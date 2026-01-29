@@ -22,12 +22,26 @@ class EmployeeCard extends StatelessWidget {
     }
   }
 
+  String _initials(String name) {
+    final parts = name.trim().split(RegExp(r'\s+'));
+    if (parts.isEmpty) {
+      return '';
+    }
+    if (parts.length == 1) {
+      return parts.first.substring(0, 1).toUpperCase();
+    }
+    return (parts[0].substring(0, 1) + parts[1].substring(0, 1))
+        .toUpperCase();
+  }
+
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface,
+        color: colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
@@ -37,91 +51,105 @@ class EmployeeCard extends StatelessWidget {
           ),
         ],
       ),
-      child: Column(
+      child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            employee.name,
-            style: Theme.of(context)
-                .textTheme
-                .titleMedium
-                ?.copyWith(fontWeight: FontWeight.w600),
-          ),
-          const SizedBox(height: 6),
-          Text(
-            employee.designation,
-            style: Theme.of(context)
-                .textTheme
-                .bodyMedium
-                ?.copyWith(color: Colors.grey.shade700),
-          ),
-          const SizedBox(height: 10),
-          Wrap(
-            spacing: 12,
-            runSpacing: 8,
-            children: [
-              _InfoChip(label: 'District: ${employee.homeDistrict}'),
-              _InfoChip(label: 'Blood: ${employee.bloodGroup}'),
-            ],
-          ),
-          const SizedBox(height: 12),
-          Row(
-            children: [
-              Expanded(
-                child: Text(
-                  employee.phoneNumber,
-                  style: Theme.of(context).textTheme.bodyMedium,
-                ),
-              ),
-              IconButton(
-                tooltip: 'Call',
-                onPressed: () => _launchPhone(employee.phoneNumber),
-                icon: const Icon(Icons.call),
-                color: Theme.of(context).colorScheme.primary,
-              ),
-              IconButton(
-                tooltip: 'Email',
-                onPressed: () => _launchEmail(employee.email),
-                icon: const Icon(Icons.email),
-                color: Theme.of(context).colorScheme.primary,
-              ),
-            ],
-          ),
-          Align(
-            alignment: Alignment.centerLeft,
+          CircleAvatar(
+            radius: 28,
+            backgroundColor: colorScheme.primary.withOpacity(0.15),
             child: Text(
-              employee.email,
+              _initials(employee.name),
               style: Theme.of(context)
                   .textTheme
-                  .bodySmall
-                  ?.copyWith(color: Colors.grey.shade600),
+                  .titleMedium
+                  ?.copyWith(
+                    color: colorScheme.primary,
+                    fontWeight: FontWeight.w700,
+                  ),
+            ),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  employee.name,
+                  style: Theme.of(context)
+                      .textTheme
+                      .titleMedium
+                      ?.copyWith(fontWeight: FontWeight.w600),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  employee.designation,
+                  style: Theme.of(context)
+                      .textTheme
+                      .bodyMedium
+                      ?.copyWith(color: Colors.grey.shade700),
+                ),
+                const SizedBox(height: 10),
+                Text(
+                  'রক্তের গ্রুপ: ${employee.bloodGroup}',
+                  style: Theme.of(context).textTheme.bodySmall,
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  'নিজ জেলা: ${employee.homeDistrict}',
+                  style: Theme.of(context).textTheme.bodySmall,
+                ),
+                const SizedBox(height: 10),
+                Row(
+                  children: [
+                    Icon(Icons.call, size: 18, color: colorScheme.primary),
+                    const SizedBox(width: 6),
+                    Expanded(
+                      child: Text(
+                        employee.phoneNumber,
+                        style: Theme.of(context).textTheme.bodyMedium,
+                      ),
+                    ),
+                    IconButton(
+                      tooltip: 'Call',
+                      onPressed: () => _launchPhone(employee.phoneNumber),
+                      icon: const Icon(Icons.phone_in_talk),
+                      color: colorScheme.primary,
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 6),
+                Row(
+                  children: [
+                    Icon(Icons.email, size: 18, color: colorScheme.primary),
+                    const SizedBox(width: 6),
+                    Expanded(
+                      child: Text(
+                        employee.email,
+                        style: Theme.of(context).textTheme.bodyMedium,
+                      ),
+                    ),
+                    IconButton(
+                      tooltip: 'Email',
+                      onPressed: () => _launchEmail(employee.email),
+                      icon: const Icon(Icons.mark_email_read),
+                      color: colorScheme.primary,
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                Row(
+                  children: [
+                    Icon(Icons.facebook, color: colorScheme.primary),
+                    const SizedBox(width: 8),
+                    Icon(Icons.link, color: colorScheme.primary),
+                    const SizedBox(width: 8),
+                    Icon(Icons.public, color: colorScheme.primary),
+                  ],
+                ),
+              ],
             ),
           ),
         ],
-      ),
-    );
-  }
-}
-
-class _InfoChip extends StatelessWidget {
-  const _InfoChip({required this.label});
-
-  final String label;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.primary.withOpacity(0.08),
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Text(
-        label,
-        style: Theme.of(context)
-            .textTheme
-            .bodySmall
-            ?.copyWith(color: Theme.of(context).colorScheme.primary),
       ),
     );
   }
