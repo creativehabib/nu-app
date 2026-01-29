@@ -149,6 +149,16 @@ const List<Map<String, dynamic>> _fallbackDepartments = [
         'phone_number': '+88017110000',
         'email': 'deputy.discipline@nu.edu.bd',
         'home_district': 'Cumilla',
+      },
+      {
+        'id': 'disc-003',
+        'name': 'Habibur Rahaman',
+        'designation': 'Administrative Officer',
+        'department_name': 'Discipline & Security Department',
+        'blood_group': 'O+',
+        'phone_number': '+8801914120688',
+        'email': 'habibur.rahman2@nu.ac.bd',
+        'home_district': 'Sherpur',
       }
     ],
   },
