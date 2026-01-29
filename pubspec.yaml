@@ -1,0 +1,17 @@
+name: university_directory_app
+version: 1.0.0
+publish_to: 'none'
+description: A simple University Directory App demo.
+
+environment:
+  sdk: '>=2.17.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  provider: ^6.0.5
+  url_launcher: ^6.2.6
+  shimmer: ^3.0.0
+
+flutter:
+  uses-material-design: true
