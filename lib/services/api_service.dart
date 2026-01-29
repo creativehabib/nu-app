@@ -126,4 +126,30 @@ const List<Map<String, dynamic>> _fallbackDepartments = [
       },
     ],
   },
+  {
+    'id' : 'discipline',
+    'name' : 'Discipline & Security Department',
+    'employees' : [
+      {
+        'id': 'disc-001',
+        'name': 'Muhammad Kamal Hasan',
+        'designation': 'Director',
+        'department_name': 'Discipline & Security Department',
+        'blood_group': 'A+',
+        'phone_number': '+880171100000',
+        'email': 'discipline.director@nu.edu.bd',
+        'home_district': 'Dhaka',
+      },
+      {
+        'id': 'disc-002',
+        'name': 'Rajaur Rahman Miah',
+        'designation': 'Proctor',
+        'department_name': 'Discipline & Security Department',
+        'blood_group': 'B+',
+        'phone_number': '+88017110000',
+        'email': 'deputy.discipline@nu.edu.bd',
+        'home_district': 'Cumilla',
+      }
+    ],
+  },
 ];
