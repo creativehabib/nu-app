@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'department_list_screen.dart';
+
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
@@ -13,7 +15,17 @@ class HomeScreen extends StatelessWidget {
       _TaskItem(icon: Icons.receipt_long, label: 'Office Order'),
       _TaskItem(icon: Icons.rate_review, label: 'Exam Remark'),
       _TaskItem(icon: Icons.assignment, label: 'Assignment'),
-      _TaskItem(icon: Icons.account_tree, label: 'Directory'),
+      _TaskItem(
+        icon: Icons.account_tree,
+        label: 'Office Dept.',
+        onTap: () {
+          Navigator.of(context).push(
+            MaterialPageRoute<void>(
+              builder: (_) => const DepartmentListScreen(),
+            ),
+          );
+        },
+      ),
       _TaskItem(icon: Icons.insert_chart_outlined, label: 'Indicator'),
       _TaskItem(icon: Icons.photo_library, label: 'Gallery'),
       _TaskItem(icon: Icons.quiz, label: 'Res. Query'),
@@ -68,6 +80,7 @@ class HomeScreen extends StatelessWidget {
                       icon: task.icon,
                       label: task.label,
                       color: baseColor,
+                      onTap: task.onTap,
                     );
                   },
                 ),
@@ -109,10 +122,15 @@ class HomeScreen extends StatelessWidget {
 }
 
 class _TaskItem {
-  const _TaskItem({required this.icon, required this.label});
+  const _TaskItem({
+    required this.icon,
+    required this.label,
+    this.onTap,
+  });
 
   final IconData icon;
   final String label;
+  final VoidCallback? onTap;
 
   static const palette = [
     Color(0xFF7E57C2),
@@ -129,51 +147,60 @@ class _TaskTile extends StatelessWidget {
     required this.icon,
     required this.label,
     required this.color,
+    this.onTap,
   });
 
   final IconData icon;
   final String label;
   final Color color;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
     final iconColor = Color.lerp(color, Colors.black, 0.2) ?? color;
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
         borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            blurRadius: 12,
-            color: Colors.black.withOpacity(0.06),
-            offset: const Offset(0, 6),
+        onTap: onTap,
+        child: Ink(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: [
+              BoxShadow(
+                blurRadius: 12,
+                color: Colors.black.withOpacity(0.06),
+                offset: const Offset(0, 6),
+              ),
+            ],
           ),
-        ],
-      ),
-      padding: const EdgeInsets.all(10),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Container(
-            height: 42,
-            width: 42,
-            decoration: BoxDecoration(
-              color: color.withOpacity(0.15),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Icon(icon, color: iconColor),
+          padding: const EdgeInsets.all(10),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                height: 42,
+                width: 42,
+                decoration: BoxDecoration(
+                  color: color.withOpacity(0.15),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Icon(icon, color: iconColor),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                label,
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w600,
+                  color: Color(0xFF2E2E2E),
+                ),
+              ),
+            ],
           ),
-          const SizedBox(height: 8),
-          Text(
-            label,
-            textAlign: TextAlign.center,
-            style: const TextStyle(
-              fontSize: 11,
-              fontWeight: FontWeight.w600,
-              color: Color(0xFF2E2E2E),
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }
