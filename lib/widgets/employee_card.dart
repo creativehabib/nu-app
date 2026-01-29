@@ -9,8 +9,19 @@ class EmployeeCard extends StatelessWidget {
   final Employee employee;
 
   Future<void> _launchPhone(String phone) async {
-    final uri = Uri(scheme: 'tel', path: phone);
-    if (!await launchUrl(uri)) {
+    final whatsappUri = Uri(
+      scheme: 'whatsapp',
+      host: 'send',
+      queryParameters: {'phone': phone},
+    );
+    if (await canLaunchUrl(whatsappUri)) {
+      if (!await launchUrl(whatsappUri)) {
+        throw 'Could not launch WhatsApp for $phone';
+      }
+      return;
+    }
+    final phoneUri = Uri(scheme: 'tel', path: phone);
+    if (!await launchUrl(phoneUri)) {
       throw 'Could not launch $phone';
     }
   }
