@@ -3,11 +3,16 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../models/employee.dart';
 
-class EmployeeCard extends StatelessWidget {
+class EmployeeCard extends StatefulWidget {
   const EmployeeCard({super.key, required this.employee});
 
   final Employee employee;
 
+  @override
+  State<EmployeeCard> createState() => _EmployeeCardState();
+}
+
+class _EmployeeCardState extends State<EmployeeCard> {
   Future<void> _launchPhone(String phone) async {
     final whatsappUri = Uri(
       scheme: 'whatsapp',
@@ -70,14 +75,18 @@ class EmployeeCard extends StatelessWidget {
           ),
         ],
       ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          CircleAvatar(
+      child: Theme(
+        data: Theme.of(context).copyWith(
+          dividerColor: Colors.transparent,
+        ),
+        child: ExpansionTile(
+          tilePadding: EdgeInsets.zero,
+          childrenPadding: const EdgeInsets.only(top: 4),
+          leading: CircleAvatar(
             radius: 22,
             backgroundColor: colorScheme.primary.withOpacity(0.18),
             child: Text(
-              _initials(employee.name),
+              _initials(widget.employee.name),
               style: Theme.of(context)
                   .textTheme
                   .titleMedium
@@ -88,119 +97,129 @@ class EmployeeCard extends StatelessWidget {
                   ),
             ),
           ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  employee.name,
-                  style: Theme.of(context)
-                      .textTheme
-                      .titleMedium
-                      ?.copyWith(fontWeight: FontWeight.w600, fontSize: 15),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  employee.designation,
-                  style: Theme.of(context)
-                      .textTheme
-                      .bodyMedium
-                      ?.copyWith(color: Colors.grey.shade700, fontSize: 12),
-                ),
-                const SizedBox(height: 6),
-                Wrap(
-                  spacing: 8,
-                  runSpacing: 4,
-                  children: [
-                    _CompactInfoChip(label: 'রক্ত: ${employee.bloodGroup}'),
-                    _CompactInfoChip(label: 'জেলা: ${employee.homeDistrict}'),
-                  ],
-                ),
-                const SizedBox(height: 8),
-                Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                  decoration: BoxDecoration(
-                    color: colorScheme.primary.withOpacity(0.08),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Row(
-                    children: [
-                      Icon(Icons.call, size: 16, color: colorScheme.primary),
-                      const SizedBox(width: 6),
-                      Expanded(
-                        child: Text(
-                          employee.phoneNumber,
-                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                fontSize: 12,
-                                height: 1.1,
-                                fontWeight: FontWeight.w600,
-                                color: colorScheme.primary,
-                              ),
-                        ),
-                      ),
-                      IconButton(
-                        tooltip: 'Call',
-                        onPressed: () => _launchPhone(employee.phoneNumber),
-                        icon: const Icon(Icons.phone_in_talk, size: 18),
-                        color: colorScheme.primary,
-                        padding: EdgeInsets.zero,
-                        constraints: const BoxConstraints(),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 6),
-                Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                  decoration: BoxDecoration(
-                    color: colorScheme.secondary.withOpacity(0.12),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Row(
-                    children: [
-                      Icon(Icons.email,
-                          size: 16, color: colorScheme.secondary),
-                      const SizedBox(width: 6),
-                      Expanded(
-                        child: Text(
-                          employee.email,
-                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                fontSize: 12,
-                                height: 1.1,
-                                fontWeight: FontWeight.w600,
-                                color: colorScheme.secondary,
-                              ),
-                        ),
-                      ),
-                      IconButton(
-                        tooltip: 'Email',
-                        onPressed: () => _launchEmail(employee.email),
-                        icon: const Icon(Icons.mark_email_read, size: 18),
-                        color: colorScheme.secondary,
-                        padding: EdgeInsets.zero,
-                        constraints: const BoxConstraints(),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 6),
-                Row(
-                  children: [
-                    Icon(Icons.facebook,
-                        color: colorScheme.primary, size: 18),
-                    const SizedBox(width: 6),
-                    Icon(Icons.link, color: colorScheme.primary, size: 18),
-                    const SizedBox(width: 6),
-                    Icon(Icons.public, color: colorScheme.primary, size: 18),
-                  ],
-                ),
-              ],
-            ),
+          title: Text(
+            widget.employee.name,
+            style: Theme.of(context)
+                .textTheme
+                .titleMedium
+                ?.copyWith(fontWeight: FontWeight.w600, fontSize: 15),
           ),
-        ],
+          subtitle: Text(
+            widget.employee.designation,
+            style: Theme.of(context)
+                .textTheme
+                .bodyMedium
+                ?.copyWith(color: Colors.grey.shade700, fontSize: 12),
+          ),
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(left: 56, right: 4, bottom: 4),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 4,
+                    children: [
+                      _CompactInfoChip(
+                          label: 'রক্ত: ${widget.employee.bloodGroup}'),
+                      _CompactInfoChip(
+                          label: 'জেলা: ${widget.employee.homeDistrict}'),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  Container(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: colorScheme.primary.withOpacity(0.08),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(Icons.call, size: 16, color: colorScheme.primary),
+                        const SizedBox(width: 6),
+                        Expanded(
+                          child: Text(
+                            widget.employee.phoneNumber,
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium
+                                ?.copyWith(
+                                  fontSize: 12,
+                                  height: 1.1,
+                                  fontWeight: FontWeight.w600,
+                                  color: colorScheme.primary,
+                                ),
+                          ),
+                        ),
+                        IconButton(
+                          tooltip: 'Call',
+                          onPressed: () =>
+                              _launchPhone(widget.employee.phoneNumber),
+                          icon: const Icon(Icons.phone_in_talk, size: 18),
+                          color: colorScheme.primary,
+                          padding: EdgeInsets.zero,
+                          constraints: const BoxConstraints(),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  Container(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: colorScheme.secondary.withOpacity(0.12),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(Icons.email,
+                            size: 16, color: colorScheme.secondary),
+                        const SizedBox(width: 6),
+                        Expanded(
+                          child: Text(
+                            widget.employee.email,
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium
+                                ?.copyWith(
+                                  fontSize: 12,
+                                  height: 1.1,
+                                  fontWeight: FontWeight.w600,
+                                  color: colorScheme.secondary,
+                                ),
+                          ),
+                        ),
+                        IconButton(
+                          tooltip: 'Email',
+                          onPressed: () =>
+                              _launchEmail(widget.employee.email),
+                          icon: const Icon(Icons.mark_email_read, size: 18),
+                          color: colorScheme.secondary,
+                          padding: EdgeInsets.zero,
+                          constraints: const BoxConstraints(),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  Row(
+                    children: [
+                      Icon(Icons.facebook,
+                          color: colorScheme.primary, size: 18),
+                      const SizedBox(width: 6),
+                      Icon(Icons.link, color: colorScheme.primary, size: 18),
+                      const SizedBox(width: 6),
+                      Icon(Icons.public, color: colorScheme.primary, size: 18),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
