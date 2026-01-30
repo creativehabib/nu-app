@@ -13,22 +13,82 @@ class EmployeeCard extends StatefulWidget {
 }
 
 class _EmployeeCardState extends State<EmployeeCard> {
-  Future<void> _launchPhone(String phone) async {
+  Future<void> _launchDialer(String phone) async {
+    final phoneUri = Uri(scheme: 'tel', path: phone);
+    if (!await launchUrl(phoneUri)) {
+      throw 'Could not launch $phone';
+    }
+  }
+
+  Future<void> _launchWhatsApp(String phone) async {
     final whatsappUri = Uri(
       scheme: 'whatsapp',
       host: 'send',
       queryParameters: {'phone': phone},
     );
-    if (await canLaunchUrl(whatsappUri)) {
-      if (!await launchUrl(whatsappUri)) {
-        throw 'Could not launch WhatsApp for $phone';
-      }
+    if (!await launchUrl(whatsappUri)) {
+      throw 'Could not launch WhatsApp for $phone';
+    }
+  }
+
+  Future<void> _showCallOptions(String phone) async {
+    final whatsappUri = Uri(
+      scheme: 'whatsapp',
+      host: 'send',
+      queryParameters: {'phone': phone},
+    );
+    final canOpenWhatsApp = await canLaunchUrl(whatsappUri);
+    if (!mounted) {
       return;
     }
-    final phoneUri = Uri(scheme: 'tel', path: phone);
-    if (!await launchUrl(phoneUri)) {
-      throw 'Could not launch $phone';
-    }
+    await showModalBottomSheet<void>(
+      context: context,
+      showDragHandle: true,
+      builder: (context) {
+        return SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Choose an app to call',
+                  style: Theme.of(context)
+                      .textTheme
+                      .titleMedium
+                      ?.copyWith(fontWeight: FontWeight.w600),
+                ),
+                const SizedBox(height: 12),
+                ListTile(
+                  leading: const Icon(Icons.phone_in_talk),
+                  title: const Text('Phone'),
+                  subtitle: Text(phone),
+                  onTap: () {
+                    Navigator.of(context).pop();
+                    _launchDialer(phone);
+                  },
+                ),
+                ListTile(
+                  leading: const Icon(Icons.chat_bubble),
+                  title: const Text('WhatsApp'),
+                  subtitle: Text(canOpenWhatsApp
+                      ? 'Call via WhatsApp'
+                      : 'WhatsApp not available'),
+                  enabled: canOpenWhatsApp,
+                  onTap: canOpenWhatsApp
+                      ? () {
+                          Navigator.of(context).pop();
+                          _launchWhatsApp(phone);
+                        }
+                      : null,
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
   }
 
   Future<void> _launchEmail(String email) async {
@@ -150,7 +210,7 @@ class _EmployeeCardState extends State<EmployeeCard> {
                         IconButton(
                           tooltip: 'Call',
                           onPressed: () =>
-                              _launchPhone(widget.employee.phoneNumber),
+                              _showCallOptions(widget.employee.phoneNumber),
                           icon: const Icon(Icons.phone_in_talk, size: 18),
                           color: colorScheme.onPrimaryContainer,
                           padding: EdgeInsets.zero,
