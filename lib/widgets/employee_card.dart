@@ -52,13 +52,21 @@ class EmployeeCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: colorScheme.surface,
-        borderRadius: BorderRadius.circular(16),
+        gradient: LinearGradient(
+          colors: [
+            colorScheme.surface,
+            colorScheme.primary.withOpacity(0.06),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: colorScheme.primary.withOpacity(0.12)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.06),
-            blurRadius: 12,
-            offset: const Offset(0, 6),
+            color: colorScheme.primary.withOpacity(0.08),
+            blurRadius: 14,
+            offset: const Offset(0, 8),
           ),
         ],
       ),
@@ -67,7 +75,7 @@ class EmployeeCard extends StatelessWidget {
         children: [
           CircleAvatar(
             radius: 22,
-            backgroundColor: colorScheme.primary.withOpacity(0.15),
+            backgroundColor: colorScheme.primary.withOpacity(0.18),
             child: Text(
               _initials(employee.name),
               style: Theme.of(context)
@@ -110,52 +118,73 @@ class EmployeeCard extends StatelessWidget {
                   ],
                 ),
                 const SizedBox(height: 8),
-                Row(
-                  children: [
-                    Icon(Icons.call, size: 16, color: colorScheme.primary),
-                    const SizedBox(width: 4),
-                    Expanded(
-                      child: Text(
-                        employee.phoneNumber,
-                        style: Theme.of(context)
-                            .textTheme
-                            .bodyMedium
-                            ?.copyWith(fontSize: 12),
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: colorScheme.primary.withOpacity(0.08),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(Icons.call, size: 16, color: colorScheme.primary),
+                      const SizedBox(width: 6),
+                      Expanded(
+                        child: Text(
+                          employee.phoneNumber,
+                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                fontSize: 12,
+                                height: 1.1,
+                                fontWeight: FontWeight.w600,
+                                color: colorScheme.primary,
+                              ),
+                        ),
                       ),
-                    ),
-                    IconButton(
-                      tooltip: 'Call',
-                      onPressed: () => _launchPhone(employee.phoneNumber),
-                      icon: const Icon(Icons.phone_in_talk, size: 18),
-                      color: colorScheme.primary,
-                      padding: EdgeInsets.zero,
-                      constraints: const BoxConstraints(),
-                    ),
-                  ],
+                      IconButton(
+                        tooltip: 'Call',
+                        onPressed: () => _launchPhone(employee.phoneNumber),
+                        icon: const Icon(Icons.phone_in_talk, size: 18),
+                        color: colorScheme.primary,
+                        padding: EdgeInsets.zero,
+                        constraints: const BoxConstraints(),
+                      ),
+                    ],
+                  ),
                 ),
-                const SizedBox(height: 4),
-                Row(
-                  children: [
-                    Icon(Icons.email, size: 16, color: colorScheme.primary),
-                    const SizedBox(width: 4),
-                    Expanded(
-                      child: Text(
-                        employee.email,
-                        style: Theme.of(context)
-                            .textTheme
-                            .bodyMedium
-                            ?.copyWith(fontSize: 12),
+                const SizedBox(height: 6),
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: colorScheme.secondary.withOpacity(0.12),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(Icons.email,
+                          size: 16, color: colorScheme.secondary),
+                      const SizedBox(width: 6),
+                      Expanded(
+                        child: Text(
+                          employee.email,
+                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                fontSize: 12,
+                                height: 1.1,
+                                fontWeight: FontWeight.w600,
+                                color: colorScheme.secondary,
+                              ),
+                        ),
                       ),
-                    ),
-                    IconButton(
-                      tooltip: 'Email',
-                      onPressed: () => _launchEmail(employee.email),
-                      icon: const Icon(Icons.mark_email_read, size: 18),
-                      color: colorScheme.primary,
-                      padding: EdgeInsets.zero,
-                      constraints: const BoxConstraints(),
-                    ),
-                  ],
+                      IconButton(
+                        tooltip: 'Email',
+                        onPressed: () => _launchEmail(employee.email),
+                        icon: const Icon(Icons.mark_email_read, size: 18),
+                        color: colorScheme.secondary,
+                        padding: EdgeInsets.zero,
+                        constraints: const BoxConstraints(),
+                      ),
+                    ],
+                  ),
                 ),
                 const SizedBox(height: 6),
                 Row(
