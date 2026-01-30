@@ -57,19 +57,12 @@ class _EmployeeCardState extends State<EmployeeCard> {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            colorScheme.surface,
-            colorScheme.primary.withOpacity(0.06),
-          ],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
+        color: colorScheme.surface,
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: colorScheme.primary.withOpacity(0.12)),
+        border: Border.all(color: colorScheme.outlineVariant.withOpacity(0.6)),
         boxShadow: [
           BoxShadow(
-            color: colorScheme.primary.withOpacity(0.08),
+            color: colorScheme.shadow.withOpacity(0.12),
             blurRadius: 14,
             offset: const Offset(0, 8),
           ),
@@ -84,14 +77,14 @@ class _EmployeeCardState extends State<EmployeeCard> {
           childrenPadding: const EdgeInsets.only(top: 4),
           leading: CircleAvatar(
             radius: 22,
-            backgroundColor: colorScheme.primary.withOpacity(0.18),
+            backgroundColor: colorScheme.primaryContainer,
             child: Text(
               _initials(widget.employee.name),
               style: Theme.of(context)
                   .textTheme
                   .titleMedium
                   ?.copyWith(
-                    color: colorScheme.primary,
+                    color: colorScheme.onPrimaryContainer,
                     fontWeight: FontWeight.w700,
                     fontSize: 14,
                   ),
@@ -109,7 +102,7 @@ class _EmployeeCardState extends State<EmployeeCard> {
             style: Theme.of(context)
                 .textTheme
                 .bodyMedium
-                ?.copyWith(color: Colors.grey.shade700, fontSize: 12),
+                ?.copyWith(color: colorScheme.onSurfaceVariant, fontSize: 12),
           ),
           children: [
             Padding(
@@ -132,12 +125,13 @@ class _EmployeeCardState extends State<EmployeeCard> {
                     padding:
                         const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                     decoration: BoxDecoration(
-                      color: colorScheme.primary.withOpacity(0.08),
+                      color: colorScheme.primaryContainer.withOpacity(0.4),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Row(
                       children: [
-                        Icon(Icons.call, size: 16, color: colorScheme.primary),
+                        Icon(Icons.call,
+                            size: 16, color: colorScheme.onPrimaryContainer),
                         const SizedBox(width: 6),
                         Expanded(
                           child: Text(
@@ -149,7 +143,7 @@ class _EmployeeCardState extends State<EmployeeCard> {
                                   fontSize: 12,
                                   height: 1.1,
                                   fontWeight: FontWeight.w600,
-                                  color: colorScheme.primary,
+                                  color: colorScheme.onPrimaryContainer,
                                 ),
                           ),
                         ),
@@ -158,7 +152,7 @@ class _EmployeeCardState extends State<EmployeeCard> {
                           onPressed: () =>
                               _launchPhone(widget.employee.phoneNumber),
                           icon: const Icon(Icons.phone_in_talk, size: 18),
-                          color: colorScheme.primary,
+                          color: colorScheme.onPrimaryContainer,
                           padding: EdgeInsets.zero,
                           constraints: const BoxConstraints(),
                         ),
@@ -170,13 +164,13 @@ class _EmployeeCardState extends State<EmployeeCard> {
                     padding:
                         const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                     decoration: BoxDecoration(
-                      color: colorScheme.secondary.withOpacity(0.12),
+                      color: colorScheme.secondaryContainer.withOpacity(0.55),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Row(
                       children: [
                         Icon(Icons.email,
-                            size: 16, color: colorScheme.secondary),
+                            size: 16, color: colorScheme.onSecondaryContainer),
                         const SizedBox(width: 6),
                         Expanded(
                           child: Text(
@@ -188,7 +182,7 @@ class _EmployeeCardState extends State<EmployeeCard> {
                                   fontSize: 12,
                                   height: 1.1,
                                   fontWeight: FontWeight.w600,
-                                  color: colorScheme.secondary,
+                                  color: colorScheme.onSecondaryContainer,
                                 ),
                           ),
                         ),
@@ -197,7 +191,7 @@ class _EmployeeCardState extends State<EmployeeCard> {
                           onPressed: () =>
                               _launchEmail(widget.employee.email),
                           icon: const Icon(Icons.mark_email_read, size: 18),
-                          color: colorScheme.secondary,
+                          color: colorScheme.onSecondaryContainer,
                           padding: EdgeInsets.zero,
                           constraints: const BoxConstraints(),
                         ),
@@ -208,11 +202,13 @@ class _EmployeeCardState extends State<EmployeeCard> {
                   Row(
                     children: [
                       Icon(Icons.facebook,
-                          color: colorScheme.primary, size: 18),
+                          color: colorScheme.onSurfaceVariant, size: 18),
                       const SizedBox(width: 6),
-                      Icon(Icons.link, color: colorScheme.primary, size: 18),
+                      Icon(Icons.link,
+                          color: colorScheme.onSurfaceVariant, size: 18),
                       const SizedBox(width: 6),
-                      Icon(Icons.public, color: colorScheme.primary, size: 18),
+                      Icon(Icons.public,
+                          color: colorScheme.onSurfaceVariant, size: 18),
                     ],
                   ),
                 ],
@@ -237,7 +233,7 @@ class _CompactInfoChip extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: colorScheme.primary.withOpacity(0.08),
+        color: colorScheme.surfaceVariant,
         borderRadius: BorderRadius.circular(10),
       ),
       child: Text(
@@ -245,7 +241,7 @@ class _CompactInfoChip extends StatelessWidget {
         style: Theme.of(context)
             .textTheme
             .bodySmall
-            ?.copyWith(color: colorScheme.primary, fontSize: 11),
+            ?.copyWith(color: colorScheme.onSurfaceVariant, fontSize: 11),
       ),
     );
   }
