@@ -15,12 +15,23 @@ class EmployeeListScreen extends StatefulWidget {
 }
 
 class _EmployeeListScreenState extends State<EmployeeListScreen> {
+  late final TextEditingController _searchController;
+
   @override
   void initState() {
     super.initState();
+    _searchController = TextEditingController();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<DirectoryProvider>().resetQuery();
+      final provider = context.read<DirectoryProvider>();
+      provider.resetQuery();
+      _searchController.text = provider.query;
     });
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
   }
 
   @override
@@ -38,9 +49,21 @@ class _EmployeeListScreenState extends State<EmployeeListScreen> {
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
             child: TextField(
+              controller: _searchController,
               decoration: InputDecoration(
-                hintText: 'Filter by blood group or home district',
+                hintText:
+                    'Search by name, designation, blood group, or district',
                 prefixIcon: const Icon(Icons.search),
+                suffixIcon: provider.query.isEmpty
+                    ? null
+                    : IconButton(
+                        tooltip: 'Clear search',
+                        icon: const Icon(Icons.close),
+                        onPressed: () {
+                          _searchController.clear();
+                          provider.updateQuery('');
+                        },
+                      ),
                 filled: true,
                 fillColor: Theme.of(context).colorScheme.surface,
                 border: OutlineInputBorder(
