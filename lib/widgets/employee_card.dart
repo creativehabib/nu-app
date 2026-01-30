@@ -18,25 +18,69 @@ class _EmployeeCardState extends State<EmployeeCard> {
     if (!await launchUrl(phoneUri)) {
       throw 'Could not launch $phone';
     }
+    await showModalBottomSheet<void>(
+      context: context,
+      showDragHandle: true,
+      builder: (context) {
+        return SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Choose an app to call',
+                  style: Theme.of(context)
+                      .textTheme
+                      .titleMedium
+                      ?.copyWith(fontWeight: FontWeight.w600),
+                ),
+                const SizedBox(height: 12),
+                ListTile(
+                  leading: const Icon(Icons.phone_in_talk),
+                  title: const Text('Phone'),
+                  subtitle: Text(phone),
+                  onTap: () {
+                    Navigator.of(context).pop();
+                    _launchDialer(phone);
+                  },
+                ),
+                ListTile(
+                  leading: const Icon(Icons.chat_bubble),
+                  title: const Text('WhatsApp'),
+                  subtitle: Text(canOpenWhatsApp
+                      ? 'Call via WhatsApp'
+                      : 'WhatsApp not available'),
+                  enabled: canOpenWhatsApp,
+                  onTap: canOpenWhatsApp
+                      ? () {
+                          Navigator.of(context).pop();
+                          _launchWhatsApp(phone);
+                        }
+                      : null,
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
   }
 
   Future<void> _launchWhatsApp(String phone) async {
-    final whatsappUri = Uri(
-      scheme: 'whatsapp',
-      host: 'send',
-      queryParameters: {'phone': phone},
-    );
-    if (!await launchUrl(whatsappUri)) {
+    final sanitizedPhone = phone.replaceAll(RegExp(r'\s+'), '');
+    final whatsappUri =
+        Uri(scheme: 'https', host: 'wa.me', path: sanitizedPhone);
+    if (!await launchUrl(whatsappUri, mode: LaunchMode.externalApplication)) {
       throw 'Could not launch WhatsApp for $phone';
     }
   }
 
   Future<void> _showCallOptions(String phone) async {
-    final whatsappUri = Uri(
-      scheme: 'whatsapp',
-      host: 'send',
-      queryParameters: {'phone': phone},
-    );
+    final sanitizedPhone = phone.replaceAll(RegExp(r'\s+'), '');
+    final whatsappUri =
+        Uri(scheme: 'https', host: 'wa.me', path: sanitizedPhone);
     final canOpenWhatsApp = await canLaunchUrl(whatsappUri);
     if (!mounted) {
       return;
@@ -74,7 +118,7 @@ class _EmployeeCardState extends State<EmployeeCard> {
                   title: const Text('WhatsApp'),
                   subtitle: Text(canOpenWhatsApp
                       ? 'Call via WhatsApp'
-                      : 'WhatsApp not available'),
+                      : 'WhatsApp link not available'),
                   enabled: canOpenWhatsApp,
                   onTap: canOpenWhatsApp
                       ? () {
