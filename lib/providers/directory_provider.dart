@@ -47,10 +47,22 @@ class DirectoryProvider extends ChangeNotifier {
     if (_query.isEmpty) {
       return employees;
     }
-    final queryLower = _query.toLowerCase();
+    final terms = _query
+        .toLowerCase()
+        .split(RegExp(r'\s+'))
+        .where((term) => term.isNotEmpty)
+        .toList();
+    if (terms.isEmpty) {
+      return employees;
+    }
     return employees.where((employee) {
-      return employee.bloodGroup.toLowerCase().contains(queryLower) ||
-          employee.homeDistrict.toLowerCase().contains(queryLower);
+      final searchable = [
+        employee.name,
+        employee.designation,
+        employee.bloodGroup,
+        employee.homeDistrict,
+      ].join(' ').toLowerCase();
+      return terms.every(searchable.contains);
     }).toList();
   }
 }
