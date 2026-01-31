@@ -37,7 +37,7 @@ class HomeScreen extends StatelessWidget {
     const currentIndex = 2;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFFDFDFE),
+      backgroundColor: const Color(0xFFF6FBFF),
       body: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
