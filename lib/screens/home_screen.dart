@@ -31,11 +31,14 @@ class HomeScreen extends StatelessWidget {
       _TaskItem(icon: Icons.celebration, label: 'Holiday'),
     ];
     const bottomNavItems = [
-      _BottomNavItem(icon: Icons.facebook, label: 'About'),
-      _BottomNavItem(icon: Icons.public, label: 'Portal'),
+      _BottomNavItem(icon: Icons.info_outline, label: 'About NU'),
+      _BottomNavItem(icon: Icons.phone_outlined, label: 'Contact'),
       _BottomNavItem(icon: Icons.home, label: 'Home'),
-      _BottomNavItem(icon: Icons.play_circle_outline, label: 'Contact'),
-      _BottomNavItem(icon: Icons.location_on_outlined, label: 'Location'),
+      _BottomNavItem(
+        icon: Icons.location_on_outlined,
+        label: 'NU Location',
+      ),
+      _BottomNavItem(icon: Icons.public, label: 'Portal'),
     ];
     const currentIndex = 2;
 
