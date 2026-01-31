@@ -32,6 +32,8 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+    final appBarColor =
+        Theme.of(context).appBarTheme.backgroundColor ?? colorScheme.primary;
     final themeProvider = context.watch<ThemeProvider>();
     final isDarkMode = themeProvider.isDarkMode;
 
@@ -77,7 +79,7 @@ class _HomeScreenState extends State<HomeScreen> {
           child: Column(
             children: [
               UserAccountsDrawerHeader(
-                decoration: BoxDecoration(color: colorScheme.primary),
+                decoration: BoxDecoration(color: appBarColor),
                 currentAccountPicture: CircleAvatar(
                   backgroundColor: colorScheme.surface,
                   child: Icon(Icons.person, size: 45, color: colorScheme.primary),
@@ -118,7 +120,7 @@ class _HomeScreenState extends State<HomeScreen> {
             Container(
               width: double.infinity,
               decoration: BoxDecoration(
-                color: colorScheme.primary,
+                color: appBarColor,
                 // নিচে হালকা শ্যাডো দেওয়ার জন্য
                 boxShadow: [
                   BoxShadow(
