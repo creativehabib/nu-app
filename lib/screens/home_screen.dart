@@ -55,9 +55,6 @@ class _HomeScreenState extends State<HomeScreen> {
     final bottomNavItems = buildAppBottomNavItems(context);
     const currentIndex = 2;
 
-    const headerBackground = Color(0xFF355C86);
-    const headerAccent = Color(0xFFECF1F8);
-
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: SystemUiOverlayStyle.light.copyWith(
         statusBarColor: colorScheme.primary,
@@ -74,14 +71,14 @@ class _HomeScreenState extends State<HomeScreen> {
                 padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
                 child: Container(
                   padding:
-                      const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                  const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                   decoration: BoxDecoration(
-                    color: headerBackground,
-                    borderRadius: BorderRadius.circular(18),
+                    color: colorScheme.primary,
+                    borderRadius: BorderRadius.circular(20),
                     boxShadow: [
                       BoxShadow(
                         blurRadius: 16,
-                        color: headerBackground.withOpacity(0.28),
+                        color: colorScheme.primary.withOpacity(0.25),
                         offset: const Offset(0, 6),
                       ),
                     ],
@@ -89,13 +86,13 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: Row(
                     children: [
                       Container(
-                        height: 48,
-                        width: 48,
+                        height: 52,
+                        width: 52,
                         decoration: BoxDecoration(
-                          color: headerAccent,
-                          borderRadius: BorderRadius.circular(14),
+                          color: colorScheme.onPrimary.withOpacity(0.15),
+                          borderRadius: BorderRadius.circular(16),
                         ),
-                        padding: const EdgeInsets.all(5),
+                        padding: const EdgeInsets.all(6),
                         child: Image.network(
                           'https://www.nu.ac.bd/assets/images/logo.png',
                           fit: BoxFit.contain,
@@ -109,34 +106,34 @@ class _HomeScreenState extends State<HomeScreen> {
                             Text(
                               'National University',
                               style: TextStyle(
-                                fontSize: 18,
+                                fontSize: 20,
                                 fontWeight: FontWeight.w700,
-                                color: headerAccent,
+                                color: colorScheme.onPrimary,
                               ),
                             ),
                             const SizedBox(height: 2),
                             Text(
                               'Bangladesh',
                               style: TextStyle(
-                                fontSize: 14,
+                                fontSize: 16,
                                 fontWeight: FontWeight.w500,
-                                color: headerAccent.withOpacity(0.85),
+                                color: colorScheme.onPrimary.withOpacity(0.85),
                               ),
                             ),
                           ],
                         ),
                       ),
                       Container(
-                        height: 34,
-                        width: 34,
+                        height: 38,
+                        width: 38,
                         decoration: BoxDecoration(
-                          color: headerAccent.withOpacity(0.2),
-                          borderRadius: BorderRadius.circular(10),
+                          color: colorScheme.onPrimary.withOpacity(0.15),
+                          borderRadius: BorderRadius.circular(12),
                         ),
                         child: Icon(
-                          Icons.lock_outline,
-                          color: headerAccent,
-                          size: 18,
+                          Icons.notifications_none_outlined,
+                          color: colorScheme.onPrimary,
+                          size: 20,
                         ),
                       ),
                     ],
@@ -196,7 +193,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: GridView.builder(
                     itemCount: tasks.length,
                     gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
+                    const SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 3,
                       mainAxisSpacing: 14,
                       crossAxisSpacing: 14,
@@ -205,7 +202,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     itemBuilder: (context, index) {
                       final task = tasks[index];
                       final baseColor = _TaskItem.palette[
-                          index % _TaskItem.palette.length];
+                      index % _TaskItem.palette.length];
                       return _TaskTile(
                         icon: task.icon,
                         label: task.label,
