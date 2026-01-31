@@ -59,8 +59,8 @@ class UniversityDirectoryApp extends StatelessWidget {
             ),
             darkTheme: ThemeData(
               appBarTheme: AppBarTheme(
-                backgroundColor: darkColorScheme.primary,
-                foregroundColor: darkColorScheme.onPrimary,
+                backgroundColor: const Color(0xFF1B2735),
+                foregroundColor: darkColorScheme.onSurface,
                 systemOverlayStyle: const SystemUiOverlayStyle(
                   statusBarColor: Colors.transparent,
                   statusBarIconBrightness: Brightness.light,
