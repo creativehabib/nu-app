@@ -12,6 +12,7 @@ class LocationScreen extends StatelessWidget {
       context,
       onHomeTap: () => Navigator.of(context).popUntil((route) => route.isFirst),
     );
+    final colorScheme = Theme.of(context).colorScheme;
 
     return Scaffold(
       appBar: AppBar(
@@ -47,23 +48,23 @@ class LocationScreen extends StatelessWidget {
           Container(
             height: 180,
             decoration: BoxDecoration(
-              color: const Color(0xFFEFF4FF),
+              color: colorScheme.surfaceVariant,
               borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: const Color(0xFFCBD5F5)),
+              border: Border.all(color: colorScheme.outlineVariant),
             ),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
-              children: const [
+              children: [
                 Icon(
                   Icons.map_outlined,
                   size: 42,
-                  color: Color(0xFF173B5F),
+                  color: colorScheme.primary,
                 ),
-                SizedBox(height: 8),
+                const SizedBox(height: 8),
                 Text(
                   'Map preview available in the full app',
                   style: TextStyle(
-                    color: Color(0xFF4B5563),
+                    color: colorScheme.onSurfaceVariant,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -93,12 +94,13 @@ class _LocationCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Card(
       elevation: 0,
-      color: Colors.white,
+      color: colorScheme.surface,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
-        side: const BorderSide(color: Color(0xFFE2E8F0)),
+        side: BorderSide(color: colorScheme.outlineVariant),
       ),
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -109,10 +111,10 @@ class _LocationCard extends StatelessWidget {
               height: 44,
               width: 44,
               decoration: BoxDecoration(
-                color: const Color(0xFF173B5F).withOpacity(0.12),
+                color: colorScheme.primary.withOpacity(0.12),
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: Icon(icon, color: const Color(0xFF173B5F)),
+              child: Icon(icon, color: colorScheme.primary),
             ),
             const SizedBox(width: 12),
             Expanded(
@@ -129,7 +131,7 @@ class _LocationCard extends StatelessWidget {
                   Text(
                     address,
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: const Color(0xFF4B5563),
+                          color: colorScheme.onSurfaceVariant,
                         ),
                   ),
                 ],
