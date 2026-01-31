@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import 'department_list_screen.dart';
 import '../navigation/app_bottom_nav_items.dart';
@@ -36,162 +37,171 @@ class HomeScreen extends StatelessWidget {
     final bottomNavItems = buildAppBottomNavItems(context);
     const currentIndex = 2;
 
-    return Scaffold(
-      backgroundColor: const Color(0xFFF6FBFF),
-      body: SafeArea(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                decoration: BoxDecoration(
-                  color: colorScheme.primary,
-                  borderRadius: BorderRadius.circular(20),
-                  boxShadow: [
-                    BoxShadow(
-                      blurRadius: 16,
-                      color: colorScheme.primary.withOpacity(0.25),
-                      offset: const Offset(0, 6),
-                    ),
-                  ],
-                ),
-                child: Row(
-                  children: [
-                    Container(
-                      height: 52,
-                      width: 52,
-                      decoration: BoxDecoration(
-                        color: colorScheme.onPrimary.withOpacity(0.15),
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      padding: const EdgeInsets.all(6),
-                      child: Image.network(
-                        'https://www.nu.ac.bd/assets/images/logo.png',
-                        fit: BoxFit.contain,
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'National University',
-                            style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.w700,
-                              color: colorScheme.onPrimary,
-                            ),
-                          ),
-                          const SizedBox(height: 2),
-                          Text(
-                            'Bangladesh',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w500,
-                              color: colorScheme.onPrimary.withOpacity(0.85),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Container(
-                      height: 38,
-                      width: 38,
-                      decoration: BoxDecoration(
-                        color: colorScheme.onPrimary.withOpacity(0.15),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Icon(
-                        Icons.notifications_none_outlined,
-                        color: colorScheme.onPrimary,
-                        size: 20,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 4, 16, 8),
-              child: Container(
-                height: 160,
-                width: double.infinity,
-                clipBehavior: Clip.antiAlias,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(16),
-                  boxShadow: [
-                    BoxShadow(
-                      blurRadius: 14,
-                      color: Colors.black.withOpacity(0.08),
-                      offset: const Offset(0, 8),
-                    ),
-                  ],
-                ),
-                child: Image.network(
-                  'https://www.nu.ac.bd/slide_images/slider_image_01.png',
-                  fit: BoxFit.cover,
-                ),
-              ),
-            ),
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Our Services',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w700,
-                      color: Color(0xFF1F1F1F),
-                    ),
-                  ),
-                  SizedBox(height: 2),
-                  Text(
-                    'Everything you need in one place',
-                    style: TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w500,
-                      color: Color(0xFF7C8294),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: GridView.builder(
-                  itemCount: tasks.length,
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 3,
-                    mainAxisSpacing: 14,
-                    crossAxisSpacing: 14,
-                    childAspectRatio: 0.95,
-                  ),
-                  itemBuilder: (context, index) {
-                    final task = tasks[index];
-                    final baseColor = _TaskItem.palette[
-                        index % _TaskItem.palette.length];
-                    return _TaskTile(
-                      icon: task.icon,
-                      label: task.label,
-                      color: baseColor,
-                      onTap: task.onTap,
-                    );
-                  },
-                ),
-              ),
-            ),
-          ],
-        ),
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: SystemUiOverlayStyle.light.copyWith(
+        statusBarColor: colorScheme.primary,
+        statusBarIconBrightness: Brightness.light,
+        statusBarBrightness: Brightness.dark,
       ),
-      bottomNavigationBar: AppBottomNavBar(
-        items: bottomNavItems,
-        currentIndex: currentIndex,
+      child: Scaffold(
+        backgroundColor: const Color(0xFFF6FBFF),
+        body: SafeArea(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
+                child: Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                  decoration: BoxDecoration(
+                    color: colorScheme.primary,
+                    borderRadius: BorderRadius.circular(20),
+                    boxShadow: [
+                      BoxShadow(
+                        blurRadius: 16,
+                        color: colorScheme.primary.withOpacity(0.25),
+                        offset: const Offset(0, 6),
+                      ),
+                    ],
+                  ),
+                  child: Row(
+                    children: [
+                      Container(
+                        height: 52,
+                        width: 52,
+                        decoration: BoxDecoration(
+                          color: colorScheme.onPrimary.withOpacity(0.15),
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        padding: const EdgeInsets.all(6),
+                        child: Image.network(
+                          'https://www.nu.ac.bd/assets/images/logo.png',
+                          fit: BoxFit.contain,
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'National University',
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.w700,
+                                color: colorScheme.onPrimary,
+                              ),
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              'Bangladesh',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w500,
+                                color: colorScheme.onPrimary.withOpacity(0.85),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Container(
+                        height: 38,
+                        width: 38,
+                        decoration: BoxDecoration(
+                          color: colorScheme.onPrimary.withOpacity(0.15),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Icon(
+                          Icons.notifications_none_outlined,
+                          color: colorScheme.onPrimary,
+                          size: 20,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 4, 16, 8),
+                child: Container(
+                  height: 160,
+                  width: double.infinity,
+                  clipBehavior: Clip.antiAlias,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(16),
+                    boxShadow: [
+                      BoxShadow(
+                        blurRadius: 14,
+                        color: Colors.black.withOpacity(0.08),
+                        offset: const Offset(0, 8),
+                      ),
+                    ],
+                  ),
+                  child: Image.network(
+                    'https://www.nu.ac.bd/slide_images/slider_image_01.png',
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              ),
+              const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Our Services',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w700,
+                        color: Color(0xFF1F1F1F),
+                      ),
+                    ),
+                    SizedBox(height: 2),
+                    Text(
+                      'Everything you need in one place',
+                      style: TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w500,
+                        color: Color(0xFF7C8294),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: GridView.builder(
+                    itemCount: tasks.length,
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 3,
+                      mainAxisSpacing: 14,
+                      crossAxisSpacing: 14,
+                      childAspectRatio: 0.95,
+                    ),
+                    itemBuilder: (context, index) {
+                      final task = tasks[index];
+                      final baseColor = _TaskItem.palette[
+                          index % _TaskItem.palette.length];
+                      return _TaskTile(
+                        icon: task.icon,
+                        label: task.label,
+                        color: baseColor,
+                        onTap: task.onTap,
+                      );
+                    },
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+        bottomNavigationBar: AppBottomNavBar(
+          items: bottomNavItems,
+          currentIndex: currentIndex,
+        ),
       ),
     );
   }
