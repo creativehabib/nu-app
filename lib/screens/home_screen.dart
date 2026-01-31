@@ -16,12 +16,12 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    final colorScheme = Theme.of(context).colorScheme;
+    // স্ট্যাটাস বার কনফিগারেশন: ব্যাকগ্রাউন্ড নীল (প্রাইমারি কালার) এবং আইকন সাদা
     SystemChrome.setSystemUIOverlayStyle(
-      SystemUiOverlayStyle.light.copyWith(
-        statusBarColor: colorScheme.primary,
-        statusBarIconBrightness: Brightness.light,
-        statusBarBrightness: Brightness.dark,
+      const SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent, // ট্রান্সপারেন্ট যাতে হেডারের কালার দেখা যায়
+        statusBarIconBrightness: Brightness.light, // সাদা আইকন
+        statusBarBrightness: Brightness.dark,    // iOS এর জন্য
       ),
     );
   }
@@ -29,6 +29,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+
     final tasks = [
       _TaskItem(icon: Icons.menu_book, label: 'Daily Task'),
       _TaskItem(icon: Icons.how_to_reg, label: 'Attendance'),
@@ -37,7 +38,8 @@ class _HomeScreenState extends State<HomeScreen> {
       _TaskItem(icon: Icons.receipt_long, label: 'Office Order'),
       _TaskItem(icon: Icons.rate_review, label: 'Exam Remark'),
       _TaskItem(icon: Icons.assignment, label: 'Assignment'),
-      _TaskItem(icon: Icons.account_tree,
+      _TaskItem(
+        icon: Icons.account_tree,
         label: 'Office Dept.',
         onTap: () {
           Navigator.of(context).push(
@@ -52,169 +54,210 @@ class _HomeScreenState extends State<HomeScreen> {
       _TaskItem(icon: Icons.quiz, label: 'Res. Query'),
       _TaskItem(icon: Icons.celebration, label: 'Holiday'),
     ];
+
     final bottomNavItems = buildAppBottomNavItems(context);
     const currentIndex = 2;
 
     return AnnotatedRegion<SystemUiOverlayStyle>(
-      value: SystemUiOverlayStyle.light.copyWith(
-        statusBarColor: colorScheme.primary,
+      value: const SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent,
         statusBarIconBrightness: Brightness.light,
         statusBarBrightness: Brightness.dark,
       ),
       child: Scaffold(
         backgroundColor: const Color(0xFFF6FBFF),
-        body: SafeArea(
+
+        // --- সাইডবার ড্রয়ার মেনু ---
+        drawer: Drawer(
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Padding(
-                padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
-                child: Container(
-                  padding:
-                  const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                  decoration: BoxDecoration(
-                    color: colorScheme.primary,
-                    borderRadius: BorderRadius.circular(20),
-                    boxShadow: [
-                      BoxShadow(
-                        blurRadius: 16,
-                        color: colorScheme.primary.withOpacity(0.25),
-                        offset: const Offset(0, 6),
-                      ),
-                    ],
+              UserAccountsDrawerHeader(
+                decoration: BoxDecoration(color: colorScheme.primary),
+                currentAccountPicture: const CircleAvatar(
+                  backgroundColor: Colors.white,
+                  child: Icon(Icons.person, size: 45, color: Color(0xFF173B5F)),
+                ),
+                accountName: const Text('Habibur Rahaman',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+                accountEmail: const Text('habibur@example.com'),
+              ),
+              ListTile(
+                leading: const Icon(Icons.home_outlined),
+                title: const Text('Home'),
+                onTap: () => Navigator.pop(context),
+              ),
+              ListTile(
+                leading: const Icon(Icons.person_outline),
+                title: const Text('Profile'),
+                onTap: () {},
+              ),
+              const Divider(),
+              ListTile(
+                leading: const Icon(Icons.logout, color: Colors.red),
+                title: const Text('Logout', style: TextStyle(color: Colors.red)),
+                onTap: () {},
+              ),
+            ],
+          ),
+        ),
+
+        body: Column(
+          children: [
+            // --- ফ্ল্যাট ফুল-উইডথ হেডার (Flat Full-width Header) ---
+            Container(
+              width: double.infinity,
+              decoration: BoxDecoration(
+                color: colorScheme.primary,
+                // নিচে হালকা শ্যাডো দেওয়ার জন্য
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.1),
+                    blurRadius: 10,
+                    offset: const Offset(0, 2),
                   ),
+                ],
+              ),
+              child: SafeArea(
+                bottom: false, // হেডারের নিচে সেফ এরিয়া দরকার নেই
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
                   child: Row(
                     children: [
-                      Container(
-                        height: 52,
-                        width: 52,
-                        decoration: BoxDecoration(
-                          color: colorScheme.onPrimary.withOpacity(0.15),
-                          borderRadius: BorderRadius.circular(16),
+                      // ড্রয়ার বাটন
+                      Builder(
+                        builder: (context) => IconButton(
+                          icon: const Icon(Icons.menu, color: Colors.white, size: 28),
+                          onPressed: () => Scaffold.of(context).openDrawer(),
                         ),
-                        padding: const EdgeInsets.all(6),
+                      ),
+                      const SizedBox(width: 4),
+                      // লোগো
+                      Container(
+                        height: 40,
+                        width: 40,
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.2),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        padding: const EdgeInsets.all(4),
                         child: Image.network(
                           'https://www.nu.ac.bd/assets/images/logo.png',
                           fit: BoxFit.contain,
                         ),
                       ),
                       const SizedBox(width: 12),
-                      Expanded(
+                      const Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
                               'National University',
                               style: TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.w700,
-                                color: colorScheme.onPrimary,
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
                               ),
                             ),
-                            const SizedBox(height: 2),
                             Text(
                               'Bangladesh',
                               style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w500,
-                                color: colorScheme.onPrimary.withOpacity(0.85),
+                                fontSize: 13,
+                                color: Colors.white70,
                               ),
                             ),
                           ],
                         ),
                       ),
-                      Container(
-                        height: 38,
-                        width: 38,
-                        decoration: BoxDecoration(
-                          color: colorScheme.onPrimary.withOpacity(0.15),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Icon(
-                          Icons.notifications_none_outlined,
-                          color: colorScheme.onPrimary,
-                          size: 20,
-                        ),
+                      // নোটিফিকেশন আইকন
+                      IconButton(
+                        icon: const Icon(Icons.notifications_none_outlined, color: Colors.white),
+                        onPressed: () {},
                       ),
                     ],
                   ),
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(16, 4, 16, 8),
-                child: Container(
-                  height: 160,
-                  width: double.infinity,
-                  clipBehavior: Clip.antiAlias,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(16),
-                    boxShadow: [
-                      BoxShadow(
-                        blurRadius: 14,
-                        color: Colors.black.withOpacity(0.08),
-                        offset: const Offset(0, 8),
-                      ),
-                    ],
-                  ),
-                  child: Image.network(
-                    'https://www.nu.ac.bd/slide_images/slider_image_01.png',
-                    fit: BoxFit.cover,
-                  ),
-                ),
-              ),
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+            ),
+
+            // নিচের কন্টেন্টগুলো স্ক্রল করার জন্য Expanded ব্যবহার করা হয়েছে
+            Expanded(
+              child: SingleChildScrollView(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      'Our Services',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w700,
-                        color: Color(0xFF1F1F1F),
+                    // --- স্লাইডার সেকশন ---
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+                      child: Container(
+                        height: 160,
+                        width: double.infinity,
+                        clipBehavior: Clip.antiAlias,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        child: Image.network(
+                          'https://www.nu.ac.bd/slide_images/slider_image_01.png',
+                          fit: BoxFit.cover,
+                        ),
                       ),
                     ),
-                    SizedBox(height: 2),
-                    Text(
-                      'Everything you need in one place',
-                      style: TextStyle(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w500,
-                        color: Color(0xFF7C8294),
+
+                    // --- সার্ভিসেস টাইটেল ---
+                    const Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Our Services',
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w700,
+                              color: Color(0xFF1F1F1F),
+                            ),
+                          ),
+                          Text(
+                            'Everything you need in one place',
+                            style: TextStyle(
+                              fontSize: 13,
+                              color: Color(0xFF7C8294),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
+
+                    // --- গ্রিড ভিউ ---
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: GridView.builder(
+                        shrinkWrap: true, // সিঙ্গেল চাইল্ড স্ক্রল ভিউর ভেতরে দরকার
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemCount: tasks.length,
+                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 3,
+                          mainAxisSpacing: 14,
+                          crossAxisSpacing: 14,
+                          childAspectRatio: 0.95,
+                        ),
+                        itemBuilder: (context, index) {
+                          final task = tasks[index];
+                          final baseColor = _TaskItem.palette[index % _TaskItem.palette.length];
+                          return _TaskTile(
+                            icon: task.icon,
+                            label: task.label,
+                            color: baseColor,
+                            onTap: task.onTap,
+                          );
+                        },
+                      ),
+                    ),
+                    const SizedBox(height: 20),
                   ],
                 ),
               ),
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: GridView.builder(
-                    itemCount: tasks.length,
-                    gridDelegate:
-                    const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 3,
-                      mainAxisSpacing: 14,
-                      crossAxisSpacing: 14,
-                      childAspectRatio: 0.95,
-                    ),
-                    itemBuilder: (context, index) {
-                      final task = tasks[index];
-                      final baseColor = _TaskItem.palette[
-                      index % _TaskItem.palette.length];
-                      return _TaskTile(
-                        icon: task.icon,
-                        label: task.label,
-                        color: baseColor,
-                        onTap: task.onTap,
-                      );
-                    },
-                  ),
-                ),
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
         bottomNavigationBar: AppBottomNavBar(
           items: bottomNavItems,
@@ -225,35 +268,17 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
+// --- হেল্পার ক্লাস (বদলানোর প্রয়োজন নেই) ---
 class _TaskItem {
-  const _TaskItem({
-    required this.icon,
-    required this.label,
-    this.onTap,
-  });
-
+  const _TaskItem({required this.icon, required this.label, this.onTap});
   final IconData icon;
   final String label;
   final VoidCallback? onTap;
-
-  static const palette = [
-    Color(0xFF7E57C2),
-    Color(0xFF26A69A),
-    Color(0xFFFFA726),
-    Color(0xFF42A5F5),
-    Color(0xFFEF5350),
-    Color(0xFF8D6E63),
-  ];
+  static const palette = [Color(0xFF7E57C2), Color(0xFF26A69A), Color(0xFFFFA726), Color(0xFF42A5F5), Color(0xFFEF5350), Color(0xFF8D6E63)];
 }
 
 class _TaskTile extends StatelessWidget {
-  const _TaskTile({
-    required this.icon,
-    required this.label,
-    required this.color,
-    this.onTap,
-  });
-
+  const _TaskTile({required this.icon, required this.label, required this.color, this.onTap});
   final IconData icon;
   final String label;
   final Color color;
@@ -271,40 +296,20 @@ class _TaskTile extends StatelessWidget {
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(
-              color: const Color(0xFFE8EAF2),
-            ),
-            boxShadow: [
-              BoxShadow(
-                blurRadius: 10,
-                color: Colors.black.withOpacity(0.05),
-                offset: const Offset(0, 4),
-              ),
-            ],
+            border: Border.all(color: const Color(0xFFE8EAF2)),
+            boxShadow: [BoxShadow(blurRadius: 10, color: Colors.black.withOpacity(0.05), offset: const Offset(0, 4))],
           ),
           padding: const EdgeInsets.all(10),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Container(
-                height: 42,
-                width: 42,
-                decoration: BoxDecoration(
-                  color: color.withOpacity(0.12),
-                  borderRadius: BorderRadius.circular(12),
-                ),
+                height: 42, width: 42,
+                decoration: BoxDecoration(color: color.withOpacity(0.12), borderRadius: BorderRadius.circular(12)),
                 child: Icon(icon, color: iconColor),
               ),
               const SizedBox(height: 8),
-              Text(
-                label,
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                  fontSize: 11,
-                  fontWeight: FontWeight.w600,
-                  color: Color(0xFF2E2E2E),
-                ),
-              ),
+              Text(label, textAlign: TextAlign.center, style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: Color(0xFF2E2E2E))),
             ],
           ),
         ),
