@@ -69,6 +69,7 @@ class _EmployeeCardState extends State<EmployeeCard> {
       showDragHandle: true,
       backgroundColor: Theme.of(context).colorScheme.surface,
       builder: (context) {
+        final colorScheme = Theme.of(context).colorScheme;
         return SafeArea(
           child: Padding(
             padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
@@ -87,7 +88,7 @@ class _EmployeeCardState extends State<EmployeeCard> {
 
                 // Phone Call
                 ListTile(
-                  leading: const Icon(Icons.phone_in_talk),
+                  leading: Icon(Icons.phone_in_talk, color: colorScheme.primary),
                   title: const Text('Phone Call'),
                   subtitle: Text(phone),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -99,7 +100,7 @@ class _EmployeeCardState extends State<EmployeeCard> {
 
                 // whatsapp
                 ListTile(
-                  leading: const Icon(Icons.message, color: Colors.green),
+                  leading: Icon(Icons.message, color: colorScheme.tertiary),
                   title: const Text('WhatsApp'),
                   subtitle: Text(canOpenWhatsApp
                       ? 'Chat/Call via WhatsApp'
