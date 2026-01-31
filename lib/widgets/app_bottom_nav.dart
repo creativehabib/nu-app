@@ -12,19 +12,20 @@ class AppBottomNavBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return SafeArea(
       top: false,
       child: Padding(
         padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
         child: Container(
           decoration: BoxDecoration(
-            color: Colors.white,
-            border: Border.all(color: const Color(0xFFE7ECF4)),
+            color: colorScheme.surface,
+            border: Border.all(color: colorScheme.outlineVariant),
             borderRadius: BorderRadius.circular(30),
             boxShadow: [
               BoxShadow(
                 blurRadius: 24,
-                color: Colors.black.withOpacity(0.12),
+                color: Theme.of(context).shadowColor.withOpacity(0.18),
                 offset: const Offset(0, 12),
               ),
             ],
@@ -74,7 +75,7 @@ class _BottomNavButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final selectedColor = Theme.of(context).colorScheme.primary;
-    const unselectedColor = Color(0xFF9AA4B2);
+    final unselectedColor = Theme.of(context).colorScheme.onSurfaceVariant;
     final iconBackground =
         isSelected ? selectedColor.withOpacity(0.16) : Colors.transparent;
     return Material(

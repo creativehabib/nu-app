@@ -79,12 +79,13 @@ class _InfoCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Card(
       elevation: 0,
-      color: Colors.white,
+      color: colorScheme.surface,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
-        side: const BorderSide(color: Color(0xFFE2E8F0)),
+        side: BorderSide(color: colorScheme.outlineVariant),
       ),
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -95,10 +96,10 @@ class _InfoCard extends StatelessWidget {
               height: 44,
               width: 44,
               decoration: BoxDecoration(
-                color: const Color(0xFF173B5F).withOpacity(0.12),
+                color: colorScheme.primary.withOpacity(0.12),
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: Icon(icon, color: const Color(0xFF173B5F)),
+              child: Icon(icon, color: colorScheme.primary),
             ),
             const SizedBox(width: 12),
             Expanded(
@@ -115,7 +116,7 @@ class _InfoCard extends StatelessWidget {
                   Text(
                     description,
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: const Color(0xFF4B5563),
+                          color: colorScheme.onSurfaceVariant,
                         ),
                   ),
                 ],

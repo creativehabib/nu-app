@@ -41,6 +41,7 @@ class _EmployeeListScreenState extends State<EmployeeListScreen> {
     final provider = context.watch<DirectoryProvider>();
     final filteredEmployees =
         provider.filteredEmployees(widget.department.employees);
+    final colorScheme = Theme.of(context).colorScheme;
     final bottomNavItems = buildAppBottomNavItems(
       context,
       onHomeTap: () => Navigator.of(context).popUntil((route) => route.isFirst),
@@ -82,8 +83,14 @@ class _EmployeeListScreenState extends State<EmployeeListScreen> {
           ),
           Expanded(
             child: filteredEmployees.isEmpty
-                ? const Center(
-                    child: Text('No employees match this filter.'),
+                ? Center(
+                    child: Text(
+                      'No employees match this filter.',
+                      style: Theme.of(context)
+                          .textTheme
+                          .bodyMedium
+                          ?.copyWith(color: colorScheme.onSurfaceVariant),
+                    ),
                   )
                 : ListView.builder(
                     padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
