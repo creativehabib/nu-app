@@ -14,7 +14,6 @@ class EmployeeCard extends StatefulWidget {
 
 class _EmployeeCardState extends State<EmployeeCard> {
 
-  // ১. শুধুমাত্র ডায়ালপ্যাড ওপেন করার জন্য ফাংশন
   Future<void> _launchDialer(String phone) async {
     final phoneUri = Uri(scheme: 'tel', path: phone);
     if (!await launchUrl(phoneUri)) {
@@ -27,13 +26,12 @@ class _EmployeeCardState extends State<EmployeeCard> {
     }
   }
 
-  // ২. শুধুমাত্র হোয়াটসঅ্যাপ ওপেন করার জন্য ফাংশন
   Future<void> _launchWhatsApp(String phone) async {
     final sanitizedPhone = phone.replaceAll(RegExp(r'\s+'), '');
     if (sanitizedPhone.isEmpty) {
       return;
     }
-    // হোয়াটসঅ্যাপ ইউআরএল ফরম্যাট
+
     final whatsappUri = Uri.parse("https://wa.me/$sanitizedPhone");
 
     if (!await launchUrl(whatsappUri, mode: LaunchMode.externalApplication)) {
@@ -46,7 +44,6 @@ class _EmployeeCardState extends State<EmployeeCard> {
     }
   }
 
-  // ৩. ইমেইল ওপেন করার ফাংশন
   Future<void> _launchEmail(String email) async {
     final uri = Uri(scheme: 'mailto', path: email);
     if (!await launchUrl(uri)) {
@@ -54,15 +51,12 @@ class _EmployeeCardState extends State<EmployeeCard> {
     }
   }
 
-  // ৪. বটম শিট দেখানোর ফাংশন (Call Options)
   Future<void> _showCallOptions(String phone) async {
     final sanitizedPhone = phone.replaceAll(RegExp(r'\s+'), '');
 
-    // এখানে চেক করা হচ্ছে হোয়াটসঅ্যাপ ইন্সটল আছে কিনা
     final whatsappUri = Uri.parse("whatsapp://send?phone=$sanitizedPhone");
     bool canOpenWhatsApp = await canLaunchUrl(whatsappUri);
 
-    // ফলব্যাক: যদি স্কিম দিয়ে কাজ না করে, ওয়েব লিংক দিয়ে চেক করা
     if (!canOpenWhatsApp) {
       final webUri = Uri.parse("https://wa.me/$sanitizedPhone");
       canOpenWhatsApp = await canLaunchUrl(webUri);
@@ -91,7 +85,7 @@ class _EmployeeCardState extends State<EmployeeCard> {
                 ),
                 const SizedBox(height: 16),
 
-                // ফোন অপশন
+                // Phone Call
                 ListTile(
                   leading: const Icon(Icons.phone_in_talk),
                   title: const Text('Phone Call'),
@@ -99,23 +93,23 @@ class _EmployeeCardState extends State<EmployeeCard> {
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                   onTap: () {
                     Navigator.of(context).pop();
-                    _launchDialer(phone); // ১ নম্বর ফাংশন কল হচ্ছে
+                    _launchDialer(phone);
                   },
                 ),
 
-                // হোয়াটসঅ্যাপ অপশন
+                // whatsapp
                 ListTile(
-                  leading: const Icon(Icons.message, color: Colors.green), // হোয়াটসঅ্যাপ আইকন কালার
+                  leading: const Icon(Icons.message, color: Colors.green),
                   title: const Text('WhatsApp'),
                   subtitle: Text(canOpenWhatsApp
                       ? 'Chat/Call via WhatsApp'
                       : 'WhatsApp not available'),
-                  enabled: canOpenWhatsApp, // ইন্সটল না থাকলে ডিসেবল থাকবে
+                  enabled: canOpenWhatsApp,
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                   onTap: canOpenWhatsApp
                       ? () {
                     Navigator.of(context).pop();
-                    _launchWhatsApp(phone); // ২ নম্বর ফাংশন কল হচ্ছে
+                    _launchWhatsApp(phone);
                   }
                       : null,
                 ),
@@ -223,7 +217,7 @@ class _EmployeeCardState extends State<EmployeeCard> {
                             ),
                           ),
                         ),
-                        // এখানে ক্লিক করলে বটম শিট ওপেন হবে
+
                         IconButton(
                           tooltip: 'Call Options',
                           onPressed: () => _showCallOptions(widget.employee.phoneNumber),
