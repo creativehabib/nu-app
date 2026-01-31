@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 
 import 'department_list_screen.dart';
 import '../navigation/app_bottom_nav_items.dart';
+import '../providers/theme_provider.dart';
 import '../widgets/app_bottom_nav.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -16,12 +18,13 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
+    final brightness = Theme.of(context).brightness;
     // স্ট্যাটাস বার কনফিগারেশন: ব্যাকগ্রাউন্ড নীল (প্রাইমারি কালার) এবং আইকন সাদা
     SystemChrome.setSystemUIOverlayStyle(
-      const SystemUiOverlayStyle(
+      SystemUiOverlayStyle(
         statusBarColor: Colors.transparent, // ট্রান্সপারেন্ট যাতে হেডারের কালার দেখা যায়
         statusBarIconBrightness: Brightness.light, // সাদা আইকন
-        statusBarBrightness: Brightness.dark,    // iOS এর জন্য
+        statusBarBrightness: brightness == Brightness.dark ? Brightness.light : Brightness.dark,    // iOS এর জন্য
       ),
     );
   }
@@ -29,6 +32,8 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+    final themeProvider = context.watch<ThemeProvider>();
+    final isDarkMode = themeProvider.isDarkMode;
 
     final tasks = [
       _TaskItem(icon: Icons.menu_book, label: 'Daily Task'),
@@ -59,13 +64,13 @@ class _HomeScreenState extends State<HomeScreen> {
     const currentIndex = 2;
 
     return AnnotatedRegion<SystemUiOverlayStyle>(
-      value: const SystemUiOverlayStyle(
+      value: SystemUiOverlayStyle(
         statusBarColor: Colors.transparent,
         statusBarIconBrightness: Brightness.light,
-        statusBarBrightness: Brightness.dark,
+        statusBarBrightness: isDarkMode ? Brightness.light : Brightness.dark,
       ),
       child: Scaffold(
-        backgroundColor: const Color(0xFFF6FBFF),
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
 
         // --- সাইডবার ড্রয়ার মেনু ---
         drawer: Drawer(
@@ -73,9 +78,9 @@ class _HomeScreenState extends State<HomeScreen> {
             children: [
               UserAccountsDrawerHeader(
                 decoration: BoxDecoration(color: colorScheme.primary),
-                currentAccountPicture: const CircleAvatar(
-                  backgroundColor: Colors.white,
-                  child: Icon(Icons.person, size: 45, color: Color(0xFF173B5F)),
+                currentAccountPicture: CircleAvatar(
+                  backgroundColor: colorScheme.surface,
+                  child: Icon(Icons.person, size: 45, color: colorScheme.primary),
                 ),
                 accountName: const Text('Habibur Rahaman',
                     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
@@ -90,6 +95,12 @@ class _HomeScreenState extends State<HomeScreen> {
                 leading: const Icon(Icons.person_outline),
                 title: const Text('Profile'),
                 onTap: () {},
+              ),
+              SwitchListTile(
+                secondary: Icon(isDarkMode ? Icons.dark_mode : Icons.light_mode),
+                title: const Text('Dark mode'),
+                value: isDarkMode,
+                onChanged: themeProvider.toggleTheme,
               ),
               const Divider(),
               ListTile(
@@ -111,7 +122,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 // নিচে হালকা শ্যাডো দেওয়ার জন্য
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
+                    color: colorScheme.shadow.withOpacity(0.2),
                     blurRadius: 10,
                     offset: const Offset(0, 2),
                   ),
@@ -146,7 +157,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       ),
                       const SizedBox(width: 12),
-                      const Expanded(
+                      Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -155,14 +166,14 @@ class _HomeScreenState extends State<HomeScreen> {
                               style: TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
-                                color: Colors.white,
+                                color: colorScheme.onPrimary,
                               ),
                             ),
                             Text(
                               'Bangladesh',
                               style: TextStyle(
                                 fontSize: 13,
-                                color: Colors.white70,
+                                color: colorScheme.onPrimary.withOpacity(0.7),
                               ),
                             ),
                           ],
@@ -203,8 +214,8 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
 
                     // --- সার্ভিসেস টাইটেল ---
-                    const Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -213,14 +224,14 @@ class _HomeScreenState extends State<HomeScreen> {
                             style: TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.w700,
-                              color: Color(0xFF1F1F1F),
+                              color: colorScheme.onSurface,
                             ),
                           ),
                           Text(
                             'Everything you need in one place',
                             style: TextStyle(
                               fontSize: 13,
-                              color: Color(0xFF7C8294),
+                              color: colorScheme.onSurfaceVariant,
                             ),
                           ),
                         ],
@@ -287,6 +298,7 @@ class _TaskTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final iconColor = Color.lerp(color, Colors.black, 0.2) ?? color;
+    final colorScheme = Theme.of(context).colorScheme;
     return Material(
       color: Colors.transparent,
       child: InkWell(
@@ -294,10 +306,16 @@ class _TaskTile extends StatelessWidget {
         onTap: onTap,
         child: Ink(
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: colorScheme.surface,
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: const Color(0xFFE8EAF2)),
-            boxShadow: [BoxShadow(blurRadius: 10, color: Colors.black.withOpacity(0.05), offset: const Offset(0, 4))],
+            border: Border.all(color: colorScheme.outlineVariant),
+            boxShadow: [
+              BoxShadow(
+                blurRadius: 10,
+                color: Theme.of(context).shadowColor.withOpacity(0.15),
+                offset: const Offset(0, 4),
+              ),
+            ],
           ),
           padding: const EdgeInsets.all(10),
           child: Column(
@@ -309,7 +327,15 @@ class _TaskTile extends StatelessWidget {
                 child: Icon(icon, color: iconColor),
               ),
               const SizedBox(height: 8),
-              Text(label, textAlign: TextAlign.center, style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: Color(0xFF2E2E2E))),
+              Text(
+                label,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w600,
+                  color: colorScheme.onSurface,
+                ),
+              ),
             ],
           ),
         ),
