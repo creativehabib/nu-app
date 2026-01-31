@@ -23,25 +23,27 @@ class UniversityDirectoryApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = ColorScheme.fromSeed(
+      seedColor: const Color(0xFF173B5F),
+      brightness: Brightness.light,
+    );
+
     return ChangeNotifierProvider(
       create: (_) => DirectoryProvider()..loadDepartments(),
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         title: 'National University Directory',
         theme: ThemeData(
-          appBarTheme: const AppBarTheme(
-            backgroundColor: Color(0xFF173B5F),
-            foregroundColor: Colors.white,
-            systemOverlayStyle: SystemUiOverlayStyle(
+          appBarTheme: AppBarTheme(
+            backgroundColor: colorScheme.primary,
+            foregroundColor: colorScheme.onPrimary,
+            systemOverlayStyle: const SystemUiOverlayStyle(
               statusBarColor: Colors.transparent,
               statusBarIconBrightness: Brightness.light,
               statusBarBrightness: Brightness.dark,
             ),
           ),
-          colorScheme: ColorScheme.fromSeed(
-            seedColor: const Color(0xFF173B5F),
-            brightness: Brightness.light,
-          ),
+          colorScheme: colorScheme,
           scaffoldBackgroundColor: const Color(0xFFF7F9FC),
           useMaterial3: true,
         ),
