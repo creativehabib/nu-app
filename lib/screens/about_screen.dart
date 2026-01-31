@@ -1,10 +1,18 @@
 import 'package:flutter/material.dart';
 
+import '../navigation/app_bottom_nav_items.dart';
+import '../widgets/app_bottom_nav.dart';
+
 class AboutScreen extends StatelessWidget {
   const AboutScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final bottomNavItems = buildAppBottomNavItems(
+      context,
+      onHomeTap: () => Navigator.of(context).popUntil((route) => route.isFirst),
+    );
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('About'),
@@ -50,6 +58,10 @@ class AboutScreen extends StatelessWidget {
           ),
         ],
       ),
+      bottomNavigationBar: AppBottomNavBar(
+        items: bottomNavItems,
+        currentIndex: 0,
+      ),
     );
   }
 }
@@ -83,10 +95,10 @@ class _InfoCard extends StatelessWidget {
               height: 44,
               width: 44,
               decoration: BoxDecoration(
-                color: const Color(0xFF0D47A1).withOpacity(0.12),
+                color: const Color(0xFF173B5F).withOpacity(0.12),
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: Icon(icon, color: const Color(0xFF0D47A1)),
+              child: Icon(icon, color: const Color(0xFF173B5F)),
             ),
             const SizedBox(width: 12),
             Expanded(

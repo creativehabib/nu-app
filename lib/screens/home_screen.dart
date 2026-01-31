@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 
-import 'about_screen.dart';
-import 'contact_screen.dart';
 import 'department_list_screen.dart';
-import 'location_screen.dart';
+import '../navigation/app_bottom_nav_items.dart';
+import '../widgets/app_bottom_nav.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -33,43 +32,7 @@ class HomeScreen extends StatelessWidget {
       _TaskItem(icon: Icons.quiz, label: 'Res. Query'),
       _TaskItem(icon: Icons.celebration, label: 'Holiday'),
     ];
-    final bottomNavItems = [
-      _BottomNavItem(
-        icon: Icons.info_outline,
-        label: 'About',
-        onTap: () {
-          Navigator.of(context).push(
-            MaterialPageRoute<void>(
-              builder: (_) => const AboutScreen(),
-            ),
-          );
-        },
-      ),
-      _BottomNavItem(
-        icon: Icons.phone_outlined,
-        label: 'Contact',
-        onTap: () {
-          Navigator.of(context).push(
-            MaterialPageRoute<void>(
-              builder: (_) => const ContactScreen(),
-            ),
-          );
-        },
-      ),
-      const _BottomNavItem(icon: Icons.home, label: 'Home'),
-      _BottomNavItem(
-        icon: Icons.location_on_outlined,
-        label: 'Location',
-        onTap: () {
-          Navigator.of(context).push(
-            MaterialPageRoute<void>(
-              builder: (_) => const LocationScreen(),
-            ),
-          );
-        },
-      ),
-      const _BottomNavItem(icon: Icons.person_outline, label: 'Profile'),
-    ];
+    final bottomNavItems = buildAppBottomNavItems(context);
     const currentIndex = 2;
 
     return Scaffold(
@@ -156,40 +119,9 @@ class HomeScreen extends StatelessWidget {
           ],
         ),
       ),
-      bottomNavigationBar: SafeArea(
-        top: false,
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
-          child: Container(
-            decoration: BoxDecoration(
-              color: Colors.white,
-              border: Border.all(color: const Color(0xFFE7ECF4)),
-              borderRadius: BorderRadius.circular(30),
-              boxShadow: [
-                BoxShadow(
-                  blurRadius: 24,
-                  color: Colors.black.withOpacity(0.12),
-                  offset: const Offset(0, 12),
-                ),
-              ],
-            ),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: List.generate(
-                  bottomNavItems.length,
-                  (index) => Expanded(
-                    child: _BottomNavButton(
-                      item: bottomNavItems[index],
-                      isSelected: index == currentIndex,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ),
+      bottomNavigationBar: AppBottomNavBar(
+        items: bottomNavItems,
+        currentIndex: currentIndex,
       ),
     );
   }
@@ -270,84 +202,6 @@ class _TaskTile extends StatelessWidget {
                   fontSize: 11,
                   fontWeight: FontWeight.w600,
                   color: Color(0xFF2E2E2E),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _BottomNavItem {
-  const _BottomNavItem({
-    required this.icon,
-    required this.label,
-    this.onTap,
-  });
-
-  final IconData icon;
-  final String label;
-  final VoidCallback? onTap;
-}
-
-class _BottomNavButton extends StatelessWidget {
-  const _BottomNavButton({
-    required this.item,
-    required this.isSelected,
-  });
-
-  final _BottomNavItem item;
-  final bool isSelected;
-
-  @override
-  Widget build(BuildContext context) {
-    const selectedColor = Color(0xFF0D47A1);
-    const unselectedColor = Color(0xFF9AA4B2);
-    final iconBackground =
-        isSelected ? selectedColor.withOpacity(0.16) : Colors.transparent;
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        borderRadius: BorderRadius.circular(20),
-        onTap: item.onTap,
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 200),
-          curve: Curves.easeOut,
-          margin: const EdgeInsets.symmetric(horizontal: 4),
-          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 8),
-          decoration: BoxDecoration(
-            color: isSelected
-                ? selectedColor.withOpacity(0.08)
-                : Colors.transparent,
-            borderRadius: BorderRadius.circular(18),
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              AnimatedContainer(
-                duration: const Duration(milliseconds: 200),
-                curve: Curves.easeOut,
-                height: 30,
-                width: 30,
-                decoration: BoxDecoration(
-                  color: iconBackground,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Icon(
-                  item.icon,
-                  size: 18,
-                  color: isSelected ? selectedColor : unselectedColor,
-                ),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                item.label,
-                style: TextStyle(
-                  fontSize: 10,
-                  fontWeight: isSelected ? FontWeight.w700 : FontWeight.w600,
-                  color: isSelected ? selectedColor : unselectedColor,
                 ),
               ),
             ],
