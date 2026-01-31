@@ -57,6 +57,7 @@ class CollegeProvider extends ChangeNotifier {
         college.district ?? '',
         college.thana ?? '',
         college.eiin ?? '',
+        college.email ?? '',
       ].join(' ').toLowerCase();
       return searchable.contains(lower);
     }).toList();
