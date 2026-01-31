@@ -13,293 +13,125 @@ class EmployeeCard extends StatefulWidget {
 }
 
 class _EmployeeCardState extends State<EmployeeCard> {
+
+  // ১. শুধুমাত্র ডায়ালপ্যাড ওপেন করার জন্য ফাংশন
   Future<void> _launchDialer(String phone) async {
     final phoneUri = Uri(scheme: 'tel', path: phone);
     if (!await launchUrl(phoneUri)) {
-      throw 'Could not launch $phone';
-    }
-    await showModalBottomSheet<void>(
-      context: context,
-      showDragHandle: true,
-      builder: (context) {
-        return SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Choose an app to call',
-                  style: Theme.of(context)
-                      .textTheme
-                      .titleMedium
-                      ?.copyWith(fontWeight: FontWeight.w600),
-                ),
-                const SizedBox(height: 12),
-                ListTile(
-                  leading: const Icon(Icons.phone_in_talk),
-                  title: const Text('Phone'),
-                  subtitle: Text(phone),
-                  onTap: () {
-                    Navigator.of(context).pop();
-                    _launchDialer(phone);
-                  },
-                ),
-                ListTile(
-                  leading: const Icon(Icons.chat_bubble),
-                  title: const Text('WhatsApp'),
-                  subtitle: Text(canOpenWhatsApp
-                      ? 'Call via WhatsApp'
-                      : 'WhatsApp not available'),
-                  enabled: canOpenWhatsApp,
-                  onTap: canOpenWhatsApp
-                      ? () {
-                          Navigator.of(context).pop();
-                          _launchWhatsApp(phone);
-                        }
-                      : null,
-                ),
-              ],
-            ),
-          ),
+      debugPrint('Could not launch $phone');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Could not launch dialer for $phone')),
         );
-      },
-    );
-  }
-
-  Future<void> _launchWhatsApp(String phone) async {
-    final sanitizedPhone = phone.replaceAll(RegExp(r'\s+'), '');
-    final whatsappUri =
-        Uri(scheme: 'https', host: 'wa.me', path: sanitizedPhone);
-    if (!await launchUrl(whatsappUri, mode: LaunchMode.externalApplication)) {
-      throw 'Could not launch WhatsApp for $phone';
+      }
     }
   }
 
-  Future<void> _showCallOptions(String phone) async {
-    final sanitizedPhone = phone.replaceAll(RegExp(r'\s+'), '');
-    final whatsappUri =
-        Uri(scheme: 'https', host: 'wa.me', path: sanitizedPhone);
-    final canOpenWhatsApp = await canLaunchUrl(whatsappUri);
-    if (!mounted) {
-      return;
-    }
-    await showModalBottomSheet<void>(
-      context: context,
-      showDragHandle: true,
-      builder: (context) {
-        return SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Choose an app to call',
-                  style: Theme.of(context)
-                      .textTheme
-                      .titleMedium
-                      ?.copyWith(fontWeight: FontWeight.w600),
-                ),
-                const SizedBox(height: 12),
-                ListTile(
-                  leading: const Icon(Icons.phone_in_talk),
-                  title: const Text('Phone'),
-                  subtitle: Text(phone),
-                  onTap: () {
-                    Navigator.of(context).pop();
-                    _launchDialer(phone);
-                  },
-                ),
-                ListTile(
-                  leading: const Icon(Icons.chat_bubble),
-                  title: const Text('WhatsApp'),
-                  subtitle: Text(canOpenWhatsApp
-                      ? 'Call via WhatsApp'
-                      : 'WhatsApp link not available'),
-                  enabled: canOpenWhatsApp,
-                  onTap: canOpenWhatsApp
-                      ? () {
-                          Navigator.of(context).pop();
-                          _launchWhatsApp(phone);
-                        }
-                      : null,
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
-
+  // ২. শুধুমাত্র হোয়াটসঅ্যাপ ওপেন করার জন্য ফাংশন
   Future<void> _launchWhatsApp(String phone) async {
     final sanitizedPhone = phone.replaceAll(RegExp(r'\s+'), '');
     if (sanitizedPhone.isEmpty) {
-      throw 'Phone number missing';
-    }
-    final whatsappUri =
-        Uri(scheme: 'https', host: 'wa.me', path: sanitizedPhone);
-    if (!await launchUrl(whatsappUri, mode: LaunchMode.externalApplication)) {
-      throw 'Could not launch WhatsApp for $phone';
-    }
-  }
-
-  Future<void> _showCallOptions(String phone) async {
-    final sanitizedPhone = phone.replaceAll(RegExp(r'\s+'), '');
-    final whatsappUri =
-        Uri(scheme: 'https', host: 'wa.me', path: sanitizedPhone);
-    final canOpenWhatsApp =
-        sanitizedPhone.isNotEmpty && await canLaunchUrl(whatsappUri);
-    final whatsAppStatus = sanitizedPhone.isEmpty
-        ? 'Phone number missing'
-        : (canOpenWhatsApp
-            ? 'Call via WhatsApp'
-            : 'Install WhatsApp or check the number format');
-    if (!mounted) {
       return;
     }
-    await showModalBottomSheet<void>(
-      context: context,
-      showDragHandle: true,
-      builder: (context) {
-        return SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Choose an app to call',
-                  style: Theme.of(context)
-                      .textTheme
-                      .titleMedium
-                      ?.copyWith(fontWeight: FontWeight.w600),
-                ),
-                const SizedBox(height: 12),
-                ListTile(
-                  leading: const Icon(Icons.phone_in_talk),
-                  title: const Text('Phone'),
-                  subtitle: Text(phone),
-                  onTap: () {
-                    Navigator.of(context).pop();
-                    _launchDialer(phone);
-                  },
-                ),
-                ListTile(
-                  leading: const Icon(Icons.chat_bubble),
-                  title: const Text('WhatsApp'),
-                  subtitle: Text(whatsAppStatus),
-                  enabled: canOpenWhatsApp,
-                  onTap: canOpenWhatsApp
-                      ? () {
-                          Navigator.of(context).pop();
-                          _launchWhatsApp(phone);
-                        }
-                      : null,
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
+    // হোয়াটসঅ্যাপ ইউআরএল ফরম্যাট
+    final whatsappUri = Uri.parse("https://wa.me/$sanitizedPhone");
 
-  Future<void> _launchWhatsApp(String phone) async {
-    final sanitizedPhone = phone.replaceAll(RegExp(r'\s+'), '');
-    if (sanitizedPhone.isEmpty) {
-      throw 'Phone number missing';
-    }
-    final whatsappUri =
-        Uri(scheme: 'https', host: 'wa.me', path: sanitizedPhone);
     if (!await launchUrl(whatsappUri, mode: LaunchMode.externalApplication)) {
-      throw 'Could not launch WhatsApp for $phone';
-    }
-  }
-
-  Future<void> _showCallOptions(String phone) async {
-    final sanitizedPhone = phone.replaceAll(RegExp(r'\s+'), '');
-    final whatsappUri =
-        Uri(scheme: 'https', host: 'wa.me', path: sanitizedPhone);
-    final bool canOpenWhatsApp =
-        sanitizedPhone.isNotEmpty && await canLaunchUrl(whatsappUri);
-    final String whatsAppStatus = sanitizedPhone.isEmpty
-        ? 'Phone number missing'
-        : (canOpenWhatsApp
-            ? 'Call via WhatsApp'
-            : 'Install WhatsApp or check the number format');
-    if (!mounted) {
-      return;
-    }
-    await showModalBottomSheet<void>(
-      context: context,
-      showDragHandle: true,
-      builder: (context) {
-        return SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Choose an app to call',
-                  style: Theme.of(context)
-                      .textTheme
-                      .titleMedium
-                      ?.copyWith(fontWeight: FontWeight.w600),
-                ),
-                const SizedBox(height: 12),
-                ListTile(
-                  leading: const Icon(Icons.phone_in_talk),
-                  title: const Text('Phone'),
-                  subtitle: Text(phone),
-                  onTap: () {
-                    Navigator.of(context).pop();
-                    _launchDialer(phone);
-                  },
-                ),
-                ListTile(
-                  leading: const Icon(Icons.chat_bubble),
-                  title: const Text('WhatsApp'),
-                  subtitle: Text(whatsAppStatus),
-                  enabled: canOpenWhatsApp,
-                  onTap: canOpenWhatsApp
-                      ? () {
-                          Navigator.of(context).pop();
-                          _launchWhatsApp(phone);
-                        }
-                      : null,
-                ),
-              ],
-            ),
-          ),
+      debugPrint('Could not launch WhatsApp');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Could not open WhatsApp')),
         );
-      },
-    );
+      }
+    }
   }
 
+  // ৩. ইমেইল ওপেন করার ফাংশন
   Future<void> _launchEmail(String email) async {
     final uri = Uri(scheme: 'mailto', path: email);
     if (!await launchUrl(uri)) {
-      throw 'Could not launch $email';
+      debugPrint('Could not launch $email');
     }
+  }
+
+  // ৪. বটম শিট দেখানোর ফাংশন (Call Options)
+  Future<void> _showCallOptions(String phone) async {
+    final sanitizedPhone = phone.replaceAll(RegExp(r'\s+'), '');
+
+    // এখানে চেক করা হচ্ছে হোয়াটসঅ্যাপ ইন্সটল আছে কিনা
+    final whatsappUri = Uri.parse("whatsapp://send?phone=$sanitizedPhone");
+    bool canOpenWhatsApp = await canLaunchUrl(whatsappUri);
+
+    // ফলব্যাক: যদি স্কিম দিয়ে কাজ না করে, ওয়েব লিংক দিয়ে চেক করা
+    if (!canOpenWhatsApp) {
+      final webUri = Uri.parse("https://wa.me/$sanitizedPhone");
+      canOpenWhatsApp = await canLaunchUrl(webUri);
+    }
+
+    if (!mounted) return;
+
+    await showModalBottomSheet<void>(
+      context: context,
+      showDragHandle: true,
+      backgroundColor: Theme.of(context).colorScheme.surface,
+      builder: (context) {
+        return SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Choose an app to call',
+                  style: Theme.of(context)
+                      .textTheme
+                      .titleMedium
+                      ?.copyWith(fontWeight: FontWeight.w600),
+                ),
+                const SizedBox(height: 16),
+
+                // ফোন অপশন
+                ListTile(
+                  leading: const Icon(Icons.phone_in_talk),
+                  title: const Text('Phone Call'),
+                  subtitle: Text(phone),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  onTap: () {
+                    Navigator.of(context).pop();
+                    _launchDialer(phone); // ১ নম্বর ফাংশন কল হচ্ছে
+                  },
+                ),
+
+                // হোয়াটসঅ্যাপ অপশন
+                ListTile(
+                  leading: const Icon(Icons.message, color: Colors.green), // হোয়াটসঅ্যাপ আইকন কালার
+                  title: const Text('WhatsApp'),
+                  subtitle: Text(canOpenWhatsApp
+                      ? 'Chat/Call via WhatsApp'
+                      : 'WhatsApp not available'),
+                  enabled: canOpenWhatsApp, // ইন্সটল না থাকলে ডিসেবল থাকবে
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  onTap: canOpenWhatsApp
+                      ? () {
+                    Navigator.of(context).pop();
+                    _launchWhatsApp(phone); // ২ নম্বর ফাংশন কল হচ্ছে
+                  }
+                      : null,
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
   }
 
   String _initials(String name) {
     final parts = name.trim().split(RegExp(r'\s+'));
-    if (parts.isEmpty) {
-      return '';
-    }
-    if (parts.length == 1) {
-      return parts.first.substring(0, 1).toUpperCase();
-    }
-    return (parts[0].substring(0, 1) + parts[1].substring(0, 1))
-        .toUpperCase();
+    if (parts.isEmpty) return '';
+    if (parts.length == 1) return parts.first.substring(0, 1).toUpperCase();
+    return (parts[0].substring(0, 1) + parts[1].substring(0, 1)).toUpperCase();
   }
 
   @override
@@ -309,16 +141,16 @@ class _EmployeeCardState extends State<EmployeeCard> {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: colorScheme.surface,
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: colorScheme.outlineVariant.withOpacity(0.6)),
-        boxShadow: [
-          BoxShadow(
-            color: colorScheme.shadow.withOpacity(0.12),
-            blurRadius: 14,
-            offset: const Offset(0, 8),
-          ),
-        ],
+          color: colorScheme.surface,
+          borderRadius: BorderRadius.circular(18),
+          border: Border.all(color: colorScheme.outlineVariant.withOpacity(0.6)),
+          boxShadow: [
+            BoxShadow(
+              color: colorScheme.shadow.withOpacity(0.12),
+              blurRadius: 14,
+              offset: const Offset(0, 8),
+            ),
+          ],
       ),
       child: Theme(
         data: Theme.of(context).copyWith(
@@ -332,14 +164,11 @@ class _EmployeeCardState extends State<EmployeeCard> {
             backgroundColor: colorScheme.primaryContainer,
             child: Text(
               _initials(widget.employee.name),
-              style: Theme.of(context)
-                  .textTheme
-                  .titleMedium
-                  ?.copyWith(
-                    color: colorScheme.onPrimaryContainer,
-                    fontWeight: FontWeight.w700,
-                    fontSize: 14,
-                  ),
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                color: colorScheme.onPrimaryContainer,
+                fontWeight: FontWeight.w700,
+                fontSize: 14,
+              ),
             ),
           ),
           title: Text(
@@ -366,43 +195,38 @@ class _EmployeeCardState extends State<EmployeeCard> {
                     spacing: 8,
                     runSpacing: 4,
                     children: [
-                      _CompactInfoChip(
-                          label: 'রক্ত: ${widget.employee.bloodGroup}'),
-                      _CompactInfoChip(
-                          label: 'জেলা: ${widget.employee.homeDistrict}'),
+                      _CompactInfoChip(label: 'রক্ত: ${widget.employee.bloodGroup}'),
+                      _CompactInfoChip(label: 'জেলা: ${widget.employee.homeDistrict}'),
                     ],
                   ),
                   const SizedBox(height: 8),
+
+                  // কল বাটন সেকশন
                   Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                     decoration: BoxDecoration(
                       color: colorScheme.primaryContainer.withOpacity(0.4),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Row(
                       children: [
-                        Icon(Icons.call,
-                            size: 16, color: colorScheme.onPrimaryContainer),
+                        Icon(Icons.call, size: 16, color: colorScheme.onPrimaryContainer),
                         const SizedBox(width: 6),
                         Expanded(
                           child: Text(
                             widget.employee.phoneNumber,
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodyMedium
-                                ?.copyWith(
-                                  fontSize: 12,
-                                  height: 1.1,
-                                  fontWeight: FontWeight.w600,
-                                  color: colorScheme.onPrimaryContainer,
-                                ),
+                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              fontSize: 12,
+                              height: 1.1,
+                              fontWeight: FontWeight.w600,
+                              color: colorScheme.onPrimaryContainer,
+                            ),
                           ),
                         ),
+                        // এখানে ক্লিক করলে বটম শিট ওপেন হবে
                         IconButton(
-                          tooltip: 'Call',
-                          onPressed: () =>
-                              _showCallOptions(widget.employee.phoneNumber),
+                          tooltip: 'Call Options',
+                          onPressed: () => _showCallOptions(widget.employee.phoneNumber),
                           icon: const Icon(Icons.phone_in_talk, size: 18),
                           color: colorScheme.onPrimaryContainer,
                           padding: EdgeInsets.zero,
@@ -411,37 +235,34 @@ class _EmployeeCardState extends State<EmployeeCard> {
                       ],
                     ),
                   ),
+
                   const SizedBox(height: 6),
+
+                  // ইমেইল বাটন সেকশন
                   Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                     decoration: BoxDecoration(
                       color: colorScheme.secondaryContainer.withOpacity(0.55),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Row(
                       children: [
-                        Icon(Icons.email,
-                            size: 16, color: colorScheme.onSecondaryContainer),
+                        Icon(Icons.email, size: 16, color: colorScheme.onSecondaryContainer),
                         const SizedBox(width: 6),
                         Expanded(
                           child: Text(
                             widget.employee.email,
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodyMedium
-                                ?.copyWith(
-                                  fontSize: 12,
-                                  height: 1.1,
-                                  fontWeight: FontWeight.w600,
-                                  color: colorScheme.onSecondaryContainer,
-                                ),
+                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              fontSize: 12,
+                              height: 1.1,
+                              fontWeight: FontWeight.w600,
+                              color: colorScheme.onSecondaryContainer,
+                            ),
                           ),
                         ),
                         IconButton(
                           tooltip: 'Email',
-                          onPressed: () =>
-                              _launchEmail(widget.employee.email),
+                          onPressed: () => _launchEmail(widget.employee.email),
                           icon: const Icon(Icons.mark_email_read, size: 18),
                           color: colorScheme.onSecondaryContainer,
                           padding: EdgeInsets.zero,
@@ -450,17 +271,15 @@ class _EmployeeCardState extends State<EmployeeCard> {
                       ],
                     ),
                   ),
+
                   const SizedBox(height: 6),
                   Row(
                     children: [
-                      Icon(Icons.facebook,
-                          color: colorScheme.onSurfaceVariant, size: 18),
+                      Icon(Icons.facebook, color: colorScheme.onSurfaceVariant, size: 18),
                       const SizedBox(width: 6),
-                      Icon(Icons.link,
-                          color: colorScheme.onSurfaceVariant, size: 18),
+                      Icon(Icons.link, color: colorScheme.onSurfaceVariant, size: 18),
                       const SizedBox(width: 6),
-                      Icon(Icons.public,
-                          color: colorScheme.onSurfaceVariant, size: 18),
+                      Icon(Icons.public, color: colorScheme.onSurfaceVariant, size: 18),
                     ],
                   ),
                 ],

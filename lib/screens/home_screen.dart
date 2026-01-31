@@ -15,8 +15,7 @@ class HomeScreen extends StatelessWidget {
       _TaskItem(icon: Icons.receipt_long, label: 'Office Order'),
       _TaskItem(icon: Icons.rate_review, label: 'Exam Remark'),
       _TaskItem(icon: Icons.assignment, label: 'Assignment'),
-      _TaskItem(
-        icon: Icons.account_tree,
+      _TaskItem(icon: Icons.account_tree,
         label: 'Office Dept.',
         onTap: () {
           Navigator.of(context).push(
@@ -32,10 +31,10 @@ class HomeScreen extends StatelessWidget {
       _TaskItem(icon: Icons.celebration, label: 'Holiday'),
     ];
     const bottomNavItems = [
-      _BottomNavItem(icon: Icons.facebook, label: 'Social'),
+      _BottomNavItem(icon: Icons.facebook, label: 'About'),
       _BottomNavItem(icon: Icons.public, label: 'Portal'),
       _BottomNavItem(icon: Icons.home, label: 'Home'),
-      _BottomNavItem(icon: Icons.play_circle_outline, label: 'Media'),
+      _BottomNavItem(icon: Icons.play_circle_outline, label: 'Contact'),
       _BottomNavItem(icon: Icons.location_on_outlined, label: 'Location'),
     ];
     const currentIndex = 2;
@@ -88,7 +87,7 @@ class HomeScreen extends StatelessWidget {
             const Padding(
               padding: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
               child: Text(
-                'Faculty Daily Tasks',
+                'Our Services',
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w700,
