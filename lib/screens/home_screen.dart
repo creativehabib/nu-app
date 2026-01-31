@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 
+import 'about_screen.dart';
+import 'contact_screen.dart';
 import 'department_list_screen.dart';
+import 'location_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -30,15 +33,42 @@ class HomeScreen extends StatelessWidget {
       _TaskItem(icon: Icons.quiz, label: 'Res. Query'),
       _TaskItem(icon: Icons.celebration, label: 'Holiday'),
     ];
-    const bottomNavItems = [
-      _BottomNavItem(icon: Icons.info_outline, label: 'About'),
-      _BottomNavItem(icon: Icons.phone_outlined, label: 'Contact'),
-      _BottomNavItem(icon: Icons.home, label: 'Home'),
+    final bottomNavItems = [
+      _BottomNavItem(
+        icon: Icons.info_outline,
+        label: 'About',
+        onTap: () {
+          Navigator.of(context).push(
+            MaterialPageRoute<void>(
+              builder: (_) => const AboutScreen(),
+            ),
+          );
+        },
+      ),
+      _BottomNavItem(
+        icon: Icons.phone_outlined,
+        label: 'Contact',
+        onTap: () {
+          Navigator.of(context).push(
+            MaterialPageRoute<void>(
+              builder: (_) => const ContactScreen(),
+            ),
+          );
+        },
+      ),
+      const _BottomNavItem(icon: Icons.home, label: 'Home'),
       _BottomNavItem(
         icon: Icons.location_on_outlined,
         label: 'Location',
+        onTap: () {
+          Navigator.of(context).push(
+            MaterialPageRoute<void>(
+              builder: (_) => const LocationScreen(),
+            ),
+          );
+        },
       ),
-      _BottomNavItem(icon: Icons.person_outline, label: 'Profile'),
+      const _BottomNavItem(icon: Icons.person_outline, label: 'Profile'),
     ];
     const currentIndex = 2;
 
@@ -254,10 +284,12 @@ class _BottomNavItem {
   const _BottomNavItem({
     required this.icon,
     required this.label,
+    this.onTap,
   });
 
   final IconData icon;
   final String label;
+  final VoidCallback? onTap;
 }
 
 class _BottomNavButton extends StatelessWidget {
@@ -279,7 +311,7 @@ class _BottomNavButton extends StatelessWidget {
       color: Colors.transparent,
       child: InkWell(
         borderRadius: BorderRadius.circular(20),
-        onTap: () {},
+        onTap: item.onTap,
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 200),
           curve: Curves.easeOut,
