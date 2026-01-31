@@ -5,8 +5,15 @@ import 'package:http/http.dart' as http;
 import '../models/college.dart';
 import '../models/department.dart';
 
+class ApiResult<T> {
+  const ApiResult({required this.items, required this.usedFallback});
+
+  final List<T> items;
+  final bool usedFallback;
+}
+
 class ApiService {
-  Future<List<Department>> fetchDepartments({String? endpoint}) async {
+  Future<ApiResult<Department>> fetchDepartments({String? endpoint}) async {
     final uri = Uri.parse(
       endpoint ?? 'https://raw.githubusercontent.com/creativehabib/nu-data/main/departments.json',
     );
@@ -18,20 +25,22 @@ class ApiService {
       }
 
       final data = jsonDecode(response.body) as List<dynamic>;
-      return data
+      final items = data
           .map(
             (department) =>
                 Department.fromJson(department as Map<String, dynamic>),
           )
           .toList();
+      return ApiResult(items: items, usedFallback: false);
     } catch (_) {
-      return _fallbackDepartments
+      final fallback = _fallbackDepartments
           .map((department) => Department.fromJson(department))
           .toList();
+      return ApiResult(items: fallback, usedFallback: true);
     }
   }
 
-  Future<List<College>> fetchColleges({String? endpoint}) async {
+  Future<ApiResult<College>> fetchColleges({String? endpoint}) async {
     final uri = Uri.parse(
       endpoint ?? 'https://raw.githubusercontent.com/creativehabib/nu-data/refs/heads/main/affiliated_college.json',
     );
@@ -44,14 +53,16 @@ class ApiService {
 
       final data = jsonDecode(response.body);
       final items = _extractList(data);
-      return items
+      final colleges = items
           .whereType<Map<String, dynamic>>()
           .map(College.fromJson)
           .toList();
+      return ApiResult(items: colleges, usedFallback: false);
     } catch (_) {
-      return _fallbackColleges
+      final fallback = _fallbackColleges
           .map((college) => College.fromJson(college))
           .toList();
+      return ApiResult(items: fallback, usedFallback: true);
     }
   }
 }

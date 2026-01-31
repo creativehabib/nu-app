@@ -5,6 +5,7 @@ import '../models/college.dart';
 import '../navigation/app_bottom_nav_items.dart';
 import '../providers/college_provider.dart';
 import '../widgets/app_bottom_nav.dart';
+import '../widgets/offline_notice.dart';
 
 class CollegeListScreen extends StatefulWidget {
   const CollegeListScreen({super.key});
@@ -99,6 +100,12 @@ class _CollegeListBody extends StatelessWidget {
 
     if (provider.isLoading) {
       return const Center(child: CircularProgressIndicator());
+    }
+
+    if (provider.isOffline) {
+      return const OfflineNotice(
+        message: "Your mobile internet or Wi-Fi isn't connected.",
+      );
     }
 
     final colleges = provider.filteredColleges;
