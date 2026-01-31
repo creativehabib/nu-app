@@ -164,6 +164,8 @@ class _CollegeCard extends StatelessWidget {
                   _MetaChip(icon: Icons.confirmation_number, label: 'Code: ${college.code}'),
                 if ((college.eiin ?? '').isNotEmpty)
                   _MetaChip(icon: Icons.badge_outlined, label: 'EIIN: ${college.eiin}'),
+                if ((college.email ?? '').isNotEmpty)
+                  _MetaChip(icon: Icons.email_outlined, label: college.email!),
               ],
             ),
           ],
