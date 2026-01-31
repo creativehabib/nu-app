@@ -79,16 +79,16 @@ class HomeScreen extends StatelessWidget {
                           Text(
                             'National University',
                             style: TextStyle(
-                              fontSize: 18,
+                              fontSize: 20,
                               fontWeight: FontWeight.w700,
                               color: Color(0xFF1F1F1F),
                             ),
                           ),
-                          SizedBox(height: 4),
+                          SizedBox(height: 1),
                           Text(
-                            'Welcome back, Admin',
+                            'Bangladesh',
                             style: TextStyle(
-                              fontSize: 12,
+                              fontSize: 16,
                               fontWeight: FontWeight.w500,
                               color: Color(0xFF6C6C6C),
                             ),
