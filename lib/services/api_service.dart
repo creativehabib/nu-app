@@ -33,7 +33,7 @@ class ApiService {
 
   Future<List<College>> fetchColleges({String? endpoint}) async {
     final uri = Uri.parse(
-      endpoint ?? 'https://collegeportal.nu.ac.bd/college-list-data',
+      endpoint ?? 'https://raw.githubusercontent.com/creativehabib/nu-data/refs/heads/main/affiliated_college.json',
     );
 
     try {
