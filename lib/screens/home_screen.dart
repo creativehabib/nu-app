@@ -58,7 +58,7 @@ class _HomeScreenState extends State<HomeScreen> {
           );
         },
       ),
-      _TaskItem(icon: Icons.insert_chart_outlined, label: 'Indicator'),
+      _TaskItem(icon: Icons.insert_chart_outlined, label: 'Affiliated College'),
       _TaskItem(icon: Icons.photo_library, label: 'Gallery'),
       _TaskItem(icon: Icons.quiz, label: 'Res. Query'),
       _TaskItem(icon: Icons.celebration, label: 'Holiday'),
