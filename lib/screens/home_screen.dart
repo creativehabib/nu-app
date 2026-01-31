@@ -9,6 +9,7 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     final tasks = [
       _TaskItem(icon: Icons.menu_book, label: 'Daily Task'),
       _TaskItem(icon: Icons.how_to_reg, label: 'Attendance'),
@@ -46,7 +47,7 @@ class HomeScreen extends StatelessWidget {
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: colorScheme.primaryContainer,
                   borderRadius: BorderRadius.circular(20),
                   boxShadow: [
                     BoxShadow(
@@ -55,6 +56,10 @@ class HomeScreen extends StatelessWidget {
                       offset: const Offset(0, 8),
                     ),
                   ],
+                  border: Border.all(
+                    color: colorScheme.primary.withOpacity(0.12),
+                    width: 1,
+                  ),
                 ),
                 child: Row(
                   children: [
@@ -62,7 +67,7 @@ class HomeScreen extends StatelessWidget {
                       height: 52,
                       width: 52,
                       decoration: BoxDecoration(
-                        color: const Color(0xFFF1F4FF),
+                        color: colorScheme.primary.withOpacity(0.12),
                         borderRadius: BorderRadius.circular(16),
                       ),
                       padding: const EdgeInsets.all(6),
@@ -72,7 +77,7 @@ class HomeScreen extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(width: 12),
-                    const Expanded(
+                    Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -81,7 +86,7 @@ class HomeScreen extends StatelessWidget {
                             style: TextStyle(
                               fontSize: 20,
                               fontWeight: FontWeight.w700,
-                              color: Color(0xFF1F1F1F),
+                              color: colorScheme.onPrimaryContainer,
                             ),
                           ),
                           SizedBox(height: 1),
@@ -90,7 +95,8 @@ class HomeScreen extends StatelessWidget {
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w500,
-                              color: Color(0xFF6C6C6C),
+                              color:
+                                  colorScheme.onPrimaryContainer.withOpacity(0.7),
                             ),
                           ),
                         ],
@@ -100,12 +106,12 @@ class HomeScreen extends StatelessWidget {
                       height: 38,
                       width: 38,
                       decoration: BoxDecoration(
-                        color: const Color(0xFFF6F7FB),
+                        color: colorScheme.primary.withOpacity(0.12),
                         borderRadius: BorderRadius.circular(12),
                       ),
-                      child: const Icon(
+                      child: Icon(
                         Icons.notifications_none_outlined,
-                        color: Color(0xFF3E3E3E),
+                        color: colorScheme.primary,
                         size: 20,
                       ),
                     ),
