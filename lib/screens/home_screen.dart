@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
+import 'college_list_screen.dart';
 import 'department_list_screen.dart';
 import '../navigation/app_bottom_nav_items.dart';
 import '../providers/theme_provider.dart';
@@ -58,7 +59,17 @@ class _HomeScreenState extends State<HomeScreen> {
           );
         },
       ),
-      _TaskItem(icon: Icons.insert_chart_outlined, label: 'Affiliated College'),
+      _TaskItem(
+        icon: Icons.insert_chart_outlined,
+        label: 'Affiliated College',
+        onTap: () {
+          Navigator.of(context).push(
+            MaterialPageRoute<void>(
+              builder: (_) => const CollegeListScreen(),
+            ),
+          );
+        },
+      ),
       _TaskItem(icon: Icons.photo_library, label: 'Gallery'),
       _TaskItem(icon: Icons.quiz, label: 'Res. Query'),
       _TaskItem(icon: Icons.celebration, label: 'Holiday'),
