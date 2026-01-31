@@ -11,20 +11,28 @@ class DirectoryProvider extends ChangeNotifier {
   final ApiService _apiService;
   final List<Department> _departments = [];
   bool _isLoading = false;
+  bool _isOffline = false;
   String _query = '';
 
   List<Department> get departments => List.unmodifiable(_departments);
   bool get isLoading => _isLoading;
+  bool get isOffline => _isOffline;
   String get query => _query;
 
   Future<void> loadDepartments() async {
     _isLoading = true;
     notifyListeners();
 
-    final items = await _apiService.fetchDepartments();
-    _departments
-      ..clear()
-      ..addAll(items);
+    try {
+      final result = await _apiService.fetchDepartments();
+      _isOffline = result.usedFallback;
+      _departments
+        ..clear()
+        ..addAll(result.items);
+    } catch (_) {
+      _isOffline = true;
+      _departments.clear();
+    }
 
     _isLoading = false;
     notifyListeners();
