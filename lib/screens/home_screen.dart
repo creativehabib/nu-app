@@ -78,9 +78,9 @@ class _HomeScreenState extends State<HomeScreen> {
             children: [
               UserAccountsDrawerHeader(
                 decoration: BoxDecoration(color: colorScheme.primary),
-                currentAccountPicture: const CircleAvatar(
-                  backgroundColor: Colors.white,
-                  child: Icon(Icons.person, size: 45, color: Color(0xFF173B5F)),
+                currentAccountPicture: CircleAvatar(
+                  backgroundColor: colorScheme.surface,
+                  child: Icon(Icons.person, size: 45, color: colorScheme.primary),
                 ),
                 accountName: const Text('Habibur Rahaman',
                     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
