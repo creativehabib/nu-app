@@ -37,7 +37,7 @@ class HomeScreen extends StatelessWidget {
     const currentIndex = 2;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF6F7FB),
+      backgroundColor: const Color(0xFFFDFDFE),
       body: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -47,17 +47,17 @@ class HomeScreen extends StatelessWidget {
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                 decoration: BoxDecoration(
-                  color: colorScheme.primaryContainer,
+                  color: Colors.white,
                   borderRadius: BorderRadius.circular(20),
                   boxShadow: [
                     BoxShadow(
                       blurRadius: 16,
-                      color: Colors.black.withOpacity(0.06),
-                      offset: const Offset(0, 8),
+                      color: Colors.black.withOpacity(0.05),
+                      offset: const Offset(0, 6),
                     ),
                   ],
                   border: Border.all(
-                    color: colorScheme.primary.withOpacity(0.12),
+                    color: const Color(0xFFE6E9F2),
                     width: 1,
                   ),
                 ),
@@ -86,17 +86,16 @@ class HomeScreen extends StatelessWidget {
                             style: TextStyle(
                               fontSize: 20,
                               fontWeight: FontWeight.w700,
-                              color: colorScheme.onPrimaryContainer,
+                              color: const Color(0xFF1D1E25),
                             ),
                           ),
-                          SizedBox(height: 1),
+                          const SizedBox(height: 2),
                           Text(
                             'Bangladesh',
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w500,
-                              color:
-                                  colorScheme.onPrimaryContainer.withOpacity(0.7),
+                              color: const Color(0xFF5C6272),
                             ),
                           ),
                         ],
@@ -121,25 +120,49 @@ class HomeScreen extends StatelessWidget {
             ),
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 4, 16, 8),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(16),
+              child: Container(
+                height: 160,
+                width: double.infinity,
+                clipBehavior: Clip.antiAlias,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(16),
+                  boxShadow: [
+                    BoxShadow(
+                      blurRadius: 14,
+                      color: Colors.black.withOpacity(0.08),
+                      offset: const Offset(0, 8),
+                    ),
+                  ],
+                ),
                 child: Image.network(
                   'https://www.nu.ac.bd/slide_images/slider_image_01.png',
-                  height: 160,
-                  width: double.infinity,
                   fit: BoxFit.cover,
                 ),
               ),
             ),
             const Padding(
               padding: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-              child: Text(
-                'Our Services',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w700,
-                  color: Color(0xFF1F1F1F),
-                ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Our Services',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w700,
+                      color: Color(0xFF1F1F1F),
+                    ),
+                  ),
+                  SizedBox(height: 2),
+                  Text(
+                    'Everything you need in one place',
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w500,
+                      color: Color(0xFF7C8294),
+                    ),
+                  ),
+                ],
               ),
             ),
             Expanded(
@@ -224,11 +247,14 @@ class _TaskTile extends StatelessWidget {
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(16),
+            border: Border.all(
+              color: const Color(0xFFE8EAF2),
+            ),
             boxShadow: [
               BoxShadow(
-                blurRadius: 12,
-                color: Colors.black.withOpacity(0.06),
-                offset: const Offset(0, 6),
+                blurRadius: 10,
+                color: Colors.black.withOpacity(0.05),
+                offset: const Offset(0, 4),
               ),
             ],
           ),
@@ -240,7 +266,7 @@ class _TaskTile extends StatelessWidget {
                 height: 42,
                 width: 42,
                 decoration: BoxDecoration(
-                  color: color.withOpacity(0.15),
+                  color: color.withOpacity(0.12),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Icon(icon, color: iconColor),
