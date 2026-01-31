@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../navigation/app_bottom_nav_items.dart';
 import '../providers/directory_provider.dart';
+import '../widgets/app_bottom_nav.dart';
 import 'employee_list_screen.dart';
 
 class DepartmentListScreen extends StatelessWidget {
@@ -11,6 +13,10 @@ class DepartmentListScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final provider = context.watch<DirectoryProvider>();
     final departments = provider.departments;
+    final bottomNavItems = buildAppBottomNavItems(
+      context,
+      onHomeTap: () => Navigator.of(context).popUntil((route) => route.isFirst),
+    );
 
     return Scaffold(
       appBar: AppBar(
@@ -70,6 +76,10 @@ class DepartmentListScreen extends StatelessWidget {
                     );
                   },
                 ),
+      bottomNavigationBar: AppBottomNavBar(
+        items: bottomNavItems,
+        currentIndex: 2,
+      ),
     );
   }
 }

@@ -19,8 +19,12 @@ class UniversityDirectoryApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         title: 'National University Directory',
         theme: ThemeData(
+          appBarTheme: const AppBarTheme(
+            backgroundColor: Color(0xFF173B5F),
+            foregroundColor: Colors.white,
+          ),
           colorScheme: ColorScheme.fromSeed(
-            seedColor: const Color(0xFF0D47A1),
+            seedColor: const Color(0xFF173B5F),
             brightness: Brightness.light,
           ),
           scaffoldBackgroundColor: const Color(0xFFF7F9FC),

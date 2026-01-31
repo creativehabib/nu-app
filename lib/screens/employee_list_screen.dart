@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../models/department.dart';
+import '../navigation/app_bottom_nav_items.dart';
 import '../providers/directory_provider.dart';
+import '../widgets/app_bottom_nav.dart';
 import '../widgets/employee_card.dart';
 
 class EmployeeListScreen extends StatefulWidget {
@@ -39,6 +41,10 @@ class _EmployeeListScreenState extends State<EmployeeListScreen> {
     final provider = context.watch<DirectoryProvider>();
     final filteredEmployees =
         provider.filteredEmployees(widget.department.employees);
+    final bottomNavItems = buildAppBottomNavItems(
+      context,
+      onHomeTap: () => Navigator.of(context).popUntil((route) => route.isFirst),
+    );
 
     return Scaffold(
       appBar: AppBar(
@@ -92,6 +98,10 @@ class _EmployeeListScreenState extends State<EmployeeListScreen> {
                   ),
           ),
         ],
+      ),
+      bottomNavigationBar: AppBottomNavBar(
+        items: bottomNavItems,
+        currentIndex: 2,
       ),
     );
   }
