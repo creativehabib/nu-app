@@ -32,8 +32,10 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    final appBarColor =
-        Theme.of(context).appBarTheme.backgroundColor ?? colorScheme.primary;
+    final appBarTheme = Theme.of(context).appBarTheme;
+    final appBarColor = appBarTheme.backgroundColor ?? colorScheme.primary;
+    final appBarForegroundColor =
+        appBarTheme.foregroundColor ?? colorScheme.onPrimary;
     final themeProvider = context.watch<ThemeProvider>();
     final isDarkMode = themeProvider.isDarkMode;
 
@@ -139,7 +141,11 @@ class _HomeScreenState extends State<HomeScreen> {
                       // ড্রয়ার বাটন
                       Builder(
                         builder: (context) => IconButton(
-                          icon: const Icon(Icons.menu, color: Colors.white, size: 28),
+                          icon: Icon(
+                            Icons.menu,
+                            color: appBarForegroundColor,
+                            size: 28,
+                          ),
                           onPressed: () => Scaffold.of(context).openDrawer(),
                         ),
                       ),
@@ -168,14 +174,14 @@ class _HomeScreenState extends State<HomeScreen> {
                               style: TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
-                                color: colorScheme.onPrimary,
+                                color: appBarForegroundColor,
                               ),
                             ),
                             Text(
                               'Bangladesh',
                               style: TextStyle(
                                 fontSize: 13,
-                                color: colorScheme.onPrimary.withOpacity(0.7),
+                                color: appBarForegroundColor.withOpacity(0.7),
                               ),
                             ),
                           ],
@@ -183,7 +189,10 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                       // নোটিফিকেশন আইকন
                       IconButton(
-                        icon: const Icon(Icons.notifications_none_outlined, color: Colors.white),
+                        icon: Icon(
+                          Icons.notifications_none_outlined,
+                          color: appBarForegroundColor,
+                        ),
                         onPressed: () {},
                       ),
                     ],
