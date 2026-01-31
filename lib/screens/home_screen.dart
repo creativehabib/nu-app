@@ -130,6 +130,7 @@ class HomeScreen extends StatelessWidget {
           child: Container(
             decoration: BoxDecoration(
               color: Colors.white,
+              border: Border.all(color: const Color(0xFFE7ECF4)),
               borderRadius: BorderRadius.circular(30),
               boxShadow: [
                 BoxShadow(
@@ -267,8 +268,10 @@ class _BottomNavButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final selectedColor = const Color(0xFF0D47A1);
-    final unselectedColor = const Color(0xFF9AA4B2);
+    const selectedColor = Color(0xFF0D47A1);
+    const unselectedColor = Color(0xFF9AA4B2);
+    final iconBackground =
+        isSelected ? selectedColor.withOpacity(0.16) : Colors.transparent;
     return Material(
       color: Colors.transparent,
       child: InkWell(
@@ -278,20 +281,30 @@ class _BottomNavButton extends StatelessWidget {
           duration: const Duration(milliseconds: 200),
           curve: Curves.easeOut,
           margin: const EdgeInsets.symmetric(horizontal: 4),
-          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 6),
+          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 8),
           decoration: BoxDecoration(
             color: isSelected
-                ? selectedColor.withOpacity(0.12)
+                ? selectedColor.withOpacity(0.08)
                 : Colors.transparent,
             borderRadius: BorderRadius.circular(18),
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(
-                item.icon,
-                size: 22,
-                color: isSelected ? selectedColor : unselectedColor,
+              AnimatedContainer(
+                duration: const Duration(milliseconds: 200),
+                curve: Curves.easeOut,
+                height: 30,
+                width: 30,
+                decoration: BoxDecoration(
+                  color: iconBackground,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Icon(
+                  item.icon,
+                  size: 18,
+                  color: isSelected ? selectedColor : unselectedColor,
+                ),
               ),
               const SizedBox(height: 4),
               Text(
