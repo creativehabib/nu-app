@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 import 'providers/directory_provider.dart';
+import 'providers/theme_provider.dart';
 import 'screens/home_screen.dart';
 
 void main() {
@@ -23,31 +24,57 @@ class UniversityDirectoryApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = ColorScheme.fromSeed(
+    final lightColorScheme = ColorScheme.fromSeed(
       seedColor: const Color(0xFF173B5F),
       brightness: Brightness.light,
     );
+    final darkColorScheme = ColorScheme.fromSeed(
+      seedColor: const Color(0xFF173B5F),
+      brightness: Brightness.dark,
+    );
 
-    return ChangeNotifierProvider(
-      create: (_) => DirectoryProvider()..loadDepartments(),
-      child: MaterialApp(
-        debugShowCheckedModeBanner: false,
-        title: 'National University Directory',
-        theme: ThemeData(
-          appBarTheme: AppBarTheme(
-            backgroundColor: colorScheme.primary,
-            foregroundColor: colorScheme.onPrimary,
-            systemOverlayStyle: const SystemUiOverlayStyle(
-              statusBarColor: Colors.transparent,
-              statusBarIconBrightness: Brightness.light,
-              statusBarBrightness: Brightness.dark,
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => DirectoryProvider()..loadDepartments()),
+        ChangeNotifierProvider(create: (_) => ThemeProvider()),
+      ],
+      child: Consumer<ThemeProvider>(
+        builder: (context, themeProvider, _) {
+          return MaterialApp(
+            debugShowCheckedModeBanner: false,
+            title: 'National University Directory',
+            theme: ThemeData(
+              appBarTheme: AppBarTheme(
+                backgroundColor: lightColorScheme.primary,
+                foregroundColor: lightColorScheme.onPrimary,
+                systemOverlayStyle: const SystemUiOverlayStyle(
+                  statusBarColor: Colors.transparent,
+                  statusBarIconBrightness: Brightness.light,
+                  statusBarBrightness: Brightness.dark,
+                ),
+              ),
+              colorScheme: lightColorScheme,
+              scaffoldBackgroundColor: const Color(0xFFF7F9FC),
+              useMaterial3: true,
             ),
-          ),
-          colorScheme: colorScheme,
-          scaffoldBackgroundColor: const Color(0xFFF7F9FC),
-          useMaterial3: true,
-        ),
-        home: const HomeScreen(),
+            darkTheme: ThemeData(
+              appBarTheme: AppBarTheme(
+                backgroundColor: darkColorScheme.primary,
+                foregroundColor: darkColorScheme.onPrimary,
+                systemOverlayStyle: const SystemUiOverlayStyle(
+                  statusBarColor: Colors.transparent,
+                  statusBarIconBrightness: Brightness.light,
+                  statusBarBrightness: Brightness.dark,
+                ),
+              ),
+              colorScheme: darkColorScheme,
+              scaffoldBackgroundColor: const Color(0xFF0F141B),
+              useMaterial3: true,
+            ),
+            themeMode: themeProvider.themeMode,
+            home: const HomeScreen(),
+          );
+        },
       ),
     );
   }
