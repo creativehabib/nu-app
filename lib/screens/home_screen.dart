@@ -55,6 +55,9 @@ class _HomeScreenState extends State<HomeScreen> {
     final bottomNavItems = buildAppBottomNavItems(context);
     const currentIndex = 2;
 
+    const headerBackground = Color(0xFF355C86);
+    const headerAccent = Color(0xFFECF1F8);
+
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: SystemUiOverlayStyle.light.copyWith(
         statusBarColor: colorScheme.primary,
@@ -71,14 +74,14 @@ class _HomeScreenState extends State<HomeScreen> {
                 padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
                 child: Container(
                   padding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                      const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
                   decoration: BoxDecoration(
-                    color: colorScheme.primary,
-                    borderRadius: BorderRadius.circular(20),
+                    color: headerBackground,
+                    borderRadius: BorderRadius.circular(18),
                     boxShadow: [
                       BoxShadow(
                         blurRadius: 16,
-                        color: colorScheme.primary.withOpacity(0.25),
+                        color: headerBackground.withOpacity(0.28),
                         offset: const Offset(0, 6),
                       ),
                     ],
@@ -86,13 +89,13 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: Row(
                     children: [
                       Container(
-                        height: 52,
-                        width: 52,
+                        height: 48,
+                        width: 48,
                         decoration: BoxDecoration(
-                          color: colorScheme.onPrimary.withOpacity(0.15),
-                          borderRadius: BorderRadius.circular(16),
+                          color: headerAccent,
+                          borderRadius: BorderRadius.circular(14),
                         ),
-                        padding: const EdgeInsets.all(6),
+                        padding: const EdgeInsets.all(5),
                         child: Image.network(
                           'https://www.nu.ac.bd/assets/images/logo.png',
                           fit: BoxFit.contain,
@@ -106,34 +109,34 @@ class _HomeScreenState extends State<HomeScreen> {
                             Text(
                               'National University',
                               style: TextStyle(
-                                fontSize: 20,
+                                fontSize: 18,
                                 fontWeight: FontWeight.w700,
-                                color: colorScheme.onPrimary,
+                                color: headerAccent,
                               ),
                             ),
                             const SizedBox(height: 2),
                             Text(
                               'Bangladesh',
                               style: TextStyle(
-                                fontSize: 16,
+                                fontSize: 14,
                                 fontWeight: FontWeight.w500,
-                                color: colorScheme.onPrimary.withOpacity(0.85),
+                                color: headerAccent.withOpacity(0.85),
                               ),
                             ),
                           ],
                         ),
                       ),
                       Container(
-                        height: 38,
-                        width: 38,
+                        height: 34,
+                        width: 34,
                         decoration: BoxDecoration(
-                          color: colorScheme.onPrimary.withOpacity(0.15),
-                          borderRadius: BorderRadius.circular(12),
+                          color: headerAccent.withOpacity(0.2),
+                          borderRadius: BorderRadius.circular(10),
                         ),
                         child: Icon(
-                          Icons.notifications_none_outlined,
-                          color: colorScheme.onPrimary,
-                          size: 20,
+                          Icons.lock_outline,
+                          color: headerAccent,
+                          size: 18,
                         ),
                       ),
                     ],
