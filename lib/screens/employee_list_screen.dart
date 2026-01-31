@@ -54,9 +54,10 @@ class _EmployeeListScreenState extends State<EmployeeListScreen> {
       body: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+            padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
             child: TextField(
               controller: _searchController,
+              onChanged: provider.updateQuery,
               decoration: InputDecoration(
                 hintText:
                     'Search by name, designation, blood group, or district',
@@ -72,13 +73,16 @@ class _EmployeeListScreenState extends State<EmployeeListScreen> {
                         },
                       ),
                 filled: true,
-                fillColor: Theme.of(context).colorScheme.surface,
+                fillColor: colorScheme.surface,
                 border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(14),
-                  borderSide: BorderSide.none,
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(color: colorScheme.outlineVariant),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(color: colorScheme.outlineVariant),
                 ),
               ),
-              onChanged: provider.updateQuery,
             ),
           ),
           Expanded(
