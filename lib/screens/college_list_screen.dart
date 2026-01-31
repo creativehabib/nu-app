@@ -103,8 +103,9 @@ class _CollegeListBody extends StatelessWidget {
     }
 
     if (provider.isOffline) {
-      return const OfflineNotice(
+      return OfflineNotice(
         message: "Your mobile internet or Wi-Fi isn't connected.",
+        onRetry: provider.loadColleges,
       );
     }
 
