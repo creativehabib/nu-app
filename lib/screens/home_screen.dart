@@ -47,19 +47,15 @@ class HomeScreen extends StatelessWidget {
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: colorScheme.primary,
                   borderRadius: BorderRadius.circular(20),
                   boxShadow: [
                     BoxShadow(
                       blurRadius: 16,
-                      color: Colors.black.withOpacity(0.05),
+                      color: colorScheme.primary.withOpacity(0.25),
                       offset: const Offset(0, 6),
                     ),
                   ],
-                  border: Border.all(
-                    color: const Color(0xFFE6E9F2),
-                    width: 1,
-                  ),
                 ),
                 child: Row(
                   children: [
@@ -67,7 +63,7 @@ class HomeScreen extends StatelessWidget {
                       height: 52,
                       width: 52,
                       decoration: BoxDecoration(
-                        color: colorScheme.primary.withOpacity(0.12),
+                        color: colorScheme.onPrimary.withOpacity(0.15),
                         borderRadius: BorderRadius.circular(16),
                       ),
                       padding: const EdgeInsets.all(6),
@@ -86,7 +82,7 @@ class HomeScreen extends StatelessWidget {
                             style: TextStyle(
                               fontSize: 20,
                               fontWeight: FontWeight.w700,
-                              color: const Color(0xFF1D1E25),
+                              color: colorScheme.onPrimary,
                             ),
                           ),
                           const SizedBox(height: 2),
@@ -95,7 +91,7 @@ class HomeScreen extends StatelessWidget {
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w500,
-                              color: const Color(0xFF5C6272),
+                              color: colorScheme.onPrimary.withOpacity(0.85),
                             ),
                           ),
                         ],
@@ -105,12 +101,12 @@ class HomeScreen extends StatelessWidget {
                       height: 38,
                       width: 38,
                       decoration: BoxDecoration(
-                        color: colorScheme.primary.withOpacity(0.12),
+                        color: colorScheme.onPrimary.withOpacity(0.15),
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Icon(
                         Icons.notifications_none_outlined,
-                        color: colorScheme.primary,
+                        color: colorScheme.onPrimary,
                         size: 20,
                       ),
                     ),
