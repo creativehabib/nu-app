@@ -31,6 +31,14 @@ class HomeScreen extends StatelessWidget {
       _TaskItem(icon: Icons.quiz, label: 'Res. Query'),
       _TaskItem(icon: Icons.celebration, label: 'Holiday'),
     ];
+    const bottomNavItems = [
+      _BottomNavItem(icon: Icons.facebook, label: 'Social'),
+      _BottomNavItem(icon: Icons.public, label: 'Portal'),
+      _BottomNavItem(icon: Icons.home, label: 'Home'),
+      _BottomNavItem(icon: Icons.play_circle_outline, label: 'Media'),
+      _BottomNavItem(icon: Icons.location_on_outlined, label: 'Location'),
+    ];
+    const currentIndex = 2;
 
     return Scaffold(
       backgroundColor: const Color(0xFFF6F7FB),
@@ -116,33 +124,39 @@ class HomeScreen extends StatelessWidget {
           ],
         ),
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
-        currentIndex: 2,
-        selectedItemColor: const Color(0xFF0D47A1),
-        unselectedItemColor: const Color(0xFF9AA4B2),
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.facebook),
-            label: '',
+      bottomNavigationBar: SafeArea(
+        top: false,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
+          child: Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(30),
+              boxShadow: [
+                BoxShadow(
+                  blurRadius: 24,
+                  color: Colors.black.withOpacity(0.12),
+                  offset: const Offset(0, 12),
+                ),
+              ],
+            ),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: List.generate(
+                  bottomNavItems.length,
+                  (index) => Expanded(
+                    child: _BottomNavButton(
+                      item: bottomNavItems[index],
+                      isSelected: index == currentIndex,
+                    ),
+                  ),
+                ),
+              ),
+            ),
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.public),
-            label: '',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: '',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.play_circle_outline),
-            label: '',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.location_on_outlined),
-            label: '',
-          ),
-        ],
+        ),
       ),
     );
   }
@@ -223,6 +237,70 @@ class _TaskTile extends StatelessWidget {
                   fontSize: 11,
                   fontWeight: FontWeight.w600,
                   color: Color(0xFF2E2E2E),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _BottomNavItem {
+  const _BottomNavItem({
+    required this.icon,
+    required this.label,
+  });
+
+  final IconData icon;
+  final String label;
+}
+
+class _BottomNavButton extends StatelessWidget {
+  const _BottomNavButton({
+    required this.item,
+    required this.isSelected,
+  });
+
+  final _BottomNavItem item;
+  final bool isSelected;
+
+  @override
+  Widget build(BuildContext context) {
+    final selectedColor = const Color(0xFF0D47A1);
+    final unselectedColor = const Color(0xFF9AA4B2);
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(20),
+        onTap: () {},
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          curve: Curves.easeOut,
+          margin: const EdgeInsets.symmetric(horizontal: 4),
+          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 6),
+          decoration: BoxDecoration(
+            color: isSelected
+                ? selectedColor.withOpacity(0.12)
+                : Colors.transparent,
+            borderRadius: BorderRadius.circular(18),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                item.icon,
+                size: 22,
+                color: isSelected ? selectedColor : unselectedColor,
+              ),
+              const SizedBox(height: 4),
+              Text(
+                item.label,
+                style: TextStyle(
+                  fontSize: 10,
+                  fontWeight: isSelected ? FontWeight.w700 : FontWeight.w600,
+                  color: isSelected ? selectedColor : unselectedColor,
                 ),
               ),
             ],
