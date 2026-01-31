@@ -13,6 +13,7 @@ class DepartmentListScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final provider = context.watch<DirectoryProvider>();
     final departments = provider.departments;
+    final colorScheme = Theme.of(context).colorScheme;
     final bottomNavItems = buildAppBottomNavItems(
       context,
       onHomeTap: () => Navigator.of(context).popUntil((route) => route.isFirst),
@@ -25,7 +26,15 @@ class DepartmentListScreen extends StatelessWidget {
       body: provider.isLoading
           ? const Center(child: CircularProgressIndicator())
           : departments.isEmpty
-              ? const Center(child: Text('No departments available.'))
+              ? Center(
+                  child: Text(
+                    'No departments available.',
+                    style: Theme.of(context)
+                        .textTheme
+                        .bodyMedium
+                        ?.copyWith(color: colorScheme.onSurfaceVariant),
+                  ),
+                )
               : ListView.builder(
                   padding: const EdgeInsets.fromLTRB(16, 12, 16, 20),
                   itemCount: departments.length,
@@ -35,7 +44,7 @@ class DepartmentListScreen extends StatelessWidget {
                       padding: const EdgeInsets.only(bottom: 12),
                       child: Card(
                         elevation: 0,
-                        color: Colors.white,
+                        color: colorScheme.surface,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(16),
                         ),
@@ -45,11 +54,10 @@ class DepartmentListScreen extends StatelessWidget {
                             vertical: 12,
                           ),
                           leading: CircleAvatar(
-                            backgroundColor:
-                                Theme.of(context).colorScheme.primaryContainer,
+                            backgroundColor: colorScheme.primaryContainer,
                             child: Icon(
                               Icons.apartment_outlined,
-                              color: Theme.of(context).colorScheme.primary,
+                              color: colorScheme.primary,
                             ),
                           ),
                           title: Text(
@@ -61,8 +69,14 @@ class DepartmentListScreen extends StatelessWidget {
                           ),
                           subtitle: Text(
                             '${department.employees.length} জন কর্মকর্তা/কর্মচারী',
+                            style: TextStyle(
+                              color: colorScheme.onSurfaceVariant,
+                            ),
                           ),
-                          trailing: const Icon(Icons.chevron_right),
+                          trailing: Icon(
+                            Icons.chevron_right,
+                            color: colorScheme.onSurfaceVariant,
+                          ),
                           onTap: () {
                             Navigator.of(context).push(
                               MaterialPageRoute<void>(
