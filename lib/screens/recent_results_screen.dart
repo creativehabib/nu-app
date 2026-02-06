@@ -95,10 +95,19 @@ class _RecentResultsScreenState extends State<RecentResultsScreen> {
       display: block !important;
       overflow-x: hidden !important;
     }
+    #wrapper[style] {
+      width: 100% !important;
+      max-width: 100% !important;
+    }
     #wrapper table {
       width: 100% !important;
       max-width: 100% !important;
       table-layout: fixed;
+    }
+    #wrapper table[width],
+    #wrapper td[width] {
+      width: 100% !important;
+      max-width: 100% !important;
     }
     #wrapper th,
     #wrapper td {
@@ -107,15 +116,6 @@ class _RecentResultsScreenState extends State<RecentResultsScreen> {
     #wrapper select {
       width: 100% !important;
       max-width: 100% !important;
-    }
-    #wrapper table {
-      width: 100% !important;
-      max-width: 100% !important;
-      table-layout: fixed;
-    }
-    #wrapper th,
-    #wrapper td {
-      word-break: break-word;
     }
   `;
   document.head.appendChild(style);
