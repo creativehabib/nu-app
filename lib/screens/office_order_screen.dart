@@ -38,27 +38,12 @@ class _OfficeOrderScreenState extends State<OfficeOrderScreen> {
   Future<void> _showRecentNewsTable() async {
     const script = '''
 (() => {
-  const tables = Array.from(document.querySelectorAll('table'));
-  if (!tables.length) return;
-  let target = null;
-  for (const table of tables) {
-    const text = (table.innerText || '').toLowerCase();
-    if (text.includes('recent') && text.includes('news')) {
-      target = table;
-      break;
-    }
-  }
-  if (!target) {
-    target = tables.reduce((best, table) => {
-      const rows = table.querySelectorAll('tr').length;
-      const bestRows = best.querySelectorAll('tr').length;
-      return rows > bestRows ? table : best;
-    }, tables[0]);
-  }
+  const wrapper = document.querySelector('#myTable_wrapper');
+  if (!wrapper) return;
   document.body.innerHTML = '';
   const container = document.createElement('div');
   container.style.padding = '16px';
-  container.appendChild(target.cloneNode(true));
+  container.appendChild(wrapper.cloneNode(true));
   document.body.appendChild(container);
   document.body.style.backgroundColor = '#ffffff';
 })();
@@ -68,12 +53,6 @@ class _OfficeOrderScreenState extends State<OfficeOrderScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final bottomNavItems = buildAppBottomNavItems(
-      context,
-      onHomeTap: () => Navigator.of(context).popUntil((route) => route.isFirst),
-    );
-    const currentIndex = 2;
-
     return Scaffold(
       appBar: AppBar(
         title: const Text('Office Order'),
@@ -93,10 +72,6 @@ class _OfficeOrderScreenState extends State<OfficeOrderScreen> {
             child: WebViewWidget(controller: _controller),
           ),
         ],
-      ),
-      bottomNavigationBar: AppBottomNavBar(
-        items: bottomNavItems,
-        currentIndex: currentIndex,
       ),
     );
   }
