@@ -93,6 +93,20 @@ class _RecentResultsScreenState extends State<RecentResultsScreen> {
       max-width: 100vw !important;
       margin: 0 !important;
       display: block !important;
+      overflow-x: hidden !important;
+    }
+    #wrapper table {
+      width: 100% !important;
+      max-width: 100% !important;
+      table-layout: fixed;
+    }
+    #wrapper th,
+    #wrapper td {
+      word-break: break-word;
+    }
+    #wrapper select {
+      width: 100% !important;
+      max-width: 100% !important;
     }
     #wrapper table {
       width: 100% !important;
@@ -113,15 +127,19 @@ class _RecentResultsScreenState extends State<RecentResultsScreen> {
   container.style.overflowX = 'hidden';
   const wrapper = document.createElement('div');
   wrapper.id = 'wrapper';
-  wrapper.style.width = '100%';
-  wrapper.style.maxWidth = '100%';
-  wrapper.style.margin = '0';
-  wrapper.style.display = 'block';
   wrapper.appendChild(form.cloneNode(true));
   container.appendChild(wrapper);
   document.body.appendChild(container);
   document.body.style.backgroundColor = '#ffffff';
   document.body.style.margin = '0';
+  const pageWrapper = document.querySelector('#wrapper');
+  if (pageWrapper) {
+    pageWrapper.style.width = '100%';
+    pageWrapper.style.maxWidth = '100%';
+    pageWrapper.style.margin = '0';
+    pageWrapper.style.display = 'block';
+    pageWrapper.style.overflowX = 'hidden';
+  }
 })();
 ''';
     await _controller.runJavaScript(script);
