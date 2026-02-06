@@ -4,16 +4,15 @@ import 'package:webview_flutter/webview_flutter.dart';
 import '../navigation/app_bottom_nav_items.dart';
 import '../widgets/app_bottom_nav.dart';
 
-class OfficeOrderScreen extends StatefulWidget {
-  const OfficeOrderScreen({super.key});
+class RecentResultsScreen extends StatefulWidget {
+  const RecentResultsScreen({super.key});
 
   @override
-  State<OfficeOrderScreen> createState() => _OfficeOrderScreenState();
+  State<RecentResultsScreen> createState() => _RecentResultsScreenState();
 }
 
-class _OfficeOrderScreenState extends State<OfficeOrderScreen> {
-  static final Uri _recentNewsUri =
-      Uri.parse('https://www.nu.ac.bd/recent-news-notice.php');
+class _RecentResultsScreenState extends State<RecentResultsScreen> {
+  static final Uri _recentResultsUri = Uri.parse('http://103.113.200.8/');
   late final WebViewController _controller;
   int _loadingProgress = 0;
 
@@ -29,21 +28,24 @@ class _OfficeOrderScreenState extends State<OfficeOrderScreen> {
               _loadingProgress = progress;
             });
           },
-          onPageFinished: (_) => _showRecentNewsTable(),
+          onPageFinished: (_) => _showResultsForm(),
         ),
       )
-      ..loadRequest(_recentNewsUri);
+      ..loadRequest(_recentResultsUri);
   }
 
-  Future<void> _showRecentNewsTable() async {
+  Future<void> _showResultsForm() async {
     const script = '''
 (() => {
-  const wrapper = document.querySelector('#myTable_wrapper');
-  if (!wrapper) return;
+  const form =
+    document.querySelector('form') ||
+    document.querySelector('form[name]') ||
+    document.querySelector('form[action]');
+  if (!form) return;
   document.body.innerHTML = '';
   const container = document.createElement('div');
   container.style.padding = '16px';
-  container.appendChild(wrapper.cloneNode(true));
+  container.appendChild(form.cloneNode(true));
   document.body.appendChild(container);
   document.body.style.backgroundColor = '#ffffff';
 })();
@@ -53,9 +55,15 @@ class _OfficeOrderScreenState extends State<OfficeOrderScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final bottomNavItems = buildAppBottomNavItems(
+      context,
+      onHomeTap: () => Navigator.of(context).popUntil((route) => route.isFirst),
+    );
+    const currentIndex = 2;
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Office Order'),
+        title: const Text('Recent Results'),
         actions: [
           IconButton(
             onPressed: () => _controller.reload(),
@@ -72,6 +80,10 @@ class _OfficeOrderScreenState extends State<OfficeOrderScreen> {
             child: WebViewWidget(controller: _controller),
           ),
         ],
+      ),
+      bottomNavigationBar: AppBottomNavBar(
+        items: bottomNavItems,
+        currentIndex: currentIndex,
       ),
     );
   }
