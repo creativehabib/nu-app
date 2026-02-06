@@ -43,8 +43,50 @@ class _RecentResultsScreenState extends State<RecentResultsScreen> {
     document.querySelector('form[action]');
   if (!form) return;
   document.body.innerHTML = '';
+  const style = document.createElement('style');
+  style.textContent = `
+    * { box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      margin: 0;
+      overflow-x: hidden;
+    }
+    form { display: flex; flex-direction: column; gap: 12px; width: 100%; }
+    label { font-weight: 600; color: #1f2937; }
+    input, select {
+      width: 100%;
+      max-width: 100%;
+      padding: 12px 14px;
+      border-radius: 12px;
+      border: 1px solid #d1d5db;
+      background: #f9fafb;
+      font-size: 16px;
+      transition: border-color 150ms ease, box-shadow 150ms ease;
+    }
+    input:focus, select:focus {
+      outline: none;
+      border-color: #2563eb;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
+      background: #ffffff;
+    }
+    button, input[type="submit"] {
+      width: 100%;
+      padding: 12px 16px;
+      border-radius: 12px;
+      border: none;
+      background: #2563eb;
+      color: #ffffff;
+      font-weight: 600;
+      font-size: 16px;
+      cursor: pointer;
+    }
+  `;
+  document.head.appendChild(style);
   const container = document.createElement('div');
-  container.style.padding = '16px';
+  container.style.padding = '20px 16px 24px';
+  container.style.maxWidth = '520px';
+  container.style.width = '100%';
+  container.style.margin = '0 auto';
   container.appendChild(form.cloneNode(true));
   document.body.appendChild(container);
   document.body.style.backgroundColor = '#ffffff';
