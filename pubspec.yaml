@@ -24,6 +24,7 @@ flutter:
 
   assets:
     - assets/nu-logo.png
+    - assets/img.png
 
 flutter_icons:
   android: true

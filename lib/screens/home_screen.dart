@@ -203,8 +203,8 @@ class _HomeScreenState extends State<HomeScreen> {
                           borderRadius: BorderRadius.circular(8),
                         ),
                         padding: const EdgeInsets.all(4),
-                        child: Image.network(
-                          'https://www.nu.ac.bd/assets/images/logo.png',
+                        child: Image.asset(
+                          'assets/nu-logo.png',
                           fit: BoxFit.contain,
                         ),
                       ),
@@ -261,8 +261,8 @@ class _HomeScreenState extends State<HomeScreen> {
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(16),
                         ),
-                        child: Image.network(
-                          'https://www.nu.ac.bd/slide_images/slider_image_01.png',
+                        child: Image.asset(
+                          'assets/img.png',
                           fit: BoxFit.cover,
                         ),
                       ),
