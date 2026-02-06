@@ -56,10 +56,6 @@ class _RecentResultsScreenState extends State<RecentResultsScreen> {
       overflow-x: hidden;
     }
     form { display: flex; flex-direction: column; gap: 12px; width: 100%; }
-    table { width: 100%; border-collapse: collapse; }
-    tbody, tr, td, th { display: block; width: 100%; }
-    td, th { padding: 0; }
-    tr { display: grid; gap: 8px; }
     label { font-weight: 600; color: #1f2937; }
     input, select {
       width: 100%;
