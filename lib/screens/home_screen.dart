@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
+import 'archive_results_screen.dart';
 import 'college_list_screen.dart';
 import 'department_list_screen.dart';
 import '../navigation/app_bottom_nav_items.dart';
@@ -46,7 +47,17 @@ class _HomeScreenState extends State<HomeScreen> {
       _TaskItem(icon: Icons.edit_document, label: 'Exam Atten.'),
       _TaskItem(icon: Icons.assignment_turned_in, label: 'Recent Results'),
       _TaskItem(icon: Icons.receipt_long, label: 'Office Order'),
-      _TaskItem(icon: Icons.rate_review, label: 'Archive Results'),
+      _TaskItem(
+        icon: Icons.rate_review,
+        label: 'Archive Results',
+        onTap: () {
+          Navigator.of(context).push(
+            MaterialPageRoute<void>(
+              builder: (_) => const ArchiveResultsScreen(),
+            ),
+          );
+        },
+      ),
       _TaskItem(icon: Icons.assignment, label: 'Assignment'),
       _TaskItem(
         icon: Icons.account_tree,
