@@ -90,7 +90,7 @@ class _RecentResultsScreenState extends State<RecentResultsScreen> {
     }
     #wrapper {
       width: 100% !important;
-      max-width: 100% !important;
+      max-width: 100vw !important;
       margin: 0 !important;
       display: block !important;
       overflow-x: hidden !important;
