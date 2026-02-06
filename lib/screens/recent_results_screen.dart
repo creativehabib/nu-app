@@ -46,11 +46,16 @@ class _RecentResultsScreenState extends State<RecentResultsScreen> {
   const style = document.createElement('style');
   style.textContent = `
     * { box-sizing: border-box; }
-    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
-    form { display: flex; flex-direction: column; gap: 12px; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      margin: 0;
+      overflow-x: hidden;
+    }
+    form { display: flex; flex-direction: column; gap: 12px; width: 100%; }
     label { font-weight: 600; color: #1f2937; }
     input, select {
       width: 100%;
+      max-width: 100%;
       padding: 12px 14px;
       border-radius: 12px;
       border: 1px solid #d1d5db;
@@ -80,6 +85,7 @@ class _RecentResultsScreenState extends State<RecentResultsScreen> {
   const container = document.createElement('div');
   container.style.padding = '20px 16px 24px';
   container.style.maxWidth = '520px';
+  container.style.width = '100%';
   container.style.margin = '0 auto';
   container.appendChild(form.cloneNode(true));
   document.body.appendChild(container);
