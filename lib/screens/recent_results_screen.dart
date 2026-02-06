@@ -90,24 +90,15 @@ class _RecentResultsScreenState extends State<RecentResultsScreen> {
     }
     #wrapper {
       width: 100% !important;
-      max-width: 100vw !important;
+      max-width: 80vw !important;
       margin: 0 !important;
       display: block !important;
       overflow-x: hidden !important;
-    }
-    #wrapper[style] {
-      width: 100% !important;
-      max-width: 100% !important;
     }
     #wrapper table {
       width: 100% !important;
       max-width: 100% !important;
       table-layout: fixed;
-    }
-    #wrapper table[width],
-    #wrapper td[width] {
-      width: 100% !important;
-      max-width: 100% !important;
     }
     #wrapper th,
     #wrapper td {
