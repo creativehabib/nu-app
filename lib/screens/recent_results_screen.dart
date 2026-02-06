@@ -97,6 +97,11 @@ class _RecentResultsScreenState extends State<RecentResultsScreen> {
     #wrapper table {
       width: 100% !important;
       max-width: 100% !important;
+      table-layout: fixed;
+    }
+    #wrapper th,
+    #wrapper td {
+      word-break: break-word;
     }
   `;
   document.head.appendChild(style);
@@ -105,7 +110,15 @@ class _RecentResultsScreenState extends State<RecentResultsScreen> {
   container.style.maxWidth = '520px';
   container.style.width = '100%';
   container.style.margin = '0 auto';
-  container.appendChild(form.cloneNode(true));
+  container.style.overflowX = 'hidden';
+  const wrapper = document.createElement('div');
+  wrapper.id = 'wrapper';
+  wrapper.style.width = '100%';
+  wrapper.style.maxWidth = '100%';
+  wrapper.style.margin = '0';
+  wrapper.style.display = 'block';
+  wrapper.appendChild(form.cloneNode(true));
+  container.appendChild(wrapper);
   document.body.appendChild(container);
   document.body.style.backgroundColor = '#ffffff';
   document.body.style.margin = '0';
