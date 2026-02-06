@@ -59,6 +59,12 @@ class _RecentResultsScreenState extends State<RecentResultsScreen> {
       overflow-x: hidden;
       font-size: 14px;
     }
+    #wrapper{
+      width: 0;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+    }
     form { display: flex; flex-direction: column; gap: 8px; width: 100%; }
     label { font-weight: 600; color: #1f2937; font-size: 12px; }
     input, select {
