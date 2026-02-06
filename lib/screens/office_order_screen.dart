@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
-import '../navigation/app_bottom_nav_items.dart';
-import '../widgets/app_bottom_nav.dart';
-
 class OfficeOrderScreen extends StatefulWidget {
   const OfficeOrderScreen({super.key});
 
@@ -13,7 +10,7 @@ class OfficeOrderScreen extends StatefulWidget {
 
 class _OfficeOrderScreenState extends State<OfficeOrderScreen> {
   static final Uri _recentNewsUri =
-      Uri.parse('https://www.nu.ac.bd/recent-news-notice.php');
+  Uri.parse('https://www.nu.ac.bd/recent-news-notice.php');
   late final WebViewController _controller;
   int _loadingProgress = 0;
 
@@ -38,12 +35,27 @@ class _OfficeOrderScreenState extends State<OfficeOrderScreen> {
   Future<void> _showRecentNewsTable() async {
     const script = '''
 (() => {
-  const wrapper = document.querySelector('#myTable_wrapper');
-  if (!wrapper) return;
+  const tables = Array.from(document.querySelectorAll('table'));
+  if (!tables.length) return;
+  let target = null;
+  for (const table of tables) {
+    const text = (table.innerText || '').toLowerCase();
+    if (text.includes('recent') && text.includes('news')) {
+      target = table;
+      break;
+    }
+  }
+  if (!target) {
+    target = tables.reduce((best, table) => {
+      const rows = table.querySelectorAll('tr').length;
+      const bestRows = best.querySelectorAll('tr').length;
+      return rows > bestRows ? table : best;
+    }, tables[0]);
+  }
   document.body.innerHTML = '';
   const container = document.createElement('div');
   container.style.padding = '16px';
-  container.appendChild(wrapper.cloneNode(true));
+  container.appendChild(target.cloneNode(true));
   document.body.appendChild(container);
   document.body.style.backgroundColor = '#ffffff';
 })();
