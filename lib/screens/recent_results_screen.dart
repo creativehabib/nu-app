@@ -28,36 +28,24 @@ class _RecentResultsScreenState extends State<RecentResultsScreen> {
               _loadingProgress = progress;
             });
           },
-          onPageFinished: (_) => _showResultsTable(),
+          onPageFinished: (_) => _showResultsForm(),
         ),
       )
       ..loadRequest(_recentResultsUri);
   }
 
-  Future<void> _showResultsTable() async {
+  Future<void> _showResultsForm() async {
     const script = '''
 (() => {
-  const tables = Array.from(document.querySelectorAll('table'));
-  if (!tables.length) return;
-  let target = null;
-  for (const table of tables) {
-    const text = (table.innerText || '').toLowerCase();
-    if (text.includes('result') || text.includes('recent')) {
-      target = table;
-      break;
-    }
-  }
-  if (!target) {
-    target = tables.reduce((best, table) => {
-      const rows = table.querySelectorAll('tr').length;
-      const bestRows = best.querySelectorAll('tr').length;
-      return rows > bestRows ? table : best;
-    }, tables[0]);
-  }
+  const form =
+    document.querySelector('form') ||
+    document.querySelector('form[name]') ||
+    document.querySelector('form[action]');
+  if (!form) return;
   document.body.innerHTML = '';
   const container = document.createElement('div');
   container.style.padding = '16px';
-  container.appendChild(target.cloneNode(true));
+  container.appendChild(form.cloneNode(true));
   document.body.appendChild(container);
   document.body.style.backgroundColor = '#ffffff';
 })();
