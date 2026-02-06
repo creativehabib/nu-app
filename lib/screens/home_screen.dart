@@ -44,9 +44,9 @@ class _HomeScreenState extends State<HomeScreen> {
       _TaskItem(icon: Icons.menu_book, label: 'Daily Task'),
       _TaskItem(icon: Icons.how_to_reg, label: 'Attendance'),
       _TaskItem(icon: Icons.edit_document, label: 'Exam Atten.'),
-      _TaskItem(icon: Icons.assignment_turned_in, label: 'Exam Marks'),
+      _TaskItem(icon: Icons.assignment_turned_in, label: 'Recent Results'),
       _TaskItem(icon: Icons.receipt_long, label: 'Office Order'),
-      _TaskItem(icon: Icons.rate_review, label: 'Exam Remark'),
+      _TaskItem(icon: Icons.rate_review, label: 'Archive Results'),
       _TaskItem(icon: Icons.assignment, label: 'Assignment'),
       _TaskItem(
         icon: Icons.account_tree,
