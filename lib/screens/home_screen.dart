@@ -6,6 +6,7 @@ import 'archive_results_screen.dart';
 import 'college_list_screen.dart';
 import 'department_list_screen.dart';
 import 'office_order_screen.dart';
+import 'recent_results_screen.dart';
 import '../navigation/app_bottom_nav_items.dart';
 import '../providers/theme_provider.dart';
 import '../widgets/app_bottom_nav.dart';
@@ -46,7 +47,17 @@ class _HomeScreenState extends State<HomeScreen> {
       _TaskItem(icon: Icons.menu_book, label: 'Daily Task'),
       _TaskItem(icon: Icons.how_to_reg, label: 'Attendance'),
       _TaskItem(icon: Icons.edit_document, label: 'Exam Atten.'),
-      _TaskItem(icon: Icons.assignment_turned_in, label: 'Recent Results'),
+      _TaskItem(
+        icon: Icons.assignment_turned_in,
+        label: 'Recent Results',
+        onTap: () {
+          Navigator.of(context).push(
+            MaterialPageRoute<void>(
+              builder: (_) => const RecentResultsScreen(),
+            ),
+          );
+        },
+      ),
       _TaskItem(
         icon: Icons.receipt_long,
         label: 'Office Order',
