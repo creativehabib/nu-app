@@ -50,21 +50,25 @@ class _RecentResultsScreenState extends State<RecentResultsScreen> {
   const style = document.createElement('style');
   style.textContent = `
     * { box-sizing: border-box; }
+    html, body {
+      height: 100%;
+    }
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
       margin: 0;
       overflow-x: hidden;
+      font-size: 14px;
     }
-    form { display: flex; flex-direction: column; gap: 12px; width: 100%; }
-    label { font-weight: 600; color: #1f2937; }
+    form { display: flex; flex-direction: column; gap: 8px; width: 100%; }
+    label { font-weight: 600; color: #1f2937; font-size: 12px; }
     input, select {
       width: 100%;
       max-width: 100%;
-      padding: 12px 14px;
-      border-radius: 12px;
+      padding: 10px 12px;
+      border-radius: 10px;
       border: 1px solid #d1d5db;
       background: #f9fafb;
-      font-size: 16px;
+      font-size: 14px;
       transition: border-color 150ms ease, box-shadow 150ms ease;
     }
     input:focus, select:focus {
@@ -75,19 +79,25 @@ class _RecentResultsScreenState extends State<RecentResultsScreen> {
     }
     button, input[type="submit"] {
       width: 100%;
-      padding: 12px 16px;
-      border-radius: 12px;
+      padding: 10px 14px;
+      border-radius: 10px;
       border: none;
       background: #2563eb;
       color: #ffffff;
       font-weight: 600;
-      font-size: 16px;
+      font-size: 14px;
       cursor: pointer;
+    }
+    #wrapper {
+      width: 100% !important;
+      max-width: 100% !important;
+      margin: 0 !important;
+      display: block !important;
     }
   `;
   document.head.appendChild(style);
   const container = document.createElement('div');
-  container.style.padding = '20px 16px 24px';
+  container.style.padding = '16px 14px 18px';
   container.style.maxWidth = '520px';
   container.style.width = '100%';
   container.style.margin = '0 auto';
