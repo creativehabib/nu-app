@@ -1,4 +1,4 @@
-name: university_directory_app
+name: nu_app
 version: 1.0.0
 publish_to: 'none'
 description: A simple University Directory App demo.
@@ -14,5 +14,18 @@ dependencies:
   url_launcher: ^6.2.6
   webview_flutter: ^4.8.0
 
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_launcher_icons: ^0.13.1
+
 flutter:
   uses-material-design: true
+
+  assets:
+    - assets/nu-logo.png
+
+flutter_icons:
+  android: true
+  ios: true
+  image_path: "assets/nu-logo.png"
