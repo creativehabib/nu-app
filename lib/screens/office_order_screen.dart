@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
+import '../navigation/app_bottom_nav_items.dart';
+import '../widgets/app_bottom_nav.dart';
+
 class OfficeOrderScreen extends StatefulWidget {
   const OfficeOrderScreen({super.key});
 
@@ -65,6 +68,11 @@ class _OfficeOrderScreenState extends State<OfficeOrderScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final bottomNavItems = buildAppBottomNavItems(
+      context,
+      onHomeTap: () => Navigator.of(context).popUntil((route) => route.isFirst),
+    );
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Office Order'),
@@ -84,6 +92,10 @@ class _OfficeOrderScreenState extends State<OfficeOrderScreen> {
             child: WebViewWidget(controller: _controller),
           ),
         ],
+      ),
+      bottomNavigationBar: AppBottomNavBar(
+        items: bottomNavItems,
+        currentIndex: 2,
       ),
     );
   }
