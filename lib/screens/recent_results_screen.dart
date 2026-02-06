@@ -98,6 +98,7 @@ class _RecentResultsScreenState extends State<RecentResultsScreen> {
   container.appendChild(form.cloneNode(true));
   document.body.appendChild(container);
   document.body.style.backgroundColor = '#ffffff';
+  document.body.style.margin = '0';
 })();
 ''';
     await _controller.runJavaScript(script);
