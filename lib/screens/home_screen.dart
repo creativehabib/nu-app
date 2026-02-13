@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:nu_app/screens/train_search_screen.dart';
 import 'package:provider/provider.dart';
 
 import 'archive_results_screen.dart';
@@ -138,6 +139,16 @@ class _HomeScreenState extends State<HomeScreen> {
                 leading: const Icon(Icons.home_outlined),
                 title: const Text('Home'),
                 onTap: () => Navigator.pop(context),
+              ),
+              ListTile(
+                leading: Icon(Icons.directions_train, color: Colors.indigo),
+                title: Text("ট্রেন সার্ভিস"),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const TrainSearchScreen()),
+                  );
+                },
               ),
               ListTile(
                 leading: const Icon(Icons.person_outline),
