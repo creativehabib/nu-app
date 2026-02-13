@@ -4,6 +4,7 @@ import 'package:webview_flutter/webview_flutter.dart';
 
 import '../navigation/app_bottom_nav_items.dart';
 import '../widgets/app_bottom_nav.dart';
+import '../widgets/offline_notice.dart';
 
 class TrainSearchScreen extends StatefulWidget {
   const TrainSearchScreen({super.key});
@@ -17,6 +18,7 @@ class _TrainSearchScreenState extends State<TrainSearchScreen> {
 
   late final WebViewController _controller;
   int _loadingProgress = 0;
+  bool _hasConnectionError = false;
 
   Future<void> _openInExternalBrowser(Uri uri) async {
     final launched = await launchUrl(uri, mode: LaunchMode.externalApplication);
@@ -30,6 +32,14 @@ class _TrainSearchScreenState extends State<TrainSearchScreen> {
     }
   }
 
+  void _retryRailwayTicket() {
+    setState(() {
+      _hasConnectionError = false;
+      _loadingProgress = 0;
+    });
+    _controller.loadRequest(_railwayTicketUrl);
+  }
+
   @override
   void initState() {
     super.initState();
@@ -41,6 +51,19 @@ class _TrainSearchScreenState extends State<TrainSearchScreen> {
             if (!mounted) return;
             setState(() {
               _loadingProgress = progress;
+            });
+          },
+          onPageStarted: (_) {
+            if (!mounted) return;
+            setState(() {
+              _hasConnectionError = false;
+            });
+          },
+          onWebResourceError: (_) {
+            if (!mounted) return;
+            setState(() {
+              _hasConnectionError = true;
+              _loadingProgress = 0;
             });
           },
           onNavigationRequest: (request) {
@@ -89,10 +112,15 @@ class _TrainSearchScreenState extends State<TrainSearchScreen> {
       ),
       body: Column(
         children: [
-          if (_loadingProgress < 100)
+          if (!_hasConnectionError && _loadingProgress < 100)
             LinearProgressIndicator(value: _loadingProgress / 100),
           Expanded(
-            child: WebViewWidget(controller: _controller),
+            child: _hasConnectionError
+                ? OfflineNotice(
+                    message: "Your mobile internet or WI-FI isn't connected",
+                    onRetry: _retryRailwayTicket,
+                  )
+                : WebViewWidget(controller: _controller),
           ),
         ],
       ),
