@@ -8,8 +8,9 @@ import '../widgets/app_bottom_nav.dart';
 List<AppBottomNavItem> buildAppBottomNavItems(
   BuildContext context, {
   VoidCallback? onHomeTap,
+  AppBottomNavItem? trailingItem,
 }) {
-  return [
+  final items = [
     AppBottomNavItem(
       icon: Icons.info_outline,
       label: 'About',
@@ -53,4 +54,10 @@ List<AppBottomNavItem> buildAppBottomNavItems(
       label: 'Profile',
     ),
   ];
+
+  if (trailingItem != null) {
+    items.insert(items.length - 1, trailingItem);
+  }
+
+  return items;
 }

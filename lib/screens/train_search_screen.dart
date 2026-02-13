@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
+import '../navigation/app_bottom_nav_items.dart';
+import '../widgets/app_bottom_nav.dart';
+
 class TrainSearchScreen extends StatefulWidget {
   const TrainSearchScreen({super.key});
 
@@ -63,6 +66,16 @@ class _TrainSearchScreenState extends State<TrainSearchScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final bottomNavItems = buildAppBottomNavItems(
+      context,
+      trailingItem: AppBottomNavItem(
+        icon: Icons.directions_railway,
+        label: 'Railway',
+        onTap: () {},
+      ),
+    );
+    const currentIndex = 4;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('বাংলাদেশ রেলওয়ে ই-টিকিট'),
@@ -82,6 +95,10 @@ class _TrainSearchScreenState extends State<TrainSearchScreen> {
             child: WebViewWidget(controller: _controller),
           ),
         ],
+      ),
+      bottomNavigationBar: AppBottomNavBar(
+        items: bottomNavItems,
+        currentIndex: currentIndex,
       ),
     );
   }

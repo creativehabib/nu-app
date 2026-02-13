@@ -106,6 +106,18 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       _TaskItem(icon: Icons.photo_library, label: 'Gallery'),
       _TaskItem(icon: Icons.quiz, label: 'Res. Query'),
+      _TaskItem(
+        icon: Icons.directions_railway,
+        label: 'Railway Ticket',
+        imageUrl: 'https://eticket.railway.gov.bd/assets/img/login-page-logo.png',
+        onTap: () {
+          Navigator.of(context).push(
+            MaterialPageRoute<void>(
+              builder: (_) => const TrainSearchScreen(),
+            ),
+          );
+        },
+      ),
       _TaskItem(icon: Icons.celebration, label: 'Holiday'),
     ];
 
@@ -324,6 +336,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             icon: task.icon,
                             label: task.label,
                             color: baseColor,
+                            imageUrl: task.imageUrl,
                             onTap: task.onTap,
                           );
                         },
@@ -347,18 +360,20 @@ class _HomeScreenState extends State<HomeScreen> {
 
 // --- হেল্পার ক্লাস (বদলানোর প্রয়োজন নেই) ---
 class _TaskItem {
-  const _TaskItem({required this.icon, required this.label, this.onTap});
+  const _TaskItem({required this.icon, required this.label, this.imageUrl, this.onTap});
   final IconData icon;
   final String label;
+  final String? imageUrl;
   final VoidCallback? onTap;
   static const palette = [Color(0xFF7E57C2), Color(0xFF26A69A), Color(0xFFFFA726), Color(0xFF42A5F5), Color(0xFFEF5350), Color(0xFF8D6E63)];
 }
 
 class _TaskTile extends StatelessWidget {
-  const _TaskTile({required this.icon, required this.label, required this.color, this.onTap});
+  const _TaskTile({required this.icon, required this.label, required this.color, this.imageUrl, this.onTap});
   final IconData icon;
   final String label;
   final Color color;
+  final String? imageUrl;
   final VoidCallback? onTap;
 
   @override
@@ -388,9 +403,22 @@ class _TaskTile extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Container(
-                height: 42, width: 42,
-                decoration: BoxDecoration(color: color.withOpacity(0.12), borderRadius: BorderRadius.circular(12)),
-                child: Icon(icon, color: iconColor),
+                height: 42,
+                width: 42,
+                decoration: BoxDecoration(
+                  color: color.withOpacity(0.12),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: imageUrl == null
+                    ? Icon(icon, color: iconColor)
+                    : Padding(
+                        padding: const EdgeInsets.all(6),
+                        child: Image.network(
+                          imageUrl!,
+                          fit: BoxFit.contain,
+                          errorBuilder: (_, __, ___) => Icon(icon, color: iconColor),
+                        ),
+                      ),
               ),
               const SizedBox(height: 8),
               Text(
