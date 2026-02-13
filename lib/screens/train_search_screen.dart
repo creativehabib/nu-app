@@ -101,7 +101,23 @@ class _TrainSearchScreenState extends State<TrainSearchScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('বাংলাদেশ রেলওয়ে ই-টিকিট'),
+        titleSpacing: 0,
+        title: Row(
+          children: [
+            Image.asset(
+              'assets/bangladesh-railway.png',
+              width: 34,
+              height: 34,
+            ),
+            const SizedBox(width: 10),
+            const Expanded(
+              child: Text(
+                'বাংলাদেশ রেলওয়ে ই-টিকিট',
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ],
+        ),
         actions: [
           IconButton(
             tooltip: 'ব্রাউজারে খুলুন',

@@ -25,6 +25,7 @@ flutter:
   assets:
     - assets/nu-logo.png
     - assets/img.png
+    - assets/bangladesh-railway.png
 
 flutter_icons:
   android: true
