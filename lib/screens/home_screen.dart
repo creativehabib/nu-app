@@ -123,7 +123,7 @@ class _HomeScreenState extends State<HomeScreen> {
       _TaskItem(
         icon: Icons.directions_railway,
         label: 'Railway Ticket',
-        imageUrl: 'https://eticket.railway.gov.bd/assets/img/login-page-logo.png',
+        assetPath: 'assets/bangladesh-railway.png',
         onTap: _openRailwayTicketScreen,
       ),
       _TaskItem(icon: Icons.celebration, label: 'Holiday'),
@@ -344,7 +344,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             icon: task.icon,
                             label: task.label,
                             color: baseColor,
-                            imageUrl: task.imageUrl,
+                            imageUrl: task.assetPath,
                             onTap: task.onTap,
                             isLoading: _loadingTaskLabel == task.label,
                           );
@@ -369,10 +369,10 @@ class _HomeScreenState extends State<HomeScreen> {
 
 // --- হেল্পার ক্লাস (বদলানোর প্রয়োজন নেই) ---
 class _TaskItem {
-  const _TaskItem({required this.icon, required this.label, this.imageUrl, this.onTap});
+  const _TaskItem({required this.icon, required this.label, this.assetPath, this.onTap});
   final IconData icon;
   final String label;
-  final String? imageUrl;
+  final String? assetPath;
   final VoidCallback? onTap;
   static const palette = [Color(0xFF7E57C2), Color(0xFF26A69A), Color(0xFFFFA726), Color(0xFF42A5F5), Color(0xFFEF5350), Color(0xFF8D6E63)];
 }
