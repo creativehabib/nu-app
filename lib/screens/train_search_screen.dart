@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 class TrainSearchScreen extends StatefulWidget {
@@ -14,6 +15,18 @@ class _TrainSearchScreenState extends State<TrainSearchScreen> {
   late final WebViewController _controller;
   int _loadingProgress = 0;
 
+  Future<void> _openInExternalBrowser(Uri uri) async {
+    final launched = await launchUrl(uri, mode: LaunchMode.externalApplication);
+
+    if (!launched && mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('লিংক খোলা যায়নি। অনুগ্রহ করে ফোনে ব্রাউজার চেক করুন।'),
+        ),
+      );
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -22,9 +35,26 @@ class _TrainSearchScreenState extends State<TrainSearchScreen> {
       ..setNavigationDelegate(
         NavigationDelegate(
           onProgress: (progress) {
+            if (!mounted) return;
             setState(() {
               _loadingProgress = progress;
             });
+          },
+          onNavigationRequest: (request) {
+            final uri = Uri.tryParse(request.url);
+            if (uri == null) {
+              return NavigationDecision.navigate;
+            }
+
+            final isLoginRoute = uri.host.contains('railway.gov.bd') &&
+                uri.path.toLowerCase().contains('login');
+
+            if (isLoginRoute) {
+              _openInExternalBrowser(uri);
+              return NavigationDecision.prevent;
+            }
+
+            return NavigationDecision.navigate;
           },
         ),
       )
@@ -36,6 +66,13 @@ class _TrainSearchScreenState extends State<TrainSearchScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('বাংলাদেশ রেলওয়ে ই-টিকিট'),
+        actions: [
+          IconButton(
+            tooltip: 'ব্রাউজারে খুলুন',
+            onPressed: () => _openInExternalBrowser(_railwayTicketUrl),
+            icon: const Icon(Icons.open_in_browser),
+          ),
+        ],
       ),
       body: Column(
         children: [
