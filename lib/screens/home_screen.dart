@@ -432,7 +432,7 @@ class _TaskTile extends StatelessWidget {
                         ? Icon(icon, color: iconColor)
                         : Padding(
                             padding: const EdgeInsets.all(6),
-                            child: Image.network(
+                            child: Image.asset(
                               imageUrl!,
                               fit: BoxFit.contain,
                               errorBuilder: (_, __, ___) => Icon(icon, color: iconColor),
