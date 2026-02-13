@@ -20,6 +20,20 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  String? _loadingTaskLabel;
+
+  Future<void> _openRailwayTicketScreen() async {
+    setState(() => _loadingTaskLabel = 'Railway Ticket');
+    await Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (_) => const TrainSearchScreen(),
+      ),
+    );
+
+    if (!mounted) return;
+    setState(() => _loadingTaskLabel = null);
+  }
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -110,13 +124,7 @@ class _HomeScreenState extends State<HomeScreen> {
         icon: Icons.directions_railway,
         label: 'Railway Ticket',
         imageUrl: 'https://eticket.railway.gov.bd/assets/img/login-page-logo.png',
-        onTap: () {
-          Navigator.of(context).push(
-            MaterialPageRoute<void>(
-              builder: (_) => const TrainSearchScreen(),
-            ),
-          );
-        },
+        onTap: _openRailwayTicketScreen,
       ),
       _TaskItem(icon: Icons.celebration, label: 'Holiday'),
     ];
@@ -338,6 +346,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             color: baseColor,
                             imageUrl: task.imageUrl,
                             onTap: task.onTap,
+                            isLoading: _loadingTaskLabel == task.label,
                           );
                         },
                       ),
@@ -369,12 +378,13 @@ class _TaskItem {
 }
 
 class _TaskTile extends StatelessWidget {
-  const _TaskTile({required this.icon, required this.label, required this.color, this.imageUrl, this.onTap});
+  const _TaskTile({required this.icon, required this.label, required this.color, this.imageUrl, this.onTap, this.isLoading = false});
   final IconData icon;
   final String label;
   final Color color;
   final String? imageUrl;
   final VoidCallback? onTap;
+  final bool isLoading;
 
   @override
   Widget build(BuildContext context) {
@@ -384,7 +394,7 @@ class _TaskTile extends StatelessWidget {
       color: Colors.transparent,
       child: InkWell(
         borderRadius: BorderRadius.circular(16),
-        onTap: onTap,
+        onTap: isLoading ? null : onTap,
         child: Ink(
           decoration: BoxDecoration(
             color: colorScheme.surface,
@@ -409,16 +419,25 @@ class _TaskTile extends StatelessWidget {
                   color: color.withOpacity(0.12),
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: imageUrl == null
-                    ? Icon(icon, color: iconColor)
-                    : Padding(
-                        padding: const EdgeInsets.all(6),
-                        child: Image.network(
-                          imageUrl!,
-                          fit: BoxFit.contain,
-                          errorBuilder: (_, __, ___) => Icon(icon, color: iconColor),
+                child: isLoading
+                    ? SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          valueColor: AlwaysStoppedAnimation<Color>(iconColor),
                         ),
-                      ),
+                      )
+                    : imageUrl == null
+                        ? Icon(icon, color: iconColor)
+                        : Padding(
+                            padding: const EdgeInsets.all(6),
+                            child: Image.network(
+                              imageUrl!,
+                              fit: BoxFit.contain,
+                              errorBuilder: (_, __, ___) => Icon(icon, color: iconColor),
+                            ),
+                          ),
               ),
               const SizedBox(height: 8),
               Text(
