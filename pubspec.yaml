@@ -26,6 +26,7 @@ flutter:
     - assets/nu-logo.png
     - assets/img.png
     - assets/bangladesh-railway.png
+    - assets/habib_nu.png
 
 flutter_icons:
   android: true
