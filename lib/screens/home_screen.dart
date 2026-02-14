@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 import 'archive_results_screen.dart';
 import 'college_list_screen.dart';
 import 'department_list_screen.dart';
+import 'developer_screen.dart';
 import 'office_order_screen.dart';
 import 'recent_results_screen.dart';
 import '../navigation/app_bottom_nav_items.dart';
@@ -174,6 +175,17 @@ class _HomeScreenState extends State<HomeScreen> {
                 leading: const Icon(Icons.person_outline),
                 title: const Text('Profile'),
                 onTap: () {},
+              ),
+              ListTile(
+                leading: const Icon(Icons.code),
+                title: const Text('About Developer'),
+                onTap: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute<void>(
+                      builder: (_) => const DeveloperScreen(),
+                    ),
+                  );
+                },
               ),
               SwitchListTile(
                 secondary: Icon(isDarkMode ? Icons.dark_mode : Icons.light_mode),
