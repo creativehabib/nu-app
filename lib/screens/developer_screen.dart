@@ -1,14 +1,29 @@
 import 'package:flutter/material.dart';
 
+import '../navigation/app_bottom_nav_items.dart';
+import '../widgets/app_bottom_nav.dart';
+
 class DeveloperScreen extends StatelessWidget {
   const DeveloperScreen({super.key});
+
+  void _goToHome(BuildContext context) {
+    Navigator.of(context).popUntil((route) => route.isFirst);
+  }
 
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+    final bottomNavItems = buildAppBottomNavItems(
+      context,
+      onHomeTap: () => _goToHome(context),
+    );
 
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => _goToHome(context),
+        ),
         title: const Text('About Developer'),
       ),
       body: Center(
@@ -53,6 +68,10 @@ class DeveloperScreen extends StatelessWidget {
             ),
           ),
         ),
+      ),
+      bottomNavigationBar: AppBottomNavBar(
+        items: bottomNavItems,
+        currentIndex: 4,
       ),
     );
   }
