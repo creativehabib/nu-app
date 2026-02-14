@@ -91,13 +91,9 @@ class _TrainSearchScreenState extends State<TrainSearchScreen> {
   Widget build(BuildContext context) {
     final bottomNavItems = buildAppBottomNavItems(
       context,
-      trailingItem: AppBottomNavItem(
-        icon: Icons.directions_railway,
-        label: 'Railway',
-        onTap: () {},
-      ),
+      onHomeTap: () => Navigator.of(context).popUntil((route) => route.isFirst),
     );
-    const currentIndex = 4;
+    const currentIndex = 2;
 
     return Scaffold(
       appBar: AppBar(
