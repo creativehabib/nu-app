@@ -142,7 +142,7 @@ class _HomeScreenState extends State<HomeScreen> {
       child: Scaffold(
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
 
-        // --- সাইডবার ড্রয়ার মেনু ---
+        // --- Sidebar Drawer ---
         drawer: Drawer(
           child: Column(
             children: [
