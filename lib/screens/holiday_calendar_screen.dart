@@ -58,6 +58,7 @@ class _HolidayCalendarScreenState extends State<HolidayCalendarScreen> {
         final data = snapshot.data;
         final year = data?.year ?? DateTime.now().year;
         final holidays = data?.holidayMap ?? const <int, Set<int>>{};
+        final holidayReasons = data?.holidayReasons ?? const <int, Map<int, String>>{};
 
         return Scaffold(
           appBar: AppBar(
@@ -81,7 +82,7 @@ class _HolidayCalendarScreenState extends State<HolidayCalendarScreen> {
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Text(
-                  'Holiday data source: nu-holidays.json\nলাল = সরকারী ছুটি, কমলা = সাপ্তাহিক ছুটি (শুক্র/শনি)।',
+                  'Holiday data source: nu-holidays.json\nলাল = সরকারী ছুটি (ক্লিক/হোভার করলে কারণ দেখা যাবে), কমলা = সাপ্তাহিক ছুটি (শুক্র/শনি)।',
                   style: TextStyle(
                     fontWeight: FontWeight.w600,
                     color: Theme.of(context).colorScheme.onPrimaryContainer,
@@ -127,6 +128,7 @@ class _HolidayCalendarScreenState extends State<HolidayCalendarScreen> {
                       month: month,
                       firstWeekdayColumn: firstWeekdayColumn,
                       specialHolidayDays: holidays[month] ?? const {},
+                      specialHolidayReasons: holidayReasons[month] ?? const {},
                     );
                   },
                 ),
@@ -148,6 +150,7 @@ class _MonthCalendarCard extends StatelessWidget {
     required this.month,
     required this.firstWeekdayColumn,
     required this.specialHolidayDays,
+    required this.specialHolidayReasons,
   });
 
   final String monthName;
@@ -157,6 +160,17 @@ class _MonthCalendarCard extends StatelessWidget {
   final int month;
   final int firstWeekdayColumn;
   final Set<int> specialHolidayDays;
+  final Map<int, String> specialHolidayReasons;
+
+  void _showHolidayReason(BuildContext context, int dayNumber) {
+    final reason = specialHolidayReasons[dayNumber] ?? 'কারণ উল্লেখ নেই';
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('$dayNumber ${monthName}: $reason'),
+        duration: const Duration(seconds: 2),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -237,7 +251,7 @@ class _MonthCalendarCard extends StatelessWidget {
                     dayWeight = FontWeight.w700;
                   }
 
-                  return Container(
+                  final dayChip = Container(
                     alignment: Alignment.center,
                     decoration: BoxDecoration(
                       color: dayBackground,
@@ -249,6 +263,24 @@ class _MonthCalendarCard extends StatelessWidget {
                         fontSize: 10,
                         fontWeight: dayWeight,
                         color: dayColor,
+                      ),
+                    ),
+                  );
+
+                  if (!isSpecialHoliday) {
+                    return dayChip;
+                  }
+
+                  final reason = specialHolidayReasons[dayNumber] ?? 'কারণ উল্লেখ নেই';
+
+                  return Tooltip(
+                    message: reason,
+                    child: Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        customBorder: const CircleBorder(),
+                        onTap: () => _showHolidayReason(context, dayNumber),
+                        child: dayChip,
                       ),
                     ),
                   );

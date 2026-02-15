@@ -16,16 +16,19 @@ class HolidayCalendarData {
   const HolidayCalendarData({
     required this.year,
     required this.holidayMap,
+    required this.holidayReasons,
   });
 
   final int year;
   final Map<int, Set<int>> holidayMap;
+  final Map<int, Map<int, String>> holidayReasons;
 }
 
 class ApiService {
   Future<ApiResult<Department>> fetchDepartments({String? endpoint}) async {
     final uri = Uri.parse(
-      endpoint ?? 'https://raw.githubusercontent.com/creativehabib/nu-data/main/departments.json',
+      endpoint ??
+          'https://raw.githubusercontent.com/creativehabib/nu-data/main/departments.json',
     );
 
     try {
@@ -52,7 +55,8 @@ class ApiService {
 
   Future<ApiResult<College>> fetchColleges({String? endpoint}) async {
     final uri = Uri.parse(
-      endpoint ?? 'https://raw.githubusercontent.com/creativehabib/nu-data/refs/heads/main/affiliated_college.json',
+      endpoint ??
+          'https://raw.githubusercontent.com/creativehabib/nu-data/refs/heads/main/affiliated_college.json',
     );
 
     try {
@@ -99,6 +103,7 @@ class ApiService {
       return HolidayCalendarData(
         year: currentYear,
         holidayMap: _fallbackHolidayMap(currentYear),
+        holidayReasons: _fallbackHolidayReasons(),
       );
     }
   }
@@ -112,7 +117,7 @@ List<dynamic> _extractList(dynamic data) {
     return data;
   }
   if (data is Map<String, dynamic>) {
-    for (final key in ['data', 'colleges', 'collegeList', 'items']) {
+    for (final key in ['data', 'colleges', 'collegeList', 'items', 'holidays']) {
       final value = data[key];
       if (value is List) {
         return value;
@@ -125,10 +130,7 @@ List<dynamic> _extractList(dynamic data) {
 HolidayCalendarData _parseHolidayPayload(dynamic payload) {
   final currentYear = DateTime.now().year;
   if (payload is List) {
-    return HolidayCalendarData(
-      year: currentYear,
-      holidayMap: _parseHolidayEntries(payload),
-    );
+    return _parseHolidayEntries(entries: payload, year: currentYear);
   }
 
   if (payload is Map<String, dynamic>) {
@@ -136,45 +138,65 @@ HolidayCalendarData _parseHolidayPayload(dynamic payload) {
     final holidayEntries = _extractList(payload);
 
     if (holidayEntries.isNotEmpty) {
-      return HolidayCalendarData(
-        year: year,
-        holidayMap: _parseHolidayEntries(holidayEntries),
-      );
+      return _parseHolidayEntries(entries: holidayEntries, year: year);
     }
 
     final monthMap = _parseMonthBasedHolidayMap(payload);
-    return HolidayCalendarData(year: year, holidayMap: monthMap);
+    return HolidayCalendarData(
+      year: year,
+      holidayMap: monthMap,
+      holidayReasons: const {},
+    );
   }
 
-  return HolidayCalendarData(year: currentYear, holidayMap: const {});
+  return HolidayCalendarData(
+    year: currentYear,
+    holidayMap: const {},
+    holidayReasons: const {},
+  );
 }
 
-Map<int, Set<int>> _parseHolidayEntries(List<dynamic> entries) {
-  final result = <int, Set<int>>{};
+HolidayCalendarData _parseHolidayEntries({
+  required List<dynamic> entries,
+  required int year,
+}) {
+  final holidayMap = <int, Set<int>>{};
+  final holidayReasons = <int, Map<int, String>>{};
 
   for (final item in entries) {
     if (item is! Map<String, dynamic>) {
       continue;
     }
 
-    final month = _toInt(item['month'] ?? item['m'] ?? item['mm']);
-    final day = _toInt(item['day'] ?? item['date'] ?? item['dd']);
+    int? month = _toInt(item['month'] ?? item['m'] ?? item['mm']);
+    int? day = _toInt(item['day'] ?? item['dd']);
 
-    if (month != null && day != null && month >= 1 && month <= 12 && day >= 1) {
-      result.putIfAbsent(month, () => <int>{}).add(day);
+    final dateFromText = item['date'] ?? item['isoDate'] ?? item['holidayDate'];
+    if ((month == null || day == null) && dateFromText is String) {
+      final parsedDate = DateTime.tryParse(dateFromText);
+      if (parsedDate != null) {
+        month ??= parsedDate.month;
+        day ??= parsedDate.day;
+      }
+    }
+
+    if (month == null || day == null || month < 1 || month > 12 || day < 1) {
       continue;
     }
 
-    final rawDate = item['isoDate'] ?? item['date'] ?? item['holidayDate'];
-    if (rawDate is String) {
-      final parsedDate = DateTime.tryParse(rawDate);
-      if (parsedDate != null) {
-        result.putIfAbsent(parsedDate.month, () => <int>{}).add(parsedDate.day);
-      }
+    holidayMap.putIfAbsent(month, () => <int>{}).add(day);
+
+    final reason = _extractHolidayReason(item);
+    if (reason.isNotEmpty) {
+      holidayReasons.putIfAbsent(month, () => <int, String>{})[day] = reason;
     }
   }
 
-  return result;
+  return HolidayCalendarData(
+    year: year,
+    holidayMap: holidayMap,
+    holidayReasons: holidayReasons,
+  );
 }
 
 Map<int, Set<int>> _parseMonthBasedHolidayMap(Map<String, dynamic> payload) {
@@ -189,7 +211,11 @@ Map<int, Set<int>> _parseMonthBasedHolidayMap(Map<String, dynamic> payload) {
     }
 
     if (value is List) {
-      final days = value.map(_toInt).whereType<int>().where((d) => d > 0).toSet();
+      final days = value
+          .map(_toInt)
+          .whereType<int>()
+          .where((d) => d > 0)
+          .toSet();
       if (days.isNotEmpty) {
         result[month] = days;
       }
@@ -197,6 +223,25 @@ Map<int, Set<int>> _parseMonthBasedHolidayMap(Map<String, dynamic> payload) {
   }
 
   return result;
+}
+
+String _extractHolidayReason(Map<String, dynamic> item) {
+  for (final key in [
+    'reason',
+    'name',
+    'title',
+    'holiday',
+    'occasion',
+    'event',
+    'description',
+    'details',
+  ]) {
+    final value = item[key];
+    if (value is String && value.trim().isNotEmpty) {
+      return value.trim();
+    }
+  }
+  return 'কারণ উল্লেখ নেই';
 }
 
 int _resolveHolidayYear(Map<String, dynamic> payload, int fallbackYear) {
@@ -225,6 +270,20 @@ Map<int, Set<int>> _fallbackHolidayMap(int year) {
     8: {15},
     10: {year.isLeapYear ? 2 : 1},
     12: {16, 25},
+  };
+}
+
+Map<int, Map<int, String>> _fallbackHolidayReasons() {
+  return {
+    1: {1: 'New Year Holiday'},
+    2: {21: 'আন্তর্জাতিক মাতৃভাষা দিবস'},
+    3: {17: 'জাতির পিতার জন্মবার্ষিকী', 26: 'স্বাধীনতা দিবস'},
+    4: {14: 'পহেলা বৈশাখ'},
+    5: {1: 'মে দিবস'},
+    6: {5: 'ঈদ-উল-আযহা (সম্ভাব্য)'},
+    8: {15: 'জাতীয় শোক দিবস'},
+    10: {1: 'দুর্গা পূজা (সম্ভাব্য)'},
+    12: {16: 'বিজয় দিবস', 25: 'বড়দিন'},
   };
 }
 
