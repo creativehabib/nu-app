@@ -18,12 +18,14 @@ class HolidayCalendarData {
     required this.holidayMap,
     required this.holidayReasons,
     required this.holidayTypes,
+    required this.usedFallback,
   });
 
   final int year;
   final Map<int, Set<int>> holidayMap;
   final Map<int, Map<int, String>> holidayReasons;
   final Map<int, Map<int, String>> holidayTypes;
+  final bool usedFallback;
 }
 
 class ApiService {
@@ -107,6 +109,7 @@ class ApiService {
         holidayMap: _fallbackHolidayMap(currentYear),
         holidayReasons: _fallbackHolidayReasons(),
         holidayTypes: _fallbackHolidayTypes(),
+        usedFallback: true,
       );
     }
   }
@@ -150,6 +153,7 @@ HolidayCalendarData _parseHolidayPayload(dynamic payload) {
       holidayMap: monthMap,
       holidayReasons: const {},
       holidayTypes: const {},
+      usedFallback: false,
     );
   }
 
@@ -158,6 +162,7 @@ HolidayCalendarData _parseHolidayPayload(dynamic payload) {
     holidayMap: const {},
     holidayReasons: const {},
     holidayTypes: const {},
+    usedFallback: false,
   );
 }
 
@@ -208,6 +213,7 @@ HolidayCalendarData _parseHolidayEntries({
     holidayMap: holidayMap,
     holidayReasons: holidayReasons,
     holidayTypes: holidayTypes,
+    usedFallback: false,
   );
 }
 
