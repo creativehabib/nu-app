@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:nu_app/screens/train_search_screen.dart';
+import 'package:nu_app/screens/holiday_calendar_screen.dart';
 import 'package:provider/provider.dart';
 
 import 'archive_results_screen.dart';
@@ -127,7 +128,17 @@ class _HomeScreenState extends State<HomeScreen> {
         assetPath: 'assets/bangladesh-railway.png',
         onTap: _openRailwayTicketScreen,
       ),
-      _TaskItem(icon: Icons.celebration, label: 'Holiday'),
+      _TaskItem(
+        icon: Icons.celebration,
+        label: 'Holiday',
+        onTap: () {
+          Navigator.of(context).push(
+            MaterialPageRoute<void>(
+              builder: (_) => const HolidayCalendarScreen(),
+            ),
+          );
+        },
+      ),
     ];
 
     final bottomNavItems = buildAppBottomNavItems(context);
