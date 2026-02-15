@@ -1,7 +1,16 @@
 import 'package:flutter/material.dart';
 
-class HolidayCalendarScreen extends StatelessWidget {
+import '../services/api_service.dart';
+
+class HolidayCalendarScreen extends StatefulWidget {
   const HolidayCalendarScreen({super.key});
+
+  @override
+  State<HolidayCalendarScreen> createState() => _HolidayCalendarScreenState();
+}
+
+class _HolidayCalendarScreenState extends State<HolidayCalendarScreen> {
+  late Future<HolidayCalendarData> _holidayFuture;
 
   static const List<String> _monthNamesBn = [
     'জানুয়ারি',
@@ -18,78 +27,113 @@ class HolidayCalendarScreen extends StatelessWidget {
     'ডিসেম্বর',
   ];
 
-  static const List<String> _weekDaysBn = ['রবি', 'সোম', 'মঙ্গল', 'বুধ', 'বৃহঃ', 'শুক্র', 'শনি'];
+  static const List<String> _weekDaysBn = [
+    'রবি',
+    'সোম',
+    'মঙ্গল',
+    'বুধ',
+    'বৃহঃ',
+    'শুক্র',
+    'শনি',
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+    _holidayFuture = ApiService().fetchNuHolidays();
+  }
+
+  void _reloadHolidays() {
+    setState(() {
+      _holidayFuture = ApiService().fetchNuHolidays();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    final year = DateTime.now().year;
-    final holidays = _buildHolidayMap(year);
+    return FutureBuilder<HolidayCalendarData>(
+      future: _holidayFuture,
+      builder: (context, snapshot) {
+        final isLoading = snapshot.connectionState == ConnectionState.waiting;
+        final data = snapshot.data;
+        final year = data?.year ?? DateTime.now().year;
+        final holidays = data?.holidayMap ?? const <int, Set<int>>{};
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Holiday Calendar $year'),
-      ),
-      body: Column(
-        children: [
-          Container(
-            width: double.infinity,
-            margin: const EdgeInsets.fromLTRB(16, 12, 16, 8),
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.primaryContainer,
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Text(
-              'লাল গোল চিহ্ন দেওয়া তারিখগুলো সরকারি/বিশেষ ছুটি।',
-              style: TextStyle(
-                fontWeight: FontWeight.w600,
-                color: Theme.of(context).colorScheme.onPrimaryContainer,
+        return Scaffold(
+          appBar: AppBar(
+            title: Text('Holiday Calendar $year'),
+            actions: [
+              IconButton(
+                onPressed: isLoading ? null : _reloadHolidays,
+                icon: const Icon(Icons.refresh),
+                tooltip: 'Reload holidays',
               ),
-            ),
+            ],
           ),
-          Expanded(
-            child: GridView.builder(
-              padding: const EdgeInsets.all(16),
-              itemCount: 12,
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                crossAxisSpacing: 12,
-                mainAxisSpacing: 12,
-                childAspectRatio: 0.76,
+          body: Column(
+            children: [
+              Container(
+                width: double.infinity,
+                margin: const EdgeInsets.fromLTRB(16, 12, 16, 8),
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.primaryContainer,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Text(
+                  'Holiday data source: nu-holidays.json\nলাল গোল চিহ্ন দেওয়া তারিখগুলো ছুটি।',
+                  style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    color: Theme.of(context).colorScheme.onPrimaryContainer,
+                  ),
+                ),
               ),
-              itemBuilder: (context, index) {
-                final month = index + 1;
-                final daysInMonth = DateUtils.getDaysInMonth(year, month);
-                final firstDay = DateTime(year, month, 1);
-                final firstWeekdayColumn = firstDay.weekday % 7;
+              if (isLoading)
+                const LinearProgressIndicator(minHeight: 2)
+              else
+                const SizedBox(height: 2),
+              if (snapshot.hasError)
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+                  child: Text(
+                    'ডেটা লোডে সমস্যা হয়েছে, fallback holiday list দেখানো হচ্ছে।',
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.error,
+                      fontSize: 12,
+                    ),
+                  ),
+                ),
+              Expanded(
+                child: GridView.builder(
+                  padding: const EdgeInsets.all(16),
+                  itemCount: 12,
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    crossAxisSpacing: 12,
+                    mainAxisSpacing: 12,
+                    childAspectRatio: 0.76,
+                  ),
+                  itemBuilder: (context, index) {
+                    final month = index + 1;
+                    final daysInMonth = DateUtils.getDaysInMonth(year, month);
+                    final firstDay = DateTime(year, month, 1);
+                    final firstWeekdayColumn = firstDay.weekday % 7;
 
-                return _MonthCalendarCard(
-                  monthName: _monthNamesBn[index],
-                  weekDaysBn: _weekDaysBn,
-                  daysInMonth: daysInMonth,
-                  firstWeekdayColumn: firstWeekdayColumn,
-                  holidayDays: holidays[month] ?? const {},
-                );
-              },
-            ),
+                    return _MonthCalendarCard(
+                      monthName: _monthNamesBn[index],
+                      weekDaysBn: _weekDaysBn,
+                      daysInMonth: daysInMonth,
+                      firstWeekdayColumn: firstWeekdayColumn,
+                      holidayDays: holidays[month] ?? const {},
+                    );
+                  },
+                ),
+              ),
+            ],
           ),
-        ],
-      ),
+        );
+      },
     );
-  }
-
-  Map<int, Set<int>> _buildHolidayMap(int year) {
-    return {
-      1: {1},
-      2: {21},
-      3: {17, 26},
-      4: {14},
-      5: {1},
-      6: {5},
-      8: {15},
-      10: {year.isLeapYear ? 2 : 1},
-      12: {16, 25},
-    };
   }
 }
 
@@ -190,13 +234,5 @@ class _MonthCalendarCard extends StatelessWidget {
         ),
       ),
     );
-  }
-}
-
-extension on int {
-  bool get isLeapYear {
-    if (this % 400 == 0) return true;
-    if (this % 100 == 0) return false;
-    return this % 4 == 0;
   }
 }
