@@ -14,28 +14,28 @@ class _HolidayCalendarScreenState extends State<HolidayCalendarScreen> {
   late Future<HolidayCalendarData> _holidayFuture;
 
   static const List<String> _monthNamesBn = [
-    'জানুয়ারি',
-    'ফেব্রুয়ারি',
-    'মার্চ',
-    'এপ্রিল',
-    'মে',
-    'জুন',
-    'জুলাই',
-    'আগস্ট',
-    'সেপ্টেম্বর',
-    'অক্টোবর',
-    'নভেম্বর',
-    'ডিসেম্বর',
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December',
   ];
 
   static const List<String> _weekDaysBn = [
-    'রবি',
-    'সোম',
-    'মঙ্গল',
-    'বুধ',
-    'বৃহঃ',
-    'শুক্র',
-    'শনি',
+    'SU',
+    'MO',
+    'TU',
+    'WE',
+    'TH',
+    'FR',
+    'SA',
   ];
 
   @override
