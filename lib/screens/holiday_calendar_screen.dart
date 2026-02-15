@@ -85,7 +85,7 @@ class _HolidayCalendarScreenState extends State<HolidayCalendarScreen> {
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Text(
-                  'Holiday data source: nu-holidays.json\nলাল = সরকারী/বিশেষ ছুটি, বেগুনি = University Holiday, কমলা = সাপ্তাহিক ছুটি (শুক্র/শনি)।',
+                  'লাল = সরকারী/বিশেষ ছুটি, বেগুনি = University Holiday, কমলা = সাপ্তাহিক ছুটি (শুক্র/শনি)।',
                   style: TextStyle(
                     fontWeight: FontWeight.w600,
                     color: Theme.of(context).colorScheme.onPrimaryContainer,
