@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../services/api_service.dart';
+import '../widgets/offline_notice.dart';
 
 class HolidayCalendarScreen extends StatefulWidget {
   const HolidayCalendarScreen({super.key});
@@ -60,6 +61,7 @@ class _HolidayCalendarScreenState extends State<HolidayCalendarScreen> {
         final holidays = data?.holidayMap ?? const <int, Set<int>>{};
         final holidayReasons = data?.holidayReasons ?? const <int, Map<int, String>>{};
         final holidayTypes = data?.holidayTypes ?? const <int, Map<int, String>>{};
+        final usedFallback = data?.usedFallback ?? false;
 
         return Scaffold(
           appBar: AppBar(
@@ -94,19 +96,16 @@ class _HolidayCalendarScreenState extends State<HolidayCalendarScreen> {
                 const LinearProgressIndicator(minHeight: 2)
               else
                 const SizedBox(height: 2),
-              if (snapshot.hasError)
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-                  child: Text(
-                    'ডেটা লোডে সমস্যা হয়েছে, fallback holiday list দেখানো হচ্ছে।',
-                    style: TextStyle(
-                      color: Theme.of(context).colorScheme.error,
-                      fontSize: 12,
-                    ),
+              if (usedFallback)
+                Expanded(
+                  child: OfflineNotice(
+                    message: "Your mobile internet or WI-FI isn't connected try again",
+                    onRetry: _reloadHolidays,
                   ),
                 ),
-              Expanded(
-                child: GridView.builder(
+              if (!usedFallback)
+                Expanded(
+                  child: GridView.builder(
                   padding: const EdgeInsets.all(16),
                   itemCount: 12,
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
