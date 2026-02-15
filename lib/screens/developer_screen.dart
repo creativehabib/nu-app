@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import '../navigation/app_bottom_nav_items.dart';
 import '../widgets/app_bottom_nav.dart';
 
@@ -36,28 +35,50 @@ class DeveloperScreen extends StatelessWidget {
               side: BorderSide(color: colorScheme.outlineVariant),
             ),
             child: Padding(
-              padding: const EdgeInsets.all(20),
+              padding: const EdgeInsets.all(24),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const CircleAvatar(
-                    radius: 60,
-                    backgroundImage: AssetImage('assets/habib_nu.png'),
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(12),
+                    child: Image.asset(
+                      'assets/habib_nu.png',
+                      width: 120,
+                      height: 120,
+                      fit: BoxFit.cover,
+                    ),
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 20),
                   Text(
                     'Habibur Rahaman',
                     style: Theme.of(context).textTheme.titleLarge?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  const SizedBox(height: 18),
+                  const SizedBox(height: 6),
+                  Text(
+                    'Administrative Officer',
+                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                      color: colorScheme.primary,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    'National University, Bangladesh',
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  const Divider(height: 1), // একটি হালকা সেপারেটর লাইন
+                  const SizedBox(height: 20),
                   const _InfoRow(
                     icon: Icons.phone_android,
                     label: 'Mobile',
                     value: '+8801914120688',
                   ),
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 12),
                   const _InfoRow(
                     icon: Icons.email_outlined,
                     label: 'Email',
@@ -94,18 +115,33 @@ class _InfoRow extends StatelessWidget {
 
     return Row(
       children: [
-        Icon(icon, color: colorScheme.primary),
-        const SizedBox(width: 12),
-        Text(
-          '$label:',
-          style: const TextStyle(fontWeight: FontWeight.w600),
-        ),
-        const SizedBox(width: 8),
-        Expanded(
-          child: Text(
-            value,
-            style: TextStyle(color: colorScheme.onSurfaceVariant),
+        Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: colorScheme.primary.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(8),
           ),
+          child: Icon(icon, color: colorScheme.primary, size: 20),
+        ),
+        const SizedBox(width: 16),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 12,
+                color: colorScheme.onSurfaceVariant.withOpacity(0.7),
+              ),
+            ),
+            Text(
+              value,
+              style: const TextStyle(
+                fontWeight: FontWeight.w600,
+                fontSize: 14,
+              ),
+            ),
+          ],
         ),
       ],
     );
