@@ -59,6 +59,7 @@ class _HolidayCalendarScreenState extends State<HolidayCalendarScreen> {
         final year = data?.year ?? DateTime.now().year;
         final holidays = data?.holidayMap ?? const <int, Set<int>>{};
         final holidayReasons = data?.holidayReasons ?? const <int, Map<int, String>>{};
+        final holidayTypes = data?.holidayTypes ?? const <int, Map<int, String>>{};
 
         return Scaffold(
           appBar: AppBar(
@@ -82,7 +83,7 @@ class _HolidayCalendarScreenState extends State<HolidayCalendarScreen> {
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Text(
-                  'Holiday data source: nu-holidays.json\nলাল = সরকারী ছুটি (ক্লিক/হোভার করলে কারণ দেখা যাবে), কমলা = সাপ্তাহিক ছুটি (শুক্র/শনি)।',
+                  'Holiday data source: nu-holidays.json\nলাল = সরকারী/বিশেষ ছুটি, বেগুনি = University Holiday, কমলা = সাপ্তাহিক ছুটি (শুক্র/শনি)।',
                   style: TextStyle(
                     fontWeight: FontWeight.w600,
                     color: Theme.of(context).colorScheme.onPrimaryContainer,
@@ -129,6 +130,7 @@ class _HolidayCalendarScreenState extends State<HolidayCalendarScreen> {
                       firstWeekdayColumn: firstWeekdayColumn,
                       specialHolidayDays: holidays[month] ?? const {},
                       specialHolidayReasons: holidayReasons[month] ?? const {},
+                      specialHolidayTypes: holidayTypes[month] ?? const {},
                     );
                   },
                 ),
@@ -151,6 +153,7 @@ class _MonthCalendarCard extends StatelessWidget {
     required this.firstWeekdayColumn,
     required this.specialHolidayDays,
     required this.specialHolidayReasons,
+    required this.specialHolidayTypes,
   });
 
   final String monthName;
@@ -161,12 +164,17 @@ class _MonthCalendarCard extends StatelessWidget {
   final int firstWeekdayColumn;
   final Set<int> specialHolidayDays;
   final Map<int, String> specialHolidayReasons;
+  final Map<int, String> specialHolidayTypes;
 
   void _showHolidayReason(BuildContext context, int dayNumber) {
     final reason = specialHolidayReasons[dayNumber] ?? 'কারণ উল্লেখ নেই';
+    final holidayType = specialHolidayTypes[dayNumber];
+    final suffix = holidayType == null || holidayType.isEmpty
+        ? ''
+        : ' ($holidayType)';
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('$dayNumber ${monthName}: $reason'),
+        content: Text('$dayNumber ${monthName}: $reason$suffix'),
         duration: const Duration(seconds: 2),
       ),
     );
@@ -246,8 +254,19 @@ class _MonthCalendarCard extends StatelessWidget {
                   }
 
                   if (isSpecialHoliday) {
-                    dayBackground = colorScheme.errorContainer;
-                    dayColor = colorScheme.onErrorContainer;
+                    final holidayType =
+                        (specialHolidayTypes[dayNumber] ?? '').toLowerCase();
+                    final isUniversityHoliday =
+                        holidayType == 'university holiday' ||
+                        holidayType == 'university_holiday';
+
+                    if (isUniversityHoliday) {
+                      dayBackground = colorScheme.secondaryContainer;
+                      dayColor = colorScheme.onSecondaryContainer;
+                    } else {
+                      dayBackground = colorScheme.errorContainer;
+                      dayColor = colorScheme.onErrorContainer;
+                    }
                     dayWeight = FontWeight.w700;
                   }
 
@@ -272,9 +291,13 @@ class _MonthCalendarCard extends StatelessWidget {
                   }
 
                   final reason = specialHolidayReasons[dayNumber] ?? 'কারণ উল্লেখ নেই';
+                  final holidayType = specialHolidayTypes[dayNumber];
+                  final tooltipMessage = holidayType == null || holidayType.isEmpty
+                      ? reason
+                      : '$reason ($holidayType)';
 
                   return Tooltip(
-                    message: reason,
+                    message: tooltipMessage,
                     child: Material(
                       color: Colors.transparent,
                       child: InkWell(

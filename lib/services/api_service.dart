@@ -17,11 +17,13 @@ class HolidayCalendarData {
     required this.year,
     required this.holidayMap,
     required this.holidayReasons,
+    required this.holidayTypes,
   });
 
   final int year;
   final Map<int, Set<int>> holidayMap;
   final Map<int, Map<int, String>> holidayReasons;
+  final Map<int, Map<int, String>> holidayTypes;
 }
 
 class ApiService {
@@ -104,6 +106,7 @@ class ApiService {
         year: currentYear,
         holidayMap: _fallbackHolidayMap(currentYear),
         holidayReasons: _fallbackHolidayReasons(),
+        holidayTypes: _fallbackHolidayTypes(),
       );
     }
   }
@@ -146,6 +149,7 @@ HolidayCalendarData _parseHolidayPayload(dynamic payload) {
       year: year,
       holidayMap: monthMap,
       holidayReasons: const {},
+      holidayTypes: const {},
     );
   }
 
@@ -153,6 +157,7 @@ HolidayCalendarData _parseHolidayPayload(dynamic payload) {
     year: currentYear,
     holidayMap: const {},
     holidayReasons: const {},
+    holidayTypes: const {},
   );
 }
 
@@ -162,6 +167,7 @@ HolidayCalendarData _parseHolidayEntries({
 }) {
   final holidayMap = <int, Set<int>>{};
   final holidayReasons = <int, Map<int, String>>{};
+  final holidayTypes = <int, Map<int, String>>{};
 
   for (final item in entries) {
     if (item is! Map<String, dynamic>) {
@@ -190,12 +196,18 @@ HolidayCalendarData _parseHolidayEntries({
     if (reason.isNotEmpty) {
       holidayReasons.putIfAbsent(month, () => <int, String>{})[day] = reason;
     }
+
+    final holidayType = _extractHolidayType(item);
+    if (holidayType.isNotEmpty) {
+      holidayTypes.putIfAbsent(month, () => <int, String>{})[day] = holidayType;
+    }
   }
 
   return HolidayCalendarData(
     year: year,
     holidayMap: holidayMap,
     holidayReasons: holidayReasons,
+    holidayTypes: holidayTypes,
   );
 }
 
@@ -223,6 +235,18 @@ Map<int, Set<int>> _parseMonthBasedHolidayMap(Map<String, dynamic> payload) {
   }
 
   return result;
+}
+
+
+
+String _extractHolidayType(Map<String, dynamic> item) {
+  for (final key in ['type', 'holidayType', 'category']) {
+    final value = item[key];
+    if (value is String && value.trim().isNotEmpty) {
+      return value.trim();
+    }
+  }
+  return '';
 }
 
 String _extractHolidayReason(Map<String, dynamic> item) {
@@ -284,6 +308,12 @@ Map<int, Map<int, String>> _fallbackHolidayReasons() {
     8: {15: 'জাতীয় শোক দিবস'},
     10: {1: 'দুর্গা পূজা (সম্ভাব্য)'},
     12: {16: 'বিজয় দিবস', 25: 'বড়দিন'},
+  };
+}
+
+Map<int, Map<int, String>> _fallbackHolidayTypes() {
+  return {
+    6: {5: 'University Holiday'},
   };
 }
 
