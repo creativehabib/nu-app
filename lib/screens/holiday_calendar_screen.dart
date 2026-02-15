@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
+import '../navigation/app_bottom_nav_items.dart';
 import '../services/api_service.dart';
+import '../widgets/app_bottom_nav.dart';
 import '../widgets/offline_notice.dart';
 
 class HolidayCalendarScreen extends StatefulWidget {
@@ -52,6 +54,11 @@ class _HolidayCalendarScreenState extends State<HolidayCalendarScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final bottomNavItems = buildAppBottomNavItems(
+      context,
+      onHomeTap: () => Navigator.of(context).popUntil((route) => route.isFirst),
+    );
+
     return FutureBuilder<HolidayCalendarData>(
       future: _holidayFuture,
       builder: (context, snapshot) {
@@ -135,6 +142,10 @@ class _HolidayCalendarScreenState extends State<HolidayCalendarScreen> {
                 ),
               ),
             ],
+          ),
+          bottomNavigationBar: AppBottomNavBar(
+            items: bottomNavItems,
+            currentIndex: 2,
           ),
         );
       },
