@@ -81,7 +81,7 @@ class _HolidayCalendarScreenState extends State<HolidayCalendarScreen> {
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Text(
-                  'Holiday data source: nu-holidays.json\nলাল গোল চিহ্ন দেওয়া তারিখগুলো ছুটি।',
+                  'Holiday data source: nu-holidays.json\nলাল = সরকারী ছুটি, কমলা = সাপ্তাহিক ছুটি (শুক্র/শনি)।',
                   style: TextStyle(
                     fontWeight: FontWeight.w600,
                     color: Theme.of(context).colorScheme.onPrimaryContainer,
@@ -123,8 +123,10 @@ class _HolidayCalendarScreenState extends State<HolidayCalendarScreen> {
                       monthName: _monthNamesBn[index],
                       weekDaysBn: _weekDaysBn,
                       daysInMonth: daysInMonth,
+                      year: year,
+                      month: month,
                       firstWeekdayColumn: firstWeekdayColumn,
-                      holidayDays: holidays[month] ?? const {},
+                      specialHolidayDays: holidays[month] ?? const {},
                     );
                   },
                 ),
@@ -142,15 +144,19 @@ class _MonthCalendarCard extends StatelessWidget {
     required this.monthName,
     required this.weekDaysBn,
     required this.daysInMonth,
+    required this.year,
+    required this.month,
     required this.firstWeekdayColumn,
-    required this.holidayDays,
+    required this.specialHolidayDays,
   });
 
   final String monthName;
   final List<String> weekDaysBn;
   final int daysInMonth;
+  final int year;
+  final int month;
   final int firstWeekdayColumn;
-  final Set<int> holidayDays;
+  final Set<int> specialHolidayDays;
 
   @override
   Widget build(BuildContext context) {
@@ -209,21 +215,40 @@ class _MonthCalendarCard extends StatelessWidget {
                     return const SizedBox.shrink();
                   }
 
-                  final isHoliday = holidayDays.contains(dayNumber);
+                  final date = DateTime(year, month, dayNumber);
+                  final isWeekendHoliday =
+                      date.weekday == DateTime.friday ||
+                      date.weekday == DateTime.saturday;
+                  final isSpecialHoliday = specialHolidayDays.contains(dayNumber);
+
+                  Color? dayBackground;
+                  Color dayColor = colorScheme.onSurface;
+                  FontWeight dayWeight = FontWeight.w500;
+
+                  if (isWeekendHoliday) {
+                    dayBackground = colorScheme.tertiaryContainer;
+                    dayColor = colorScheme.onTertiaryContainer;
+                    dayWeight = FontWeight.w600;
+                  }
+
+                  if (isSpecialHoliday) {
+                    dayBackground = colorScheme.errorContainer;
+                    dayColor = colorScheme.onErrorContainer;
+                    dayWeight = FontWeight.w700;
+                  }
+
                   return Container(
                     alignment: Alignment.center,
                     decoration: BoxDecoration(
-                      color: isHoliday ? colorScheme.errorContainer : null,
+                      color: dayBackground,
                       shape: BoxShape.circle,
                     ),
                     child: Text(
                       '$dayNumber',
                       style: TextStyle(
                         fontSize: 10,
-                        fontWeight: isHoliday ? FontWeight.w700 : FontWeight.w500,
-                        color: isHoliday
-                            ? colorScheme.onErrorContainer
-                            : colorScheme.onSurface,
+                        fontWeight: dayWeight,
+                        color: dayColor,
                       ),
                     ),
                   );
