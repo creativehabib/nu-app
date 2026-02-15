@@ -12,6 +12,16 @@ class ApiResult<T> {
   final bool usedFallback;
 }
 
+class HolidayCalendarData {
+  const HolidayCalendarData({
+    required this.year,
+    required this.holidayMap,
+  });
+
+  final int year;
+  final Map<int, Set<int>> holidayMap;
+}
+
 class ApiService {
   Future<ApiResult<Department>> fetchDepartments({String? endpoint}) async {
     final uri = Uri.parse(
@@ -65,6 +75,33 @@ class ApiService {
       return ApiResult(items: fallback, usedFallback: true);
     }
   }
+
+  Future<HolidayCalendarData> fetchNuHolidays({String? endpoint}) async {
+    final currentYear = DateTime.now().year;
+    final uri = Uri.parse(
+      endpoint ??
+          'https://raw.githubusercontent.com/creativehabib/nu-data/refs/heads/main/nu-holidays.json',
+    );
+
+    try {
+      final response = await http.get(uri);
+      if (response.statusCode != 200) {
+        throw Exception('Unexpected status: ${response.statusCode}');
+      }
+
+      final dynamic decoded = jsonDecode(response.body);
+      final parsed = _parseHolidayPayload(decoded);
+      if (parsed.holidayMap.isEmpty) {
+        throw Exception('Holiday payload is empty');
+      }
+      return parsed;
+    } catch (_) {
+      return HolidayCalendarData(
+        year: currentYear,
+        holidayMap: _fallbackHolidayMap(currentYear),
+      );
+    }
+  }
 }
 
 const List<Map<String, dynamic>> _fallbackDepartments = [];
@@ -83,4 +120,118 @@ List<dynamic> _extractList(dynamic data) {
     }
   }
   return const [];
+}
+
+HolidayCalendarData _parseHolidayPayload(dynamic payload) {
+  final currentYear = DateTime.now().year;
+  if (payload is List) {
+    return HolidayCalendarData(
+      year: currentYear,
+      holidayMap: _parseHolidayEntries(payload),
+    );
+  }
+
+  if (payload is Map<String, dynamic>) {
+    final year = _resolveHolidayYear(payload, currentYear);
+    final holidayEntries = _extractList(payload);
+
+    if (holidayEntries.isNotEmpty) {
+      return HolidayCalendarData(
+        year: year,
+        holidayMap: _parseHolidayEntries(holidayEntries),
+      );
+    }
+
+    final monthMap = _parseMonthBasedHolidayMap(payload);
+    return HolidayCalendarData(year: year, holidayMap: monthMap);
+  }
+
+  return HolidayCalendarData(year: currentYear, holidayMap: const {});
+}
+
+Map<int, Set<int>> _parseHolidayEntries(List<dynamic> entries) {
+  final result = <int, Set<int>>{};
+
+  for (final item in entries) {
+    if (item is! Map<String, dynamic>) {
+      continue;
+    }
+
+    final month = _toInt(item['month'] ?? item['m'] ?? item['mm']);
+    final day = _toInt(item['day'] ?? item['date'] ?? item['dd']);
+
+    if (month != null && day != null && month >= 1 && month <= 12 && day >= 1) {
+      result.putIfAbsent(month, () => <int>{}).add(day);
+      continue;
+    }
+
+    final rawDate = item['isoDate'] ?? item['date'] ?? item['holidayDate'];
+    if (rawDate is String) {
+      final parsedDate = DateTime.tryParse(rawDate);
+      if (parsedDate != null) {
+        result.putIfAbsent(parsedDate.month, () => <int>{}).add(parsedDate.day);
+      }
+    }
+  }
+
+  return result;
+}
+
+Map<int, Set<int>> _parseMonthBasedHolidayMap(Map<String, dynamic> payload) {
+  final result = <int, Set<int>>{};
+
+  for (final entry in payload.entries) {
+    final month = _toInt(entry.key);
+    final value = entry.value;
+
+    if (month == null || month < 1 || month > 12) {
+      continue;
+    }
+
+    if (value is List) {
+      final days = value.map(_toInt).whereType<int>().where((d) => d > 0).toSet();
+      if (days.isNotEmpty) {
+        result[month] = days;
+      }
+    }
+  }
+
+  return result;
+}
+
+int _resolveHolidayYear(Map<String, dynamic> payload, int fallbackYear) {
+  final year = _toInt(payload['year'] ?? payload['calendarYear']);
+  return year ?? fallbackYear;
+}
+
+int? _toInt(dynamic value) {
+  if (value is int) {
+    return value;
+  }
+  if (value is String) {
+    return int.tryParse(value);
+  }
+  return null;
+}
+
+Map<int, Set<int>> _fallbackHolidayMap(int year) {
+  return {
+    1: {1},
+    2: {21},
+    3: {17, 26},
+    4: {14},
+    5: {1},
+    6: {5},
+    8: {15},
+    10: {year.isLeapYear ? 2 : 1},
+    12: {16, 25},
+  };
+}
+
+extension on int {
+  bool get isLeapYear {
+    if (this % 400 == 0) return true;
+    if (this % 100 == 0) return false;
+    return this % 4 == 0;
+  }
 }
