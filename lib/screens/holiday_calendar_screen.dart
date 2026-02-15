@@ -85,7 +85,7 @@ class _HolidayCalendarScreenState extends State<HolidayCalendarScreen> {
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Text(
-                  'লাল = সরকারী/বিশেষ ছুটি, বেগুনি = University Holiday, কমলা = সাপ্তাহিক ছুটি (শুক্র/শনি)।',
+                  'লাল = সরকারী/বিশেষ ছুটি, গাঢ় নেভি নীল = University Holiday, কমলা = সাপ্তাহিক ছুটি (শুক্র/শনি)।',
                   style: TextStyle(
                     fontWeight: FontWeight.w600,
                     color: Theme.of(context).colorScheme.onPrimaryContainer,
@@ -164,6 +164,9 @@ class _MonthCalendarCard extends StatelessWidget {
   final Set<int> specialHolidayDays;
   final Map<int, String> specialHolidayReasons;
   final Map<int, String> specialHolidayTypes;
+
+  static const Color _universityHolidayBackground = Color(0xFF0A1F44);
+  static const Color _universityHolidayForeground = Color(0xFFFFFFFF);
 
   void _showHolidayReason(BuildContext context, int dayNumber) {
     final reason = specialHolidayReasons[dayNumber] ?? 'কারণ উল্লেখ নেই';
@@ -260,8 +263,8 @@ class _MonthCalendarCard extends StatelessWidget {
                         holidayType == 'university_holiday';
 
                     if (isUniversityHoliday) {
-                      dayBackground = colorScheme.secondaryContainer;
-                      dayColor = colorScheme.onSecondaryContainer;
+                      dayBackground = _universityHolidayBackground;
+                      dayColor = _universityHolidayForeground;
                     } else {
                       dayBackground = colorScheme.errorContainer;
                       dayColor = colorScheme.onErrorContainer;
