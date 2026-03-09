@@ -176,10 +176,14 @@ class _HomeScreenState extends State<HomeScreen> {
                 leading: Icon(Icons.directions_train, color: Colors.indigo),
                 title: Text("ট্রেন সার্ভিস"),
                 onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const TrainSearchScreen()),
-                  );
+                  Navigator.pop(context);
+                  Future.microtask(() {
+                    Navigator.of(context).push(
+                      MaterialPageRoute<void>(
+                        builder: (_) => const TrainSearchScreen(),
+                      ),
+                    );
+                  });
                 },
               ),
               ListTile(
