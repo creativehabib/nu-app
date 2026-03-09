@@ -191,11 +191,14 @@ class _HomeScreenState extends State<HomeScreen> {
                 leading: const Icon(Icons.code),
                 title: const Text('About Developer'),
                 onTap: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute<void>(
-                      builder: (_) => const DeveloperScreen(),
-                    ),
-                  );
+                  Navigator.pop(context);
+                  Future.microtask(() {
+                    Navigator.of(context).push(
+                      MaterialPageRoute<void>(
+                        builder: (_) => const DeveloperScreen(),
+                      ),
+                    );
+                  });
                 },
               ),
               SwitchListTile(
