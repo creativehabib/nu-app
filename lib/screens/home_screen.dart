@@ -41,7 +41,6 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
       time: 'গতকাল',
     ),
   ];
-  bool _showNotifications = false;
   bool _hasUnreadNotifications = true;
   late final AnimationController _pulseController;
   Timer? _incomingNotificationTimer;
@@ -91,14 +90,87 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
     }
   }
 
-  void _toggleNotificationPanel() {
-    setState(() {
-      _showNotifications = !_showNotifications;
-      if (_showNotifications) {
-        _hasUnreadNotifications = false;
-      }
-    });
-    _updatePulseState();
+  Future<void> _showNotificationPopup() async {
+    if (_hasUnreadNotifications) {
+      setState(() => _hasUnreadNotifications = false);
+      _updatePulseState();
+    }
+
+    await showDialog<void>(
+      context: context,
+      barrierDismissible: true,
+      builder: (dialogContext) {
+        final colorScheme = Theme.of(dialogContext).colorScheme;
+        return Dialog(
+          alignment: Alignment.topRight,
+          insetPadding: const EdgeInsets.fromLTRB(48, 84, 12, 0),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Container(
+            width: 320,
+            padding: const EdgeInsets.fromLTRB(12, 12, 12, 8),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'সর্বশেষ নোটিফিকেশন',
+                  style: TextStyle(
+                    color: colorScheme.onSurface,
+                    fontWeight: FontWeight.w700,
+                    fontSize: 14,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                ..._notifications.take(3).map(
+                  (notification) => ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    dense: true,
+                    visualDensity: VisualDensity.compact,
+                    leading: Icon(
+                      Icons.notifications_active_outlined,
+                      size: 20,
+                      color: colorScheme.primary,
+                    ),
+                    title: Text(
+                      notification.title,
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: colorScheme.onSurface,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    subtitle: Text(
+                      '${notification.subtitle}\n${notification.time}',
+                      style: TextStyle(
+                        fontSize: 11,
+                        color: colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                  ),
+                ),
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: TextButton.icon(
+                    onPressed: () {
+                      Navigator.of(dialogContext).pop();
+                      Navigator.of(context).push(
+                        MaterialPageRoute<void>(
+                          builder: (_) => const OfficeOrderScreen(),
+                        ),
+                      );
+                    },
+                    icon: const Icon(Icons.open_in_new, size: 16),
+                    label: const Text('See All Notification'),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
   }
 
   Future<void> _openRailwayTicketScreen() async {
@@ -407,7 +479,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                               ),
                           ],
                         ),
-                        onPressed: _toggleNotificationPanel,
+                        onPressed: _showNotificationPopup,
                       ),
                     ],
                   ),
@@ -415,93 +487,6 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
               ),
             ),
 
-            AnimatedSize(
-              duration: const Duration(milliseconds: 220),
-              curve: Curves.easeOut,
-              child: _showNotifications
-                  ? Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.fromLTRB(12, 0, 12, 8),
-                      color: appBarColor,
-                      child: Align(
-                        alignment: Alignment.topRight,
-                        child: Container(
-                          width: 320,
-                          constraints: const BoxConstraints(maxWidth: 360),
-                          decoration: BoxDecoration(
-                            color: colorScheme.surface,
-                            borderRadius: BorderRadius.circular(16),
-                            border: Border.all(color: colorScheme.outlineVariant),
-                            boxShadow: [
-                              BoxShadow(
-                                color: colorScheme.shadow.withOpacity(0.16),
-                                blurRadius: 12,
-                                offset: const Offset(0, 8),
-                              ),
-                            ],
-                          ),
-                          padding: const EdgeInsets.fromLTRB(12, 12, 12, 8),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'সর্বশেষ নোটিফিকেশন',
-                                style: TextStyle(
-                                  color: colorScheme.onSurface,
-                                  fontWeight: FontWeight.w700,
-                                  fontSize: 14,
-                                ),
-                              ),
-                              const SizedBox(height: 8),
-                              ..._notifications.take(3).map(
-                                (notification) => ListTile(
-                                  contentPadding: EdgeInsets.zero,
-                                  dense: true,
-                                  visualDensity: VisualDensity.compact,
-                                  leading: Icon(
-                                    Icons.notifications_active_outlined,
-                                    size: 20,
-                                    color: colorScheme.primary,
-                                  ),
-                                  title: Text(
-                                    notification.title,
-                                    style: TextStyle(
-                                      fontSize: 13,
-                                      color: colorScheme.onSurface,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                  subtitle: Text(
-                                    '${notification.subtitle}\n${notification.time}',
-                                    style: TextStyle(
-                                      fontSize: 11,
-                                      color: colorScheme.onSurfaceVariant,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              Align(
-                                alignment: Alignment.centerRight,
-                                child: TextButton.icon(
-                                  onPressed: () {
-                                    setState(() => _showNotifications = false);
-                                    Navigator.of(context).push(
-                                      MaterialPageRoute<void>(
-                                        builder: (_) => const OfficeOrderScreen(),
-                                      ),
-                                    );
-                                  },
-                                  icon: const Icon(Icons.open_in_new, size: 16),
-                                  label: const Text('See All Notification'),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    )
-                  : const SizedBox.shrink(),
-            ),
 
             // নিচের কন্টেন্টগুলো স্ক্রল করার জন্য Expanded ব্যবহার করা হয়েছে
             Expanded(
