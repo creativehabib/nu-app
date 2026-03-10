@@ -130,17 +130,19 @@ class _OfficeOrderScreenState extends State<OfficeOrderScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final isDark = theme.brightness == Brightness.dark;
     final bottomNavItems = buildAppBottomNavItems(
       context,
       onHomeTap: () => Navigator.of(context).popUntil((route) => route.isFirst),
     );
 
     return Scaffold(
-      backgroundColor: colorScheme.surface,
+      backgroundColor: isDark ? colorScheme.surface : Colors.grey[100],
       appBar: AppBar(
-        backgroundColor: colorScheme.surface,
-        foregroundColor: colorScheme.onSurface,
+        backgroundColor: isDark ? colorScheme.surface : null,
+        foregroundColor: isDark ? colorScheme.onSurface : null,
         title: const Text('Office Order'),
         elevation: 0,
         actions: [
