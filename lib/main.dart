@@ -1,14 +1,37 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
-
+import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'providers/college_provider.dart';
 import 'providers/directory_provider.dart';
 import 'providers/theme_provider.dart';
 import 'screens/home_screen.dart';
+import 'screens/office_order_screen.dart';
+
+// ১. Create a GlobalKey
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // --- OneSignal Start ---
+  OneSignal.Debug.setLogLevel(OSLogLevel.verbose);
+  OneSignal.initialize("56bc5737-f29b-409c-a8de-74cc32c98a83");
+  OneSignal.Notifications.requestPermission(true);
+
+  // ২. Notification click
+  OneSignal.Notifications.addClickListener((event) {
+    print("নোটিফিকেশনে ক্লিক করা হয়েছে: ${event.notification.title}");
+
+    // GlobalKey for navigate OfficeOrderScreen
+    navigatorKey.currentState?.push(
+      MaterialPageRoute(
+        builder: (context) => const OfficeOrderScreen(),
+      ),
+    );
+  });
+  // --- OneSignal End ---
+
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
   SystemChrome.setSystemUIOverlayStyle(
     SystemUiOverlayStyle.light.copyWith(
@@ -17,6 +40,7 @@ void main() {
       statusBarBrightness: Brightness.dark,
     ),
   );
+
   runApp(const UniversityDirectoryApp());
 }
 
@@ -43,6 +67,9 @@ class UniversityDirectoryApp extends StatelessWidget {
       child: Consumer<ThemeProvider>(
         builder: (context, themeProvider, _) {
           return MaterialApp(
+            // ৩. এখানে navigatorKey টি যুক্ত করা হলো
+            navigatorKey: navigatorKey,
+
             debugShowCheckedModeBanner: false,
             title: 'National University Directory',
             theme: ThemeData(
