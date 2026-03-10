@@ -143,7 +143,7 @@ class _OfficeOrderScreenState extends State<OfficeOrderScreen> {
       appBar: AppBar(
         backgroundColor: isDark ? colorScheme.surface : null,
         foregroundColor: isDark ? colorScheme.onSurface : null,
-        title: const Text('Recent Notice'),
+        title: const Text('Recent Notices'),
         elevation: 0,
         actions: [
           IconButton(

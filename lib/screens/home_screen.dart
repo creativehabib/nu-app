@@ -226,7 +226,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
       ),
       _TaskItem(
         icon: Icons.receipt_long,
-        label: 'Recent Notice',
+        label: 'Recent Notices',
         onTap: () {
           Navigator.of(context).push(
             MaterialPageRoute<void>(
