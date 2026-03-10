@@ -130,14 +130,19 @@ class _OfficeOrderScreenState extends State<OfficeOrderScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final isDark = theme.brightness == Brightness.dark;
     final bottomNavItems = buildAppBottomNavItems(
       context,
       onHomeTap: () => Navigator.of(context).popUntil((route) => route.isFirst),
     );
 
     return Scaffold(
-      backgroundColor: Colors.grey[100],
+      backgroundColor: isDark ? colorScheme.surface : Colors.grey[100],
       appBar: AppBar(
+        backgroundColor: isDark ? colorScheme.surface : null,
+        foregroundColor: isDark ? colorScheme.onSurface : null,
         title: const Text('Office Order'),
         elevation: 0,
         actions: [
@@ -162,6 +167,10 @@ class _OfficeOrderScreenState extends State<OfficeOrderScreen> {
   }
 
   Widget _buildBody() {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final isDark = theme.brightness == Brightness.dark;
+
     if (_isLoading) {
       return const Center(child: CircularProgressIndicator());
     }
@@ -170,9 +179,9 @@ class _OfficeOrderScreenState extends State<OfficeOrderScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.error_outline, color: Colors.red, size: 48),
+            Icon(Icons.error_outline, color: colorScheme.error, size: 48),
             const SizedBox(height: 16),
-            Text('ডাটা লোড করতে সমস্যা হয়েছে', style: TextStyle(color: Colors.grey[700])),
+            Text('ডাটা লোড করতে সমস্যা হয়েছে', style: TextStyle(color: colorScheme.onSurfaceVariant)),
             TextButton(
               onPressed: _fetchNotices,
               child: const Text('আবার চেষ্টা করুন'),
@@ -192,10 +201,11 @@ class _OfficeOrderScreenState extends State<OfficeOrderScreen> {
             onChanged: _filterNotices,
             decoration: InputDecoration(
               hintText: 'নোটিশ খুঁজুন...',
-              prefixIcon: const Icon(Icons.search, color: Colors.grey),
+              hintStyle: TextStyle(color: colorScheme.onSurfaceVariant),
+              prefixIcon: Icon(Icons.search, color: colorScheme.onSurfaceVariant),
               suffixIcon: _searchQuery.isNotEmpty
                   ? IconButton(
-                icon: const Icon(Icons.clear, color: Colors.grey),
+                icon: Icon(Icons.clear, color: colorScheme.onSurfaceVariant),
                 onPressed: () {
                   _searchController.clear();
                   _filterNotices('');
@@ -203,18 +213,18 @@ class _OfficeOrderScreenState extends State<OfficeOrderScreen> {
               )
                   : null,
               filled: true,
-              fillColor: Colors.white,
+              fillColor: isDark ? colorScheme.surfaceContainerHigh : Colors.white,
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide(color: Colors.grey.shade300),
+                borderSide: BorderSide(color: colorScheme.outlineVariant),
               ),
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide(color: Colors.grey.shade300),
+                borderSide: BorderSide(color: colorScheme.outlineVariant),
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide(color: Theme.of(context).primaryColor),
+                borderSide: BorderSide(color: colorScheme.primary, width: 1.4),
               ),
               contentPadding: const EdgeInsets.symmetric(vertical: 0),
             ),
@@ -242,34 +252,40 @@ class _OfficeOrderScreenState extends State<OfficeOrderScreen> {
 
               return Card(
                 elevation: 2,
+                color: colorScheme.surfaceContainerLow,
+                shadowColor: isDark ? Colors.black12 : Colors.black26,
                 margin: const EdgeInsets.only(bottom: 12),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
                 clipBehavior: Clip.antiAlias,
                 child: Theme(
-                  data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
+                  data: theme.copyWith(dividerColor: Colors.transparent),
                   child: ExpansionTile(
                     tilePadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                     leading: CircleAvatar(
-                      backgroundColor: Colors.blue.withOpacity(0.1),
-                      child: const Icon(Icons.picture_as_pdf, color: Colors.blue),
+                      backgroundColor: colorScheme.primary.withOpacity(isDark ? 0.2 : 0.1),
+                      child: const Icon(Icons.picture_as_pdf, color: Color(0xFFD32F2F)),
                     ),
                     title: Text(
                       titleText,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 14,
+                        color: colorScheme.onSurface,
+                      ),
                     ),
                     subtitle: Padding(
                       padding: const EdgeInsets.only(top: 8.0),
                       child: Row(
                         children: [
-                          const Icon(Icons.calendar_today, size: 14, color: Colors.grey),
+                          Icon(Icons.calendar_today, size: 14, color: colorScheme.onSurfaceVariant),
                           const SizedBox(width: 4),
                           Text(
                             notice['date'] ?? 'No Date',
-                            style: const TextStyle(color: Colors.grey, fontSize: 13),
+                            style: TextStyle(color: colorScheme.onSurfaceVariant, fontSize: 13),
                           ),
                         ],
                       ),
@@ -284,7 +300,7 @@ class _OfficeOrderScreenState extends State<OfficeOrderScreen> {
                               titleText,
                               style: TextStyle(
                                 fontSize: 14,
-                                color: Colors.grey.shade800,
+                                color: colorScheme.onSurface,
                                 height: 1.5,
                               ),
                             ),
@@ -304,8 +320,8 @@ class _OfficeOrderScreenState extends State<OfficeOrderScreen> {
                                   style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
                                 ),
                                 style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.blue.shade50,
-                                  foregroundColor: Colors.blue.shade700,
+                                  backgroundColor: colorScheme.primaryContainer,
+                                  foregroundColor: colorScheme.onPrimaryContainer,
                                   elevation: 0,
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(8),
