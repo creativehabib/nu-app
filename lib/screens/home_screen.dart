@@ -214,17 +214,6 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
       _TaskItem(icon: Icons.how_to_reg, label: 'Attendance'),
       _TaskItem(icon: Icons.edit_document, label: 'Exam Atten.'),
       _TaskItem(
-        icon: Icons.assignment_turned_in,
-        label: 'Recent Results',
-        onTap: () {
-          Navigator.of(context).push(
-            MaterialPageRoute<void>(
-              builder: (_) => const RecentResultsScreen(),
-            ),
-          );
-        },
-      ),
-      _TaskItem(
         icon: Icons.receipt_long,
         label: 'Recent Notices',
         onTap: () {
@@ -236,7 +225,18 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
         },
       ),
       _TaskItem(
-        icon: Icons.rate_review,
+        icon: Icons.assessment_rounded,
+        label: 'Recent Results',
+        onTap: () {
+          Navigator.of(context).push(
+            MaterialPageRoute<void>(
+              builder: (_) => const RecentResultsScreen(),
+            ),
+          );
+        },
+      ),
+      _TaskItem(
+        icon: Icons.assessment,
         label: 'Archive Results',
         onTap: () {
           Navigator.of(context).push(
@@ -246,9 +246,8 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
           );
         },
       ),
-      _TaskItem(icon: Icons.assignment, label: 'Assignment'),
       _TaskItem(
-        icon: Icons.account_tree,
+        icon: Icons.corporate_fare,
         label: 'Office Dept.',
         onTap: () {
           Navigator.of(context).push(
@@ -259,7 +258,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
         },
       ),
       _TaskItem(
-        icon: Icons.insert_chart_outlined,
+        icon: Icons.school,
         label: 'Affiliated College',
         onTap: () {
           Navigator.of(context).push(
@@ -269,17 +268,9 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
           );
         },
       ),
-      _TaskItem(icon: Icons.photo_library, label: 'Gallery'),
-      _TaskItem(icon: Icons.quiz, label: 'Res. Query'),
-      _TaskItem(
-        icon: Icons.directions_railway,
-        label: 'Railway Ticket',
-        assetPath: 'assets/bangladesh-railway.png',
-        onTap: _openRailwayTicketScreen,
-      ),
       _TaskItem(
         icon: Icons.celebration,
-        label: 'Holiday',
+        label: 'Office Holiday',
         onTap: () {
           Navigator.of(context).push(
             MaterialPageRoute<void>(
@@ -288,6 +279,16 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
           );
         },
       ),
+      _TaskItem(icon: Icons.assignment, label: 'Assignment'),
+      _TaskItem(icon: Icons.photo_library, label: 'Gallery'),
+      _TaskItem(icon: Icons.quiz, label: 'Res. Query'),
+      _TaskItem(
+        icon: Icons.directions_railway,
+        label: 'Railway Ticket',
+        assetPath: 'assets/bangladesh-railway.png',
+        onTap: _openRailwayTicketScreen,
+      ),
+
     ];
 
     final bottomNavItems = buildAppBottomNavItems(context);
