@@ -265,7 +265,7 @@ class _OfficeOrderScreenState extends State<OfficeOrderScreen> {
                     tilePadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                     leading: CircleAvatar(
                       backgroundColor: colorScheme.primary.withOpacity(isDark ? 0.2 : 0.1),
-                      child: Icon(Icons.picture_as_pdf, color: colorScheme.primary),
+                      child: const Icon(Icons.picture_as_pdf, color: Color(0xFFD32F2F)),
                     ),
                     title: Text(
                       titleText,
