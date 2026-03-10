@@ -269,7 +269,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
         },
       ),
       _TaskItem(
-        icon: Icons.celebration,
+        icon: Icons.event_note_rounded,
         label: 'Office Holiday',
         onTap: () {
           Navigator.of(context).push(
