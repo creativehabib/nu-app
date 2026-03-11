@@ -58,6 +58,16 @@ class _NativeResultScreenState extends State<NativeResultScreen> {
     super.dispose();
   }
 
+
+  @override
+  void dispose() {
+    rollController.dispose();
+    regController.dispose();
+    yearController.dispose();
+    captchaController.dispose();
+    super.dispose();
+  }
+
   @override
   void initState() {
     super.initState();
