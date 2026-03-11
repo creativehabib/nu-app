@@ -9,10 +9,9 @@ class AgeCalculatorScreen extends StatefulWidget {
 
 class _AgeCalculatorScreenState extends State<AgeCalculatorScreen> {
   DateTime? _dateOfBirth;
-  DateTime _targetDate = DateTime.now(); // ডিফল্ট টার্গেট ডেট আজকের দিন
+  DateTime _targetDate = DateTime.now();
   _AgeSummary? _summary;
 
-  // তারিখ সিলেক্ট করার কমন ফাংশন
   Future<void> _pickDate({required bool isBirthDate}) async {
     final now = DateTime.now();
     final selected = await showDatePicker(
@@ -69,6 +68,7 @@ class _AgeCalculatorScreenState extends State<AgeCalculatorScreen> {
                     value: _dateOfBirth == null ? "Select Date" : _formatDate(_dateOfBirth!),
                     icon: Icons.cake_outlined,
                     onTap: () => _pickDate(isBirthDate: true),
+                    iconColor: Colors.orange,
                   ),
                   const Divider(height: 24),
                   _DateSelectorTile(
@@ -76,6 +76,7 @@ class _AgeCalculatorScreenState extends State<AgeCalculatorScreen> {
                     value: _formatDate(_targetDate),
                     icon: Icons.event_note_outlined,
                     onTap: () => _pickDate(isBirthDate: false),
+                    iconColor: Colors.blue,
                   ),
                 ],
               ),
@@ -87,22 +88,27 @@ class _AgeCalculatorScreenState extends State<AgeCalculatorScreen> {
 
             // Life Progress Bar
             _SectionTitle(title: "Life Progress (Est. 80 years)", color: colorScheme.primary),
-            const SizedBox(height: 8),
-            ClipRRect(
-              borderRadius: BorderRadius.circular(10),
-              child: LinearProgressIndicator(
-                value: _summary!.lifeProgress,
-                minHeight: 12,
-                backgroundColor: colorScheme.surfaceVariant,
-              ),
-            ),
-            const SizedBox(height: 6),
-            Align(
-              alignment: Alignment.centerRight,
-              child: Text("${(_summary!.lifeProgress * 100).toStringAsFixed(1)}% lived until selected date", style: const TextStyle(fontSize: 12)),
+            const SizedBox(height: 12),
+            Stack(
+              alignment: Alignment.center,
+              children: [
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(10),
+                  child: LinearProgressIndicator(
+                    value: _summary!.lifeProgress,
+                    minHeight: 20,
+                    backgroundColor: colorScheme.surfaceVariant,
+                    valueColor: AlwaysStoppedAnimation<Color>(colorScheme.primary),
+                  ),
+                ),
+                Text(
+                  "${(_summary!.lifeProgress * 100).toStringAsFixed(1)}% lived",
+                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: Colors.white),
+                ),
+              ],
             ),
 
-            const SizedBox(height: 16),
+            const SizedBox(height: 24),
 
             // Age Cards Grid
             GridView.count(
@@ -113,8 +119,8 @@ class _AgeCalculatorScreenState extends State<AgeCalculatorScreen> {
               mainAxisSpacing: 12,
               childAspectRatio: 1.5,
               children: [
-                _SmallStatCard(title: 'Zodiac Sign', value: _summary!.zodiacSign, icon: Icons.star_purple500_outlined),
-                _SmallStatCard(title: 'Birth Day', value: _summary!.birthWeekDay, icon: Icons.today),
+                _SmallStatCard(title: 'Zodiac Sign', value: _summary!.zodiacSign, icon: Icons.auto_awesome, color: Colors.purple),
+                _SmallStatCard(title: 'Birth Day', value: _summary!.birthWeekDay, icon: Icons.today, color: Colors.pink),
               ],
             ),
 
@@ -124,6 +130,7 @@ class _AgeCalculatorScreenState extends State<AgeCalculatorScreen> {
               title: 'Exact Age',
               value: '${_summary!.years} years, ${_summary!.months} months, ${_summary!.days} days',
               icon: Icons.hourglass_full_rounded,
+              iconColor: Colors.teal,
               subtitle: 'Age on ${_formatDate(_targetDate)}',
             ),
 
@@ -131,8 +138,12 @@ class _AgeCalculatorScreenState extends State<AgeCalculatorScreen> {
               title: 'Next Birthday',
               value: '${_formatDate(_summary!.nextBirthday)}',
               icon: Icons.celebration_outlined,
+              iconColor: Colors.amber,
               subtitle: '${_summary!.daysUntilNextBirthday} days left from today!',
-              trailing: CircleAvatar(child: Text('${_summary!.yearsAtNextBday}')),
+              trailing: CircleAvatar(
+                backgroundColor: colorScheme.primary,
+                child: Text('${_summary!.yearsAtNextBday}', style: const TextStyle(color: Colors.white, fontSize: 12)),
+              ),
             ),
 
             // Statistics Expansion
@@ -140,11 +151,14 @@ class _AgeCalculatorScreenState extends State<AgeCalculatorScreen> {
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
               child: ExpansionTile(
                 leading: const Icon(Icons.analytics_outlined),
-                title: const Text('Life Statistics (on Target Date)', style: TextStyle(fontWeight: FontWeight.bold)),
+                title: const Text('Detailed Life Statistics', style: TextStyle(fontWeight: FontWeight.bold)),
                 children: [
-                  _ListTileInfo(label: 'Total Months', value: '${_summary!.totalMonths}', icon: Icons.calendar_view_month),
-                  _ListTileInfo(label: 'Total Weeks', value: '${_summary!.totalWeeks}', icon: Icons.view_week),
-                  _ListTileInfo(label: 'Total Days', value: '${_summary!.totalDays}', icon: Icons.timer_outlined),
+                  _ListTileInfo(label: 'Total Months', value: '${_summary!.totalMonths}', icon: Icons.calendar_view_month, color: Colors.cyan),
+                  _ListTileInfo(label: 'Total Weeks', value: '${_summary!.totalWeeks}', icon: Icons.view_week, color: Colors.indigo),
+                  _ListTileInfo(label: 'Total Days', value: '${_summary!.totalDays}', icon: Icons.timer_outlined, color: Colors.lightGreen),
+                  _ListTileInfo(label: 'Total Hours', value: _summary!.totalHours, icon: Icons.schedule, color: Colors.orange),
+                  _ListTileInfo(label: 'Total Minutes', value: _summary!.totalMinutes, icon: Icons.av_timer, color: Colors.blueGrey),
+                  _ListTileInfo(label: 'Total Seconds', value: _summary!.totalSeconds, icon: Icons.shutter_speed, color: Colors.redAccent),
                   _ListTileInfo(label: 'Est. Heartbeats', value: _summary!.heartbeats, icon: Icons.favorite, color: Colors.red),
                   _ListTileInfo(label: 'Est. Breaths', value: _summary!.breaths, icon: Icons.air, color: Colors.blue),
                 ],
@@ -194,15 +208,19 @@ class _DateSelectorTile extends StatelessWidget {
   final String label, value;
   final IconData icon;
   final VoidCallback onTap;
+  final Color iconColor;
 
-  const _DateSelectorTile({required this.label, required this.value, required this.icon, required this.onTap});
+  const _DateSelectorTile({required this.label, required this.value, required this.icon, required this.onTap, required this.iconColor});
 
   @override
   Widget build(BuildContext context) {
     return ListTile(
       onTap: onTap,
       contentPadding: EdgeInsets.zero,
-      leading: CircleAvatar(child: Icon(icon, size: 20)),
+      leading: CircleAvatar(
+        backgroundColor: iconColor.withOpacity(0.1),
+        child: Icon(icon, size: 20, color: iconColor),
+      ),
       title: Text(label, style: const TextStyle(fontSize: 12, color: Colors.grey)),
       subtitle: Text(value, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
       trailing: const Icon(Icons.edit_calendar, size: 20),
@@ -224,11 +242,11 @@ class _SectionTitle extends StatelessWidget {
 class _SmallStatCard extends StatelessWidget {
   final String title, value;
   final IconData icon;
-  const _SmallStatCard({required this.title, required this.value, required this.icon});
+  final Color color;
+  const _SmallStatCard({required this.title, required this.value, required this.icon, required this.color});
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: Padding(
@@ -237,10 +255,10 @@ class _SmallStatCard extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Icon(icon, size: 20, color: colorScheme.primary),
+            Icon(icon, size: 24, color: color),
             const SizedBox(height: 4),
-            Text(title, style: const TextStyle(fontSize: 12, color: Colors.grey)),
-            Text(value, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+            Text(title, style: const TextStyle(fontSize: 11, color: Colors.grey)),
+            Text(value, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
           ],
         ),
       ),
@@ -249,10 +267,11 @@ class _SmallStatCard extends StatelessWidget {
 }
 
 class _InfoCard extends StatelessWidget {
-  const _InfoCard({required this.title, required this.value, required this.icon, this.subtitle, this.trailing});
+  const _InfoCard({required this.title, required this.value, required this.icon, required this.iconColor, this.subtitle, this.trailing});
   final String title, value;
   final String? subtitle;
   final IconData icon;
+  final Color iconColor;
   final Widget? trailing;
 
   @override
@@ -263,9 +282,8 @@ class _InfoCard extends StatelessWidget {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: ListTile(
         leading: CircleAvatar(
-          backgroundColor: colorScheme.primaryContainer,
-          foregroundColor: colorScheme.onPrimaryContainer,
-          child: Icon(icon),
+          backgroundColor: iconColor.withOpacity(0.1),
+          child: Icon(icon, color: iconColor),
         ),
         title: Text(title, style: const TextStyle(fontWeight: FontWeight.w700)),
         subtitle: Text('$value${subtitle != null ? "\n$subtitle" : ""}'),
@@ -279,8 +297,8 @@ class _InfoCard extends StatelessWidget {
 class _ListTileInfo extends StatelessWidget {
   final String label, value;
   final IconData icon;
-  final Color? color;
-  const _ListTileInfo({required this.label, required this.value, required this.icon, this.color});
+  final Color color;
+  const _ListTileInfo({required this.label, required this.value, required this.icon, required this.color});
 
   @override
   Widget build(BuildContext context) {
@@ -305,6 +323,7 @@ class _AgeSummary {
   const _AgeSummary({
     required this.years, required this.months, required this.days,
     required this.totalMonths, required this.totalWeeks, required this.totalDays,
+    required this.totalHours, required this.totalMinutes, required this.totalSeconds,
     required this.nextBirthday, required this.daysUntilNextBirthday, required this.birthWeekDay,
     required this.zodiacSign, required this.lifeProgress,
     required this.heartbeats, required this.breaths,
@@ -312,13 +331,13 @@ class _AgeSummary {
   });
 
   final int years, months, days, totalMonths, totalWeeks, totalDays, daysUntilNextBirthday, yearsAtNextBday;
+  final String totalHours, totalMinutes, totalSeconds;
   final DateTime nextBirthday;
   final String birthWeekDay, zodiacSign, heartbeats, breaths;
   final double lifeProgress;
   final List<_Birthday> upcomingBirthdays;
 
   static _AgeSummary fromDates(DateTime dob, DateTime target) {
-    // বয়স ক্যালকুলেশন (Birth Date থেকে Target Date পর্যন্ত)
     var years = target.year - dob.year;
     var months = target.month - dob.month;
     var days = target.day - dob.day;
@@ -332,9 +351,9 @@ class _AgeSummary {
       months += 12;
     }
 
-    final totalDays = target.difference(DateTime(dob.year, dob.month, dob.day)).inDays;
+    final diff = target.difference(DateTime(dob.year, dob.month, dob.day));
+    final totalDays = diff.inDays;
 
-    // নেক্সট বার্থডে ক্যালকুলেশন (সবসময় আজকের সাপেক্ষে)
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
     var nextBirthday = DateTime(today.year, dob.month, dob.day);
@@ -353,6 +372,9 @@ class _AgeSummary {
       totalMonths: years * 12 + months,
       totalWeeks: totalDays ~/ 7,
       totalDays: totalDays,
+      totalHours: _formatLarge(diff.inHours),
+      totalMinutes: _formatLarge(diff.inMinutes),
+      totalSeconds: _formatLarge(diff.inSeconds),
       nextBirthday: nextBirthday,
       daysUntilNextBirthday: nextBirthday.difference(today).inDays,
       yearsAtNextBday: nextBirthday.year - dob.year,
