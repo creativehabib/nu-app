@@ -128,6 +128,18 @@ class _AgeCalculatorScreenState extends State<AgeCalculatorScreen> {
               children: [
                 _SmallStatCard(title: 'Zodiac Sign', value: _summary!.zodiacSign, icon: Icons.auto_awesome, color: Colors.purple),
                 _SmallStatCard(title: 'Birth Day', value: _summary!.birthWeekDay, icon: Icons.today, color: Colors.pink),
+                _SmallStatCard(
+                  title: 'Chinese Zodiac',
+                  value: _summary!.chineseZodiac,
+                  icon: Icons.pets,
+                  color: Colors.deepOrange,
+                ),
+                _SmallStatCard(
+                  title: 'Birthday Countdown',
+                  value: _summary!.birthdayCountdown,
+                  icon: Icons.countdown,
+                  color: Colors.green,
+                ),
               ],
             ),
 
@@ -150,6 +162,72 @@ class _AgeCalculatorScreenState extends State<AgeCalculatorScreen> {
               trailing: CircleAvatar(
                 backgroundColor: colorScheme.primary,
                 child: Text('${_summary!.yearsAtNextBday}', style: const TextStyle(color: Colors.white, fontSize: 12)),
+              ),
+            ),
+
+            _InfoCard(
+              title: 'Reminder Notifications',
+              value: _summary!.notificationPlan,
+              icon: Icons.notifications_active_outlined,
+              iconColor: Colors.deepPurple,
+              subtitle: 'Great for widget + push reminder workflow.',
+            ),
+
+            Card(
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              child: Padding(
+                padding: const EdgeInsets.all(14),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text('Health Insights', style: TextStyle(fontWeight: FontWeight.bold)),
+                    const SizedBox(height: 8),
+                    _ListTileInfo(
+                      label: 'Estimated Sleep Time',
+                      value: _summary!.estimatedSleep,
+                      icon: Icons.bedtime_outlined,
+                      color: Colors.indigo,
+                    ),
+                    _ListTileInfo(
+                      label: 'Estimated Meals Eaten',
+                      value: _summary!.estimatedMeals,
+                      icon: Icons.restaurant_menu,
+                      color: Colors.brown,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+
+            Card(
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              child: Padding(
+                padding: const EdgeInsets.all(14),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text('Fun Facts', style: TextStyle(fontWeight: FontWeight.bold)),
+                    const SizedBox(height: 8),
+                    _ListTileInfo(
+                      label: 'Famous People Born Today',
+                      value: _summary!.famousPeople,
+                      icon: Icons.people_alt_outlined,
+                      color: Colors.blue,
+                    ),
+                    _ListTileInfo(
+                      label: 'Historical Event',
+                      value: _summary!.historicalEvent,
+                      icon: Icons.history_edu_outlined,
+                      color: Colors.teal,
+                    ),
+                    _ListTileInfo(
+                      label: 'Age on Mars / Venus',
+                      value: _summary!.planetAge,
+                      icon: Icons.public,
+                      color: Colors.deepOrange,
+                    ),
+                  ],
+                ),
               ),
             ),
 
@@ -339,12 +417,18 @@ class _AgeSummary {
     required this.zodiacSign, required this.lifeProgress,
     required this.heartbeats, required this.breaths,
     required this.upcomingBirthdays, required this.yearsAtNextBday,
+    required this.birthdayCountdown, required this.notificationPlan,
+    required this.estimatedSleep, required this.estimatedMeals,
+    required this.chineseZodiac, required this.famousPeople,
+    required this.historicalEvent, required this.planetAge,
   });
 
   final int years, months, days, totalMonths, totalWeeks, totalDays, daysUntilNextBirthday, yearsAtNextBday;
   final String totalHours, totalMinutes, totalSeconds;
   final DateTime nextBirthday;
   final String birthWeekDay, zodiacSign, heartbeats, breaths;
+  final String birthdayCountdown, notificationPlan, estimatedSleep, estimatedMeals;
+  final String chineseZodiac, famousPeople, historicalEvent, planetAge;
   final double lifeProgress;
   final List<_Birthday> upcomingBirthdays;
 
@@ -369,6 +453,11 @@ class _AgeSummary {
     final today = DateTime(now.year, now.month, now.day);
     var nextBirthday = DateTime(today.year, dob.month, dob.day);
     if (!nextBirthday.isAfter(today)) nextBirthday = DateTime(today.year + 1, dob.month, dob.day);
+    final nextBirthdayDateTime = DateTime(nextBirthday.year, nextBirthday.month, nextBirthday.day, 8);
+    final countdown = nextBirthdayDateTime.difference(now);
+    final countdownDays = countdown.inDays;
+    final countdownHours = countdown.inHours.remainder(24);
+    final countdownMinutes = countdown.inMinutes.remainder(60);
 
     const dayNames = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
@@ -395,6 +484,14 @@ class _AgeSummary {
       heartbeats: _formatLarge(totalDays * 24 * 60 * 72),
       breaths: _formatLarge(totalDays * 24 * 60 * 16),
       upcomingBirthdays: upcoming,
+      birthdayCountdown: '${countdownDays}d ${countdownHours}h ${countdownMinutes}m',
+      notificationPlan: _notificationPlan(nextBirthday),
+      estimatedSleep: _formatDurationHours((diff.inHours * 0.33).round()),
+      estimatedMeals: _formatLarge((totalDays * 2.4).round()),
+      chineseZodiac: _calculateChineseZodiac(dob.year),
+      famousPeople: _famousPeopleByDate(dob.month, dob.day),
+      historicalEvent: _historicalEventByDate(dob.month, dob.day),
+      planetAge: _planetaryAge(years + (months / 12) + (days / 365)),
     );
   }
 
@@ -408,5 +505,50 @@ class _AgeSummary {
     if (n >= 1000000) return "${(n / 1000000).toStringAsFixed(1)}M";
     if (n >= 1000) return "${(n / 1000).toStringAsFixed(1)}K";
     return n.toString();
+  }
+
+  static String _notificationPlan(DateTime nextBirthday) {
+    final before3 = nextBirthday.subtract(const Duration(days: 3));
+    return 'Set alerts on ${before3.day}/${before3.month} (3 days before) and ${nextBirthday.day}/${nextBirthday.month} 8:00 AM';
+  }
+
+  static String _formatDurationHours(int hours) {
+    final years = hours ~/ (24 * 365);
+    final months = (hours % (24 * 365)) ~/ (24 * 30);
+    return '$years years $months months';
+  }
+
+  static String _calculateChineseZodiac(int year) {
+    const animals = ['Rat', 'Ox', 'Tiger', 'Rabbit', 'Dragon', 'Snake', 'Horse', 'Goat', 'Monkey', 'Rooster', 'Dog', 'Pig'];
+    return 'Year of the ${animals[(year - 4) % 12]}';
+  }
+
+  static String _famousPeopleByDate(int month, int day) {
+    const data = {
+      '1-1': 'J. D. Salinger, Verne Troyer',
+      '2-14': 'Frederick Douglass, Michael Bloomberg',
+      '3-14': 'Albert Einstein, Simone Biles',
+      '7-18': 'Nelson Mandela, Priyanka Chopra',
+      '10-28': 'Bill Gates, Joaquin Phoenix',
+      '12-25': 'Isaac Newton, Humphrey Bogart',
+    };
+    return data['$month-$day'] ?? 'A curated famous birthday list can be fetched via API.';
+  }
+
+  static String _historicalEventByDate(int month, int day) {
+    const data = {
+      '1-1': 'The Euro currency was launched (1999).',
+      '3-10': 'Bell made the first successful telephone call (1876).',
+      '7-20': 'Apollo 11 landed on the Moon (1969).',
+      '11-9': 'Fall of the Berlin Wall (1989).',
+      '12-16': 'Victory Day in Bangladesh (1971).',
+    };
+    return data['$month-$day'] ?? 'No highlighted event in local cache for this date.';
+  }
+
+  static String _planetaryAge(double earthYears) {
+    final marsAge = earthYears / 1.88;
+    final venusAge = earthYears / 0.62;
+    return 'Mars: ${marsAge.toStringAsFixed(1)}y | Venus: ${venusAge.toStringAsFixed(1)}y';
   }
 }
