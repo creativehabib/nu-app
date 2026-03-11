@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
@@ -17,9 +18,14 @@ class _RecentResultsScreenState extends State<RecentResultsScreen> {
   final TextEditingController _rollController = TextEditingController();
   final TextEditingController _regController = TextEditingController();
   final TextEditingController _yearController = TextEditingController();
+  final TextEditingController _captchaController = TextEditingController(); // 🟢 ক্যাপচা কন্ট্রোলার
 
   String _selectedExmCode = '1101';
   bool _isLoading = false;
+
+  // 🟢 ক্যাপচা ও সেশনের জন্য ভেরিয়েবল
+  Uint8List? _captchaBytes;
+  String _sessionCookie = "";
 
   Map<String, dynamic>? _resultData;
   List<dynamic>? _resultGrades;
@@ -27,13 +33,50 @@ class _RecentResultsScreenState extends State<RecentResultsScreen> {
   final _formKey = GlobalKey<FormState>();
 
   @override
+  void initState() {
+    super.initState();
+    _fetchCaptchaAndSession(); // 🟢 পেজ লোড হলেই ক্যাপচা আনবে
+  }
+
+  @override
   void dispose() {
     _rollController.dispose();
     _regController.dispose();
     _yearController.dispose();
+    _captchaController.dispose();
     super.dispose();
   }
 
+  // =====================================
+  // 🟢 ক্যাপচা এবং সেশন ফেচ করার লজিক
+  // =====================================
+  Future<void> _fetchCaptchaAndSession() async {
+    try {
+      final String captchaUrl = "http://103.113.200.7/captcha_code_file.php?rand=${DateTime.now().millisecondsSinceEpoch}";
+      final response = await http.get(
+        Uri.parse(captchaUrl),
+        headers: {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'},
+      );
+
+      if (response.statusCode == 200) {
+        String? rawCookie = response.headers['set-cookie'] ?? response.headers['Set-Cookie'];
+        if (rawCookie != null) {
+          RegExp regExp = RegExp(r'PHPSESSID=[^;]+');
+          Match? match = regExp.firstMatch(rawCookie);
+          _sessionCookie = match != null ? match.group(0)! : rawCookie.split(';')[0];
+        }
+        setState(() {
+          _captchaBytes = response.bodyBytes;
+        });
+      }
+    } catch (e) {
+      _showErrorSnackBar('ক্যাপচা লোড করতে সমস্যা হচ্ছে!');
+    }
+  }
+
+  // =====================================
+  // রেজাল্ট ফেচ করার লজিক
+  // =====================================
   Future<void> _fetchNuResult() async {
     if (!_formKey.currentState!.validate()) return;
     FocusScope.of(context).unfocus();
@@ -46,11 +89,14 @@ class _RecentResultsScreenState extends State<RecentResultsScreen> {
 
     final apiUrl = Uri.parse('https://nu-result-scraper.shamolrahaman.workers.dev/');
 
+    // 🟢 আপনার পেলোডে ক্যাপচা এবং সেশন যুক্ত করা হলো (ওয়ার্কারের প্রয়োজন অনুযায়ী)
     final payload = {
       "exm_code": _selectedExmCode,
       "roll": _rollController.text.trim(),
       "reg": _regController.text.trim(),
-      "exm_year": _yearController.text.trim()
+      "exm_year": _yearController.text.trim(),
+      "captcha": _captchaController.text.trim(), // ক্যাপচা কোড
+      "cookie": _sessionCookie // সেশন কুকি
     };
 
     try {
@@ -70,6 +116,7 @@ class _RecentResultsScreenState extends State<RecentResultsScreen> {
           });
         } else {
           _showErrorSnackBar(data['message'] ?? 'রেজাল্ট পাওয়া যায়নি।');
+          _fetchCaptchaAndSession(); // ভুল হলে নতুন ক্যাপচা লোড
         }
       } else {
         _showErrorSnackBar('সার্ভার এরর: HTTP ${response.statusCode}');
@@ -87,7 +134,6 @@ class _RecentResultsScreenState extends State<RecentResultsScreen> {
     );
   }
 
-  // --- রেজাল্ট দেখানোর আপডেট করা উইজেট ---
   Widget _buildResultView() {
     if (_resultData == null) return const SizedBox.shrink();
 
@@ -96,8 +142,6 @@ class _RecentResultsScreenState extends State<RecentResultsScreen> {
       children: [
         const Text('Result Sheet', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
         const SizedBox(height: 12),
-
-        // বেসিক ইনফো কার্ড
         Card(
           elevation: 2,
           margin: EdgeInsets.zero,
@@ -121,14 +165,11 @@ class _RecentResultsScreenState extends State<RecentResultsScreen> {
             ),
           ),
         ),
-
         const SizedBox(height: 24),
 
-        // গ্রেড শিট
         if (_resultGrades != null && _resultGrades!.isNotEmpty) ...[
           const Text('Grade/Mark Details', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
           const SizedBox(height: 12),
-
           Container(
             width: double.infinity,
             decoration: BoxDecoration(
@@ -180,7 +221,6 @@ class _RecentResultsScreenState extends State<RecentResultsScreen> {
           ),
           const SizedBox(height: 16),
 
-          // --- রেজাল্ট প্রকাশের তারিখ ---
           if (_resultData!['publishedDate'] != null && _resultData!['publishedDate'].toString().isNotEmpty)
             Align(
               alignment: Alignment.centerRight,
@@ -268,6 +308,45 @@ class _RecentResultsScreenState extends State<RecentResultsScreen> {
                         validator: (value) => value!.length != 4 ? 'সঠিক পরীক্ষার সাল দিন (যেমন: 2024)' : null,
                       ),
                       const SizedBox(height: 24),
+
+                      // =====================================
+                      // 🟢 ক্যাপচা সেকশন (নতুন যোগ করা হলো)
+                      // =====================================
+                      Row(
+                        children: [
+                          Container(
+                            height: 50,
+                            width: 120,
+                            decoration: BoxDecoration(
+                              border: Border.all(color: Colors.grey.shade400),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: _captchaBytes != null
+                                ? ClipRRect(
+                              borderRadius: BorderRadius.circular(8),
+                              child: Image.memory(_captchaBytes!, fit: BoxFit.fill),
+                            )
+                                : const Center(child: CircularProgressIndicator(strokeWidth: 2)),
+                          ),
+                          IconButton(
+                            onPressed: _fetchCaptchaAndSession,
+                            icon: const Icon(Icons.refresh, color: Colors.blue),
+                          ),
+                          Expanded(
+                            child: TextFormField(
+                              controller: _captchaController,
+                              decoration: InputDecoration(
+                                labelText: 'Captcha Code',
+                                border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+                                contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+                              ),
+                              validator: (value) => value!.isEmpty ? 'ক্যাপচা দিন' : null,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 24),
+
                       SizedBox(
                         width: double.infinity,
                         height: 50,

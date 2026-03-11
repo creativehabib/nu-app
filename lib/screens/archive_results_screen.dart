@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
-
-// আপনার প্রজেক্টের নেভিগেশন ফাইলগুলো ইম্পোর্ট করুন
 import '../navigation/app_bottom_nav_items.dart';
 import '../widgets/app_bottom_nav.dart';
-import 'native_result_screen.dart';
 
 // ==========================================
 // 1. Data Models & Category List
@@ -120,9 +117,9 @@ class ArchiveResultsScreen extends StatelessWidget {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => NativeResultScreen(
+                        builder: (context) => ResultViewScreen(
                           title: sub.name,
-                          formUrl: sub.url,
+                          url: sub.url,
                         ),
                       ),
                     );
@@ -164,8 +161,9 @@ class _ResultViewScreenState extends State<ResultViewScreen> {
     super.initState();
     _controller = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
-    // সার্ভারকে ক্রোম ব্রাউজার হিসেবে বোঝানোর জন্য User-Agent
       ..setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36')
+      ..clearCache()
+      ..clearLocalStorage()
       ..setNavigationDelegate(
         NavigationDelegate(
           onProgress: (progress) {
