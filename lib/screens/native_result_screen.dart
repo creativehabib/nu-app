@@ -1,3 +1,5 @@
+import 'dart:async';
+import 'dart:io';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -36,11 +38,24 @@ class _NativeResultScreenState extends State<NativeResultScreen> {
   final TextEditingController captchaController = TextEditingController();
 
   String sessionCookie = "";
-  String csrfToken = "";
-  String dynamicCsrfName = "csrfHon"; // ডিফল্ট নাম
+  final Map<String, String> _hiddenFields = {};
+  String rollFieldName = 'roll_number';
+  String regFieldName = 'reg_no';
+  String yearFieldName = 'exam_year';
+  String captchaFieldName = 'letters_code';
   Uint8List? captchaBytes;
   bool isLoading = false;
   late String targetPostUrl;
+
+
+  @override
+  void dispose() {
+    rollController.dispose();
+    regController.dispose();
+    yearController.dispose();
+    captchaController.dispose();
+    super.dispose();
+  }
 
   @override
   void initState() {
@@ -61,35 +76,50 @@ class _NativeResultScreenState extends State<NativeResultScreen> {
       );
 
       if (formResponse.statusCode == 200) {
-        String? rawCookie = formResponse.headers['set-cookie'] ?? formResponse.headers['Set-Cookie'];
-        if (rawCookie != null) {
-          RegExp regExp = RegExp(r'PHPSESSID=[^;]+');
-          Match? match = regExp.firstMatch(rawCookie);
-          sessionCookie = match != null ? match.group(0)! : rawCookie.split(';')[0];
-        }
+        sessionCookie = _extractCookieHeader(formResponse.headers);
 
         var document = parser.parse(formResponse.body);
 
-        // 🟢 ডাইনামিক হিডেন CSRF টোকেন বের করা
-        var hiddenInputs = document.querySelectorAll('input[type="hidden"]');
-        for (var input in hiddenInputs) {
-          String name = input.attributes['name'] ?? '';
-          if (name.toLowerCase().contains('csrf')) {
-            dynamicCsrfName = name;
-            csrfToken = input.attributes['value'] ?? '';
+        final form = document.querySelector('form');
+        if (form != null) {
+          final action = form.attributes['action']?.trim();
+          if (action != null && action.isNotEmpty) {
+            targetPostUrl = Uri.parse(widget.formUrl).resolve(action).toString();
+          }
+
+          final inputElements = form.querySelectorAll('input');
+          _hiddenFields.clear();
+          for (final input in inputElements) {
+            final name = input.attributes['name']?.trim();
+            if (name == null || name.isEmpty) continue;
+
+            final type = (input.attributes['type'] ?? '').toLowerCase();
+            final lowered = name.toLowerCase();
+
+            if (type == 'hidden') {
+              _hiddenFields[name] = input.attributes['value'] ?? '';
+              continue;
+            }
+
+            if (_looksLikeRollField(lowered)) {
+              rollFieldName = name;
+            } else if (_looksLikeRegField(lowered)) {
+              regFieldName = name;
+            } else if (_looksLikeYearField(lowered)) {
+              yearFieldName = name;
+            } else if (_looksLikeCaptchaField(lowered)) {
+              captchaFieldName = name;
+            }
           }
         }
 
-        // 🟢 সঠিক URL বের করা
-        var btn = document.querySelector('input[type="button"][value="Search Result"]');
-        if (btn != null) {
-          String? onClick = btn.attributes['onclick'];
-          if (onClick != null) {
-            var match = RegExp(r"'([^']+)'").firstMatch(onClick);
-            if (match != null) {
-              String path = match.group(1)!;
-              targetPostUrl = path.startsWith('http') ? path : 'http://103.113.200.7/$path';
-            }
+        // কিছু পুরোনো পেইজে বাটনের onclick এ আলাদা submit URL থাকে
+        final btn = document.querySelector('input[onclick*="php"]');
+        final onClick = btn?.attributes['onclick'];
+        if (onClick != null) {
+          final match = RegExp(r"'([^']+\.php[^']*)'").firstMatch(onClick);
+          if (match != null) {
+            targetPostUrl = Uri.parse(widget.formUrl).resolve(match.group(1)!).toString();
           }
         }
       }
@@ -122,90 +152,162 @@ class _NativeResultScreenState extends State<NativeResultScreen> {
     setState(() => isLoading = true);
 
     try {
-      // 🟢 আপনার বের করা একদম নিখুঁত নামগুলো ব্যবহার করা হলো
       Map<String, String> body = {
-        'roll_number': rollController.text,
-        'reg_no': regController.text,
-        'exam_year': yearController.text,
-        'letters_code': captchaController.text, // ক্যাপচার অরিজিনাল নাম
-        dynamicCsrfName: csrfToken, // ডাইনামিক CSRF (যেমন: csrfHon)
+        ..._hiddenFields,
+        rollFieldName: rollController.text.trim(),
+        regFieldName: regController.text.trim(),
+        yearFieldName: yearController.text.trim(),
+        captchaFieldName: captchaController.text.trim(),
       };
 
       print("🚀 Requesting EXACT POST Body: $body");
       print("🔗 Target URL: $targetPostUrl");
 
-      // ⚠️ সার্ভারকে বোঝানোর জন্য স্পেশাল হেডার (AJAX Request)
-      final response = await http.post(
-        Uri.parse(targetPostUrl),
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8', // ফর্ম ডেটা টাইপ
-          'Cookie': sessionCookie, // আমাদের মাস্টার কুকি
-          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
-          'Referer': widget.formUrl, // কোথা থেকে রিকোয়েস্ট যাচ্ছে
-          'X-Requested-With': 'XMLHttpRequest', // 🟢 সবচেয়ে জরুরি: এটি ছাড়া NU সার্ভার ডেটা দিবে না!
-          'Origin': 'http://103.113.200.7',
-        },
-        body: body,
-      );
+      final response = await http
+          .post(
+            Uri.parse(targetPostUrl),
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+              'Cookie': sessionCookie,
+              'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+              'Referer': widget.formUrl,
+              'X-Requested-With': 'XMLHttpRequest',
+              'Origin': 'http://103.113.200.7',
+            },
+            body: body,
+          )
+          .timeout(const Duration(seconds: 25));
 
-      if (response.statusCode == 200) {
-        String responseBody = response.body;
+      final responseBody = response.body;
 
-        // ক্যাপচা ভুল কিনা চেক
-        if (responseBody.contains("দয়া করে আবার চেষ্টা করুন") || responseBody.contains("wrong code") || responseBody.contains("Wrong")) {
-          _showErrorDialog("আপনার দেওয়া ক্যাপচাটি ভুল হয়েছে। দয়া করে আবার চেষ্টা করুন।");
-          _fetchCaptchaAndSession();
-          return;
-        }
-
-        NuResultData? parsedData = _parseHtmlContent(responseBody);
-
-        if (parsedData != null) {
-          _showResultBottomSheet(parsedData); // 🎉 সফল হলে রেজাল্ট দেখাবে
-        } else {
-          // ডিবাগিং এর জন্য কনসোলে প্রিন্ট (যদি রেজাল্ট না আসে)
-          print("\n❌ ==== SERVER RESPONSE HTML ==== \n${responseBody.length > 800 ? responseBody.substring(0, 800) : responseBody}\n=========================\n");
-
-          _showErrorDialog("রেজাল্ট খুঁজে পাওয়া যায়নি। রোল, রেজিস্ট্রেশন নম্বর বা সাল ভুল হতে পারে।");
-        }
-      } else {
-        throw Exception("Server Error: ${response.statusCode}");
+      if (_containsCaptchaError(responseBody)) {
+        _showErrorDialog("আপনার দেওয়া ক্যাপচাটি ভুল হয়েছে। দয়া করে আবার চেষ্টা করুন।");
+        _fetchCaptchaAndSession();
+        return;
       }
+
+      if (response.statusCode != 200) {
+        final serverMessage = _extractResponseMessage(responseBody);
+        _showErrorDialog(
+          serverMessage ?? "সার্ভার থেকে ডেটা আনা যায়নি (HTTP ${response.statusCode})। কিছুক্ষণ পর আবার চেষ্টা করুন।",
+        );
+        return;
+      }
+
+      NuResultData? parsedData = _parseHtmlContent(responseBody);
+      if (parsedData != null) {
+        _showResultBottomSheet(parsedData);
+        return;
+      }
+
+      final serverMessage = _extractResponseMessage(responseBody);
+      if (serverMessage != null) {
+        _showErrorDialog(serverMessage);
+      } else {
+        _showErrorDialog("রেজাল্ট খুঁজে পাওয়া যায়নি। রোল, রেজিস্ট্রেশন নম্বর বা সাল ভুল হতে পারে।");
+      }
+
+      print("\n❌ ==== SERVER RESPONSE HTML ==== \n${responseBody.length > 800 ? responseBody.substring(0, 800) : responseBody}\n=========================\n");
+    } on TimeoutException {
+      _showErrorDialog("সার্ভার রেসপন্স দিতে দেরি করছে। অনুগ্রহ করে আবার চেষ্টা করুন।");
+    } on SocketException {
+      _showErrorDialog("ইন্টারনেট সংযোগে সমস্যা। নেটওয়ার্ক চেক করে আবার চেষ্টা করুন।");
     } catch (e) {
-      _showErrorDialog("সার্ভার ডাউন। আবার চেষ্টা করুন।");
+      _showErrorDialog("অপ্রত্যাশিত ত্রুটি হয়েছে। আবার চেষ্টা করুন।");
       print("❌ Error: $e");
     } finally {
       setState(() => isLoading = false);
     }
   }
 
+  bool _containsCaptchaError(String responseBody) {
+    final normalized = responseBody.toLowerCase();
+    return normalized.contains('দয়া করে আবার চেষ্টা করুন') ||
+        normalized.contains('wrong code') ||
+        normalized.contains('invalid captcha') ||
+        normalized.contains('letters code') ||
+        normalized.contains('security code');
+  }
+
+  String? _extractResponseMessage(String htmlString) {
+    final document = parser.parse(htmlString);
+    final selectors = [
+      '.error',
+      '.alert',
+      '.alert-danger',
+      '.message',
+      '#message',
+      'font[color="red"]',
+      'span[style*="color:red"]',
+      'div[style*="color:red"]',
+    ];
+
+    for (final selector in selectors) {
+      final element = document.querySelector(selector);
+      final text = element?.text.trim();
+      if (text != null && text.isNotEmpty && text.length < 220) {
+        return text;
+      }
+    }
+
+    final bodyText = document.body?.text.replaceAll(RegExp(r'\s+'), ' ').trim() ?? '';
+    for (final hint in _knownFailureTexts) {
+      if (bodyText.toLowerCase().contains(hint.toLowerCase())) {
+        return hint;
+      }
+    }
+
+    return null;
+  }
+
+  static const List<String> _knownFailureTexts = [
+    'No Result Found',
+    'Result Not Found',
+    'রেজাল্ট পাওয়া যায়নি',
+    'দয়া করে সঠিক তথ্য দিন',
+    'Invalid Registration',
+    'Invalid Roll',
+  ];
+
   // =====================================
   // 5. HTML Parsing
   // =====================================
   NuResultData? _parseHtmlContent(String htmlString) {
     dom.Document document = parser.parse(htmlString);
-    List<dom.Element> tables = document.querySelectorAll('table#customers');
+    List<dom.Element> tables = document.querySelectorAll('table#customers, table.customers, table');
 
     if (tables.length < 2) return null;
 
     Map<String, String> studentInfo = {};
-    var infoRows = tables[0].querySelectorAll('tr');
-    for (var row in infoRows) {
-      var tds = row.querySelectorAll('td');
-      if (tds.length >= 2) {
-        String key = tds[0].text.trim().replaceAll(':', '');
-        String value = tds.last.text.trim();
-        if (key.isNotEmpty && value.isNotEmpty && !key.contains('Result')) {
-          studentInfo[key] = value;
-        } else if (key.contains('Result')) {
-          studentInfo['Result Status'] = value;
+    for (final table in tables.take(2)) {
+      final infoRows = table.querySelectorAll('tr');
+      for (var row in infoRows) {
+        var tds = row.querySelectorAll('td');
+        if (tds.length >= 2) {
+          String key = tds[0].text.trim().replaceAll(':', '');
+          String value = tds.last.text.trim();
+          if (key.isNotEmpty && value.isNotEmpty && !key.contains('Result')) {
+            studentInfo[key] = value;
+          } else if (key.contains('Result')) {
+            studentInfo['Result Status'] = value;
+          }
         }
       }
     }
 
+    final gradeTable = tables.firstWhere(
+      (table) {
+        final headerText = table.text.toLowerCase();
+        return headerText.contains('course') &&
+            headerText.contains('grade') &&
+            (headerText.contains('code') || headerText.contains('subject'));
+      },
+      orElse: () => tables.length > 1 ? tables[1] : tables.first,
+    );
+
     List<Map<String, String>> grades = [];
-    var gradeRows = tables[1].querySelectorAll('tr');
-    for (int i = 2; i < gradeRows.length; i++) {
+    var gradeRows = gradeTable.querySelectorAll('tr');
+    for (int i = 1; i < gradeRows.length; i++) {
       var tds = gradeRows[i].querySelectorAll('td');
       if (tds.length >= 4) {
         grades.add({
@@ -217,8 +319,48 @@ class _NativeResultScreenState extends State<NativeResultScreen> {
       }
     }
 
+    if (studentInfo.isEmpty || grades.isEmpty) return null;
+
     return NuResultData(studentInfo: studentInfo, grades: grades);
   }
+
+  bool _looksLikeRollField(String name) =>
+      name.contains('roll') && !name.contains('enroll');
+
+  bool _looksLikeRegField(String name) =>
+      name.contains('reg') || name.contains('registration');
+
+  bool _looksLikeYearField(String name) =>
+      name.contains('year') || name.contains('exam_year') || name.contains('examyear');
+
+  bool _looksLikeCaptchaField(String name) =>
+      name.contains('captcha') || name.contains('letter') || name.contains('code');
+
+  String _extractCookieHeader(Map<String, String> headers) {
+    final rawCookie = headers['set-cookie'] ?? headers['Set-Cookie'];
+    if (rawCookie == null || rawCookie.isEmpty) return '';
+
+    final matches = RegExp(r'([A-Za-z0-9_\-]+)=([^;,\s]+)').allMatches(rawCookie);
+    final map = <String, String>{};
+    for (final m in matches) {
+      final key = m.group(1);
+      final value = m.group(2);
+      if (key == null || value == null) continue;
+      if (_ignoredCookieAttributes.contains(key.toLowerCase())) continue;
+      map[key] = value;
+    }
+    return map.entries.map((e) => '${e.key}=${e.value}').join('; ');
+  }
+
+  static const Set<String> _ignoredCookieAttributes = {
+    'path',
+    'expires',
+    'max-age',
+    'domain',
+    'secure',
+    'httponly',
+    'samesite',
+  };
 
   // =====================================
   // 6. UI: Bottom Sheet Result
