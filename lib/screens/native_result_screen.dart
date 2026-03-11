@@ -1,3 +1,5 @@
+import 'dart:async';
+import 'dart:io';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -44,6 +46,16 @@ class _NativeResultScreenState extends State<NativeResultScreen> {
   Uint8List? captchaBytes;
   bool isLoading = false;
   late String targetPostUrl;
+
+
+  @override
+  void dispose() {
+    rollController.dispose();
+    regController.dispose();
+    yearController.dispose();
+    captchaController.dispose();
+    super.dispose();
+  }
 
   @override
   void initState() {
@@ -140,7 +152,6 @@ class _NativeResultScreenState extends State<NativeResultScreen> {
     setState(() => isLoading = true);
 
     try {
-      // 🟢 আপনার বের করা একদম নিখুঁত নামগুলো ব্যবহার করা হলো
       Map<String, String> body = {
         ..._hiddenFields,
         rollFieldName: rollController.text.trim(),
@@ -152,50 +163,111 @@ class _NativeResultScreenState extends State<NativeResultScreen> {
       print("🚀 Requesting EXACT POST Body: $body");
       print("🔗 Target URL: $targetPostUrl");
 
-      // ⚠️ সার্ভারকে বোঝানোর জন্য স্পেশাল হেডার (AJAX Request)
-      final response = await http.post(
-        Uri.parse(targetPostUrl),
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8', // ফর্ম ডেটা টাইপ
-          'Cookie': sessionCookie, // আমাদের মাস্টার কুকি
-          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
-          'Referer': widget.formUrl, // কোথা থেকে রিকোয়েস্ট যাচ্ছে
-          'X-Requested-With': 'XMLHttpRequest',
-          'Origin': 'http://103.113.200.7',
-        },
-        body: body,
-      );
+      final response = await http
+          .post(
+            Uri.parse(targetPostUrl),
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+              'Cookie': sessionCookie,
+              'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+              'Referer': widget.formUrl,
+              'X-Requested-With': 'XMLHttpRequest',
+              'Origin': 'http://103.113.200.7',
+            },
+            body: body,
+          )
+          .timeout(const Duration(seconds: 25));
 
-      if (response.statusCode == 200) {
-        String responseBody = response.body;
+      final responseBody = response.body;
 
-        // ক্যাপচা ভুল কিনা চেক
-        if (responseBody.contains("দয়া করে আবার চেষ্টা করুন") || responseBody.contains("wrong code") || responseBody.contains("Wrong")) {
-          _showErrorDialog("আপনার দেওয়া ক্যাপচাটি ভুল হয়েছে। দয়া করে আবার চেষ্টা করুন।");
-          _fetchCaptchaAndSession();
-          return;
-        }
-
-        NuResultData? parsedData = _parseHtmlContent(responseBody);
-
-        if (parsedData != null) {
-          _showResultBottomSheet(parsedData); // 🎉 সফল হলে রেজাল্ট দেখাবে
-        } else {
-          // ডিবাগিং এর জন্য কনসোলে প্রিন্ট (যদি রেজাল্ট না আসে)
-          print("\n❌ ==== SERVER RESPONSE HTML ==== \n${responseBody.length > 800 ? responseBody.substring(0, 800) : responseBody}\n=========================\n");
-
-          _showErrorDialog("রেজাল্ট খুঁজে পাওয়া যায়নি। রোল, রেজিস্ট্রেশন নম্বর বা সাল ভুল হতে পারে।");
-        }
-      } else {
-        throw Exception("Server Error: ${response.statusCode}");
+      if (_containsCaptchaError(responseBody)) {
+        _showErrorDialog("আপনার দেওয়া ক্যাপচাটি ভুল হয়েছে। দয়া করে আবার চেষ্টা করুন।");
+        _fetchCaptchaAndSession();
+        return;
       }
+
+      if (response.statusCode != 200) {
+        final serverMessage = _extractResponseMessage(responseBody);
+        _showErrorDialog(
+          serverMessage ?? "সার্ভার থেকে ডেটা আনা যায়নি (HTTP ${response.statusCode})। কিছুক্ষণ পর আবার চেষ্টা করুন।",
+        );
+        return;
+      }
+
+      NuResultData? parsedData = _parseHtmlContent(responseBody);
+      if (parsedData != null) {
+        _showResultBottomSheet(parsedData);
+        return;
+      }
+
+      final serverMessage = _extractResponseMessage(responseBody);
+      if (serverMessage != null) {
+        _showErrorDialog(serverMessage);
+      } else {
+        _showErrorDialog("রেজাল্ট খুঁজে পাওয়া যায়নি। রোল, রেজিস্ট্রেশন নম্বর বা সাল ভুল হতে পারে।");
+      }
+
+      print("\n❌ ==== SERVER RESPONSE HTML ==== \n${responseBody.length > 800 ? responseBody.substring(0, 800) : responseBody}\n=========================\n");
+    } on TimeoutException {
+      _showErrorDialog("সার্ভার রেসপন্স দিতে দেরি করছে। অনুগ্রহ করে আবার চেষ্টা করুন।");
+    } on SocketException {
+      _showErrorDialog("ইন্টারনেট সংযোগে সমস্যা। নেটওয়ার্ক চেক করে আবার চেষ্টা করুন।");
     } catch (e) {
-      _showErrorDialog("সার্ভার ডাউন। আবার চেষ্টা করুন।");
+      _showErrorDialog("অপ্রত্যাশিত ত্রুটি হয়েছে। আবার চেষ্টা করুন।");
       print("❌ Error: $e");
     } finally {
       setState(() => isLoading = false);
     }
   }
+
+  bool _containsCaptchaError(String responseBody) {
+    final normalized = responseBody.toLowerCase();
+    return normalized.contains('দয়া করে আবার চেষ্টা করুন') ||
+        normalized.contains('wrong code') ||
+        normalized.contains('invalid captcha') ||
+        normalized.contains('letters code') ||
+        normalized.contains('security code');
+  }
+
+  String? _extractResponseMessage(String htmlString) {
+    final document = parser.parse(htmlString);
+    final selectors = [
+      '.error',
+      '.alert',
+      '.alert-danger',
+      '.message',
+      '#message',
+      'font[color="red"]',
+      'span[style*="color:red"]',
+      'div[style*="color:red"]',
+    ];
+
+    for (final selector in selectors) {
+      final element = document.querySelector(selector);
+      final text = element?.text.trim();
+      if (text != null && text.isNotEmpty && text.length < 220) {
+        return text;
+      }
+    }
+
+    final bodyText = document.body?.text.replaceAll(RegExp(r'\s+'), ' ').trim() ?? '';
+    for (final hint in _knownFailureTexts) {
+      if (bodyText.toLowerCase().contains(hint.toLowerCase())) {
+        return hint;
+      }
+    }
+
+    return null;
+  }
+
+  static const List<String> _knownFailureTexts = [
+    'No Result Found',
+    'Result Not Found',
+    'রেজাল্ট পাওয়া যায়নি',
+    'দয়া করে সঠিক তথ্য দিন',
+    'Invalid Registration',
+    'Invalid Roll',
+  ];
 
   // =====================================
   // 5. HTML Parsing
