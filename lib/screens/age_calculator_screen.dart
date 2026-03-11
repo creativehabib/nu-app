@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 
+import '../navigation/app_bottom_nav_items.dart';
+import '../widgets/app_bottom_nav.dart';
+
 class AgeCalculatorScreen extends StatefulWidget {
   const AgeCalculatorScreen({super.key});
 
@@ -45,6 +48,10 @@ class _AgeCalculatorScreenState extends State<AgeCalculatorScreen> {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+    final bottomNavItems = buildAppBottomNavItems(
+      context,
+      onHomeTap: () => Navigator.of(context).popUntil((route) => route.isFirst),
+    );
 
     return Scaffold(
       appBar: AppBar(
@@ -197,6 +204,10 @@ class _AgeCalculatorScreenState extends State<AgeCalculatorScreen> {
             const SizedBox(height: 30),
           ],
         ],
+      ),
+      bottomNavigationBar: AppBottomNavBar(
+        items: bottomNavItems,
+        currentIndex: 2,
       ),
     );
   }
