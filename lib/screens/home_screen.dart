@@ -5,6 +5,7 @@ import 'package:nu_app/screens/train_search_screen.dart';
 import 'package:nu_app/screens/holiday_calendar_screen.dart';
 import 'package:provider/provider.dart';
 
+import 'age_calculator_screen.dart';
 import 'archive_results_screen.dart';
 import 'college_list_screen.dart';
 import 'department_list_screen.dart';
@@ -210,7 +211,17 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
     final isDarkMode = themeProvider.isDarkMode;
 
     final tasks = [
-      _TaskItem(icon: Icons.calculate, label: 'Age Calculator'),
+      _TaskItem(
+        icon: Icons.calculate,
+        label: 'Age Calculator',
+        onTap: () {
+          Navigator.of(context).push(
+            MaterialPageRoute<void>(
+              builder: (_) => const AgeCalculatorScreen(),
+            ),
+          );
+        },
+      ),
       _TaskItem(icon: Icons.how_to_reg, label: 'Attendance'),
       _TaskItem(icon: Icons.edit_document, label: 'Exam Atten.'),
       _TaskItem(
