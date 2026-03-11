@@ -46,6 +46,17 @@ class _NativeResultScreenState extends State<NativeResultScreen> {
   Uint8List? captchaBytes;
   bool isLoading = false;
   late String targetPostUrl;
+  String submitMethod = 'post';
+
+
+  @override
+  void dispose() {
+    rollController.dispose();
+    regController.dispose();
+    yearController.dispose();
+    captchaController.dispose();
+    super.dispose();
+  }
 
 
   @override
@@ -61,6 +72,7 @@ class _NativeResultScreenState extends State<NativeResultScreen> {
   void initState() {
     super.initState();
     targetPostUrl = widget.formUrl;
+    submitMethod = 'post';
     _fetchCaptchaAndSession();
   }
 
@@ -82,6 +94,7 @@ class _NativeResultScreenState extends State<NativeResultScreen> {
 
         final form = document.querySelector('form');
         if (form != null) {
+          submitMethod = (form.attributes['method'] ?? 'post').trim().toLowerCase();
           final action = form.attributes['action']?.trim();
           if (action != null && action.isNotEmpty) {
             targetPostUrl = Uri.parse(widget.formUrl).resolve(action).toString();
@@ -113,9 +126,13 @@ class _NativeResultScreenState extends State<NativeResultScreen> {
           }
         }
 
-        // কিছু পুরোনো পেইজে বাটনের onclick এ আলাদা submit URL থাকে
-        final btn = document.querySelector('input[onclick*="php"]');
-        final onClick = btn?.attributes['onclick'];
+        // কিছু পুরোনো পেইজে সার্চ বাটনের onclick এ আলাদা submit URL থাকে
+        final searchBtn = document.querySelector(
+          'input[type="button"][onclick*="php"][value*="Search"], '
+          'input[type="submit"][onclick*="php"][value*="Search"], '
+          'button[onclick*="php"]',
+        );
+        final onClick = searchBtn?.attributes['onclick'];
         if (onClick != null) {
           final match = RegExp(r"'([^']+\.php[^']*)'").firstMatch(onClick);
           if (match != null) {
@@ -163,20 +180,44 @@ class _NativeResultScreenState extends State<NativeResultScreen> {
       print("🚀 Requesting EXACT POST Body: $body");
       print("🔗 Target URL: $targetPostUrl");
 
-      final response = await http
-          .post(
-            Uri.parse(targetPostUrl),
-            headers: {
-              'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
-              'Cookie': sessionCookie,
-              'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
-              'Referer': widget.formUrl,
-              'X-Requested-With': 'XMLHttpRequest',
-              'Origin': 'http://103.113.200.7',
-            },
-            body: body,
-          )
-          .timeout(const Duration(seconds: 25));
+      final headers = {
+        'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+        'Cookie': sessionCookie,
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+        'Referer': widget.formUrl,
+        'X-Requested-With': 'XMLHttpRequest',
+        'Origin': 'http://103.113.200.7',
+      };
+
+      http.Response response;
+      if (submitMethod == 'get') {
+        final uri = Uri.parse(targetPostUrl).replace(
+          queryParameters: {
+            ...Uri.parse(targetPostUrl).queryParameters,
+            ...body,
+          },
+        );
+        response = await http.get(uri, headers: headers).timeout(const Duration(seconds: 25));
+      } else {
+        response = await http
+            .post(
+              Uri.parse(targetPostUrl),
+              headers: headers,
+              body: body,
+            )
+            .timeout(const Duration(seconds: 25));
+      }
+
+      // কিছু endpoint এ parsed action URL ভুল/expired হলে fallback হিসেবে formUrl এ retry
+      if (response.statusCode == 404 && targetPostUrl != widget.formUrl) {
+        response = await http
+            .post(
+              Uri.parse(widget.formUrl),
+              headers: headers,
+              body: body,
+            )
+            .timeout(const Duration(seconds: 25));
+      }
 
       final responseBody = response.body;
 
