@@ -137,7 +137,7 @@ class _AgeCalculatorScreenState extends State<AgeCalculatorScreen> {
                 _SmallStatCard(
                   title: 'Birthday Countdown',
                   value: _summary!.birthdayCountdown,
-                  icon: Icons.countdown,
+                  icon: Icons.countertops,
                   color: Colors.green,
                 ),
               ],
@@ -193,38 +193,6 @@ class _AgeCalculatorScreenState extends State<AgeCalculatorScreen> {
                       value: _summary!.estimatedMeals,
                       icon: Icons.restaurant_menu,
                       color: Colors.brown,
-                    ),
-                  ],
-                ),
-              ),
-            ),
-
-            Card(
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-              child: Padding(
-                padding: const EdgeInsets.all(14),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text('Fun Facts', style: TextStyle(fontWeight: FontWeight.bold)),
-                    const SizedBox(height: 8),
-                    _ListTileInfo(
-                      label: 'Famous People Born Today',
-                      value: _summary!.famousPeople,
-                      icon: Icons.people_alt_outlined,
-                      color: Colors.blue,
-                    ),
-                    _ListTileInfo(
-                      label: 'Historical Event',
-                      value: _summary!.historicalEvent,
-                      icon: Icons.history_edu_outlined,
-                      color: Colors.teal,
-                    ),
-                    _ListTileInfo(
-                      label: 'Age on Mars / Venus',
-                      value: _summary!.planetAge,
-                      icon: Icons.public,
-                      color: Colors.deepOrange,
                     ),
                   ],
                 ),
