@@ -210,7 +210,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
     final isDarkMode = themeProvider.isDarkMode;
 
     final tasks = [
-      _TaskItem(icon: Icons.menu_book, label: 'Daily Task'),
+      _TaskItem(icon: Icons.calculate, label: 'Age Calculator'),
       _TaskItem(icon: Icons.how_to_reg, label: 'Attendance'),
       _TaskItem(icon: Icons.edit_document, label: 'Exam Atten.'),
       _TaskItem(
